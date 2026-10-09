@@ -1,0 +1,6 @@
+__pycache__/
+*.py[cod]
+
+# Local model checkpoints and run output
+data/outputs/checkpoints/
+data/outputs/training/

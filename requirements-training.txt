@@ -1,0 +1,7 @@
+torch>=2.2
+transformers==4.44.2
+pyvi==0.1.1
+PyYAML==6.0.2
+pandas==2.2.2
+numpy>=1.26,<2
+scikit-learn==1.5.1
