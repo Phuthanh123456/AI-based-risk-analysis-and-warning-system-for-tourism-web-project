@@ -1,6 +1,6 @@
 // MetricCard adapts the card title/value/content structure of MUI Dashboard
 // StatCard.tsx (MIT). Demo trends and data have been removed.
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -11,12 +11,14 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 
 export function PageIntro({ eyebrow, title, description, action }) {
-  return <header className="portal-page-header"><p className="portal-eyebrow">{eyebrow}</p><Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems={{ xs: "start", sm: "center" }} flexWrap="wrap" sx={{ gap: 2 }}><Typography component="h1" variant="h1" sx={{ minWidth: 0, flex: { xs: "0 1 auto", sm: action ? "1 1 480px" : "1 1 auto" } }}>{title}</Typography>{action}</Stack>{description && <Typography component="p" variant="body1">{description}</Typography>}</header>;
+  const { pathname } = useLocation();
+  const photo = { "/plan": "halong.webp", "/result": "saigon-bridge.webp", "/weather": "halong-karsts.webp", "/traffic": "saigon-night.webp", "/news": "hoian.webp", "/map": "halong.webp", "/compare": "saigon-bridge.webp", "/alerts": "halong-karsts.webp", "/history": "hoian-lanterns.webp" }[pathname] || "halong.webp";
+  return <header className="portal-page-header"><img src={"/images/landing/" + photo} alt="" /><div className="portal-banner-shade" /><div className="portal-banner-content"><p className="portal-eyebrow"><Link to="/">VIỆT NAM</Link><span aria-hidden="true"> / </span>{eyebrow}</p><Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems={{ xs: "start", sm: "center" }} flexWrap="wrap" sx={{ gap: 2 }}><Typography component="h1" variant="h1" sx={{ minWidth: 0, flex: { xs: "0 1 auto", sm: action ? "1 1 480px" : "1 1 auto" } }}>{title}</Typography>{action}</Stack>{description && <Typography component="p" variant="body1">{description}</Typography>}</div></header>;
 }
 
 export function MetricCard({ title, value, helper, tone = "default", icon, to }) {
   const inner = <CardContent sx={{ p: "20px !important" }}><Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ gap: 1 }}><Typography component="h2" variant="body2" color="text.secondary" fontWeight={650}>{title}</Typography>{icon && <Box aria-hidden="true" sx={{ color: tone === "danger" ? "error.main" : tone === "caution" ? "warning.main" : "primary.main" }}>{icon}</Box>}</Stack><Typography component="p" className="portal-metric-value" sx={{ mt: 1, color: tone === "danger" ? "error.main" : tone === "caution" ? "warning.dark" : "text.primary" }}>{value ?? "Chưa có dữ liệu"}</Typography>{helper && <Typography component="p" variant="body2" color="text.secondary" sx={{ mt: 1 }}>{helper}</Typography>}</CardContent>;
-  return <Card component={to ? Link : "div"} to={to} variant="outlined" className={to ? "portal-card-link" : ""}>{inner}</Card>;
+  return <Card component={to ? Link : "div"} to={to} variant="outlined" className={"portal-metric " + (to ? "portal-card-link" : "")}>{inner}</Card>;
 }
 
 export function DataState({ title, description, action = "/plan", actionLabel = "Lập kế hoạch chuyến đi", severity = "info" }) {
