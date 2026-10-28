@@ -68,7 +68,7 @@ export default function TravelPortal(props) {
       text: props.theme === "dark" ? { primary: "#eef5fc", secondary: "#b7c8d8" } : { primary: "#132b42", secondary: "#536778" },
       divider: props.theme === "dark" ? "#34485b" : "#dce5e8",
     },
-    typography: { fontFamily: '"Be Vietnam Pro", sans-serif', fontSize: 14, h1: { fontSize: "clamp(1.9rem, 2.5vw, 2.25rem)", lineHeight: 1.42, fontWeight: 700, letterSpacing: 0 }, h2: { fontSize: "1.5rem", lineHeight: 1.4, fontWeight: 700, letterSpacing: 0 }, h3: { fontSize: "1.18rem", lineHeight: 1.4, fontWeight: 700, letterSpacing: 0 }, body1: { lineHeight: 1.65 }, body2: { lineHeight: 1.6 } },
+    typography: { fontFamily: '"Lexend Deca", sans-serif', fontSize: 14, h1: { fontSize: "clamp(1.9rem, 2.5vw, 2.25rem)", lineHeight: 1.42, fontWeight: 700, letterSpacing: 0 }, h2: { fontSize: "1.5rem", lineHeight: 1.4, fontWeight: 700, letterSpacing: 0 }, h3: { fontSize: "1.18rem", lineHeight: 1.4, fontWeight: 700, letterSpacing: 0 }, body1: { lineHeight: 1.65 }, body2: { lineHeight: 1.6 } },
     shape: { borderRadius: 12 },
     components: { MuiButton: { styleOverrides: { root: { textTransform: "none", minHeight: 44, borderRadius: 100, fontWeight: 600, fontSize: 12, padding: "10px 22px" } } }, MuiCard: { styleOverrides: { root: { boxShadow: "none", border: "1px solid", borderColor: "var(--portal-border)" } } }, MuiOutlinedInput: { styleOverrides: { root: { borderRadius: 12 } } } },
   }), [props.theme]);

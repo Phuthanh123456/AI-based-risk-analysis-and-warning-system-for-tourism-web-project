@@ -45,7 +45,7 @@ export function LandingPage({ onGoToLogin, signedIn = false, themeMode, toggleTh
         <p className="home-editorial-note">Gợi ý hình ảnh biên tập để lấy cảm hứng; không phải bảng xếp hạng an toàn.</p>
       </div></section>
       <section className="home-story"><div className="tour-container home-story-grid">
-        <Reveal className="home-story-art"><TravelImage src={images + "vietnam-skyline.png"} alt="Minh họa các miền cảnh quan Việt Nam" /><span className="home-art-note">ĐI XA HƠN. HIỂU NHIỀU HƠN.</span></Reveal>
+        <Reveal className="home-story-art"><TravelImage src={images + "vietnam-skyline.webp"} alt="Minh họa các miền cảnh quan Việt Nam" /><span className="home-art-note">ĐI XA HƠN. HIỂU NHIỀU HƠN.</span></Reveal>
         <Reveal><p className="tour-kicker"><span>02</span> CÔNG NGHỆ ĐỒNG HÀNH</p><h2>Hành trang tốt nhất<br />là sự chủ động.</h2><p>Đằng sau mỗi chuyến đi là những điều cần cân nhắc. Hệ thống kết hợp điều kiện thời tiết, tuyến đường và tin tức địa phương để bạn có thêm cơ sở trước khi khởi hành.</p><p>Đánh giá có nguồn, có thời điểm và có giới hạn được ghi rõ. Bạn luôn là người quyết định hành trình của mình.</p><button className="tour-text-link" onClick={() => onGoToLogin("/plan")}>Tìm hiểu qua hành trình của bạn <ArrowForward fontSize="small" /></button></Reveal>
       </div></section>
       <section className="home-section"><div className="tour-container">

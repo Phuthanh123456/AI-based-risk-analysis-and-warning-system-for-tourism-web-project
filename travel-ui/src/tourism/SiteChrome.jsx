@@ -28,7 +28,7 @@ export function SiteHeader({ overlay = false, signedIn = false, onLogin, themeMo
   }, []);
   const item = ([path, label]) => <Link key={path} to={path} aria-current={pathname === path ? "page" : undefined} onClick={() => setOpen(false)}>{label}</Link>;
   return <>
-    <header className={`tour-header ${overlay && !scrolled ? "is-overlay" : ""}`}>
+    <header className={`tour-header ${overlay ? "over-hero" : ""} ${overlay && !scrolled ? "is-overlay" : ""}`}>
       <div className="tour-header-inner"><Brand /><nav className="tour-desktop-nav" aria-label="Điều hướng chính">{primary.map(item)}<details className="tour-more" onKeyDown={(event) => { if (event.key === "Escape") event.currentTarget.open = false; }}><summary>Tiện ích <span aria-hidden="true">⌄</span></summary><div>{tools.map(([path, label]) => <Link key={path} to={path} onClick={(event) => { event.currentTarget.closest("details").open = false; }}>{label}</Link>)}</div></details></nav>
         <div className="tour-header-actions">{signedIn && toggleTheme && <button className="tour-icon-button" onClick={toggleTheme} aria-label={themeMode === "dark" ? "Chuyển giao diện sáng" : "Chuyển giao diện tối"}>{themeMode === "dark" ? <LightIcon /> : <DarkIcon />}</button>}{signedIn ? <button className="tour-account" onClick={logout}>Đăng xuất</button> : <button className="tour-account" onClick={() => onLogin?.("/plan")}>Đăng nhập</button>}<Link className="tour-button tour-button-blue tour-header-cta" to="/explore">Khám phá ngay <ArrowForward fontSize="small" /></Link><button className="tour-icon-button tour-mobile-toggle" aria-label="Mở menu điều hướng" aria-expanded={open} onClick={() => setOpen(true)}><MenuIcon /></button></div>
       </div>
@@ -47,7 +47,7 @@ export function Reveal({ children, className = "", delay = 0 }) {
 }
 
 export function TravelImage({ src, alt = "", className = "", eager = false }) {
-  return <img className={className} src={src} alt={alt} loading={eager ? "eager" : "lazy"} fetchPriority={eager ? "high" : undefined} decoding="async" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = "/images/landing/vietnam-skyline.png"; }} />;
+  return <img className={className} src={src} alt={alt} loading={eager ? "eager" : "lazy"} fetchPriority={eager ? "high" : undefined} decoding="async" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = "/images/landing/vietnam-skyline.webp"; }} />;
 }
 
 export function SectionHeading({ number, eyebrow, title, description, children }) {

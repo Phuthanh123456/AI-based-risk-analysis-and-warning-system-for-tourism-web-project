@@ -26,7 +26,7 @@ export function DataState({ title, description, action = "/plan", actionLabel = 
 }
 
 export function SourceNote({ children }) {
-  return <Typography component="p" variant="body2" color="text.secondary" sx={{ mt: 2 }}>{children}</Typography>;
+  return <aside className="portal-source-note"><details><summary>Nguồn thông tin & cách đọc kết quả</summary><Typography component="p" variant="body2" color="text.secondary" sx={{ mt: 1.5 }}>{children}</Typography></details></aside>;
 }
 
 export function RiskChip({ score }) {

@@ -10,7 +10,7 @@ Scope: existing travel-ui; preserve backend, model logic, data and API contracts
 | M3 Explore | Existing province API, working search, image associations, loading/error/empty states; choose destination for plan | Complete — public /explore backed by /map/points |
 | M4 Risk + weather | Preserve all score/response meanings; coherent banners/forms/verdict; chart only from returned forecast | Complete — direct forecast chart with accessible data table |
 | M5 Map + other pages | Large dedicated map/search, existing markers/layers; news/traffic/compare/alerts/history/auth follow shared system | Complete — map search and shared route/auth presentation |
-| M6 Visual QA | Build/lint, desktop/mobile/tablet screenshots, no horizontal overflow, route/auth/error checks, document real API limits | Pending |
+| M6 Visual QA | Build/lint, desktop/mobile/tablet screenshots, no horizontal overflow, route/auth/error checks, document real API limits | Complete — Lexend Deca, 23 browser views and 6 interaction checks; design-system/QA_REPORT.md |
 
 ## Session baseline
 
@@ -25,3 +25,7 @@ M2/M3 are committed together because public home navigation and its Explore dest
 M4: npm run lint and npm run build passed. Weather chart reads the existing temperature and adjusted_risk_score/risk_score fields; missing values remain gaps. The original verdict mapping, thresholds and result calculations were not changed. Plan form retains GPS, date, purpose and request behavior.
 
 M5: lint/build passed. Map search calls the existing onPickProvince(point, {fly:true}) and retains layer toggles and geometry. Authentication forms keep the same endpoints, payload and callback mapping; nonfunctional old remember/password-reset controls were removed. All existing route views use the shared photographic banner, navigation, footer and responsive presentation. Backend /health at localhost:8000 was not reachable at this checkpoint.
+
+M6: resumed after the user's demo pause. Verified Discover HCMC's public CSS uses Lexend Deca; locally hosted the variable font with its OFL license and Vietnamese subset, replacing the previous UI font. Fixed hero-header scroll positioning, final CTA gutters, uppercase Đ search normalization, collapsible source explanations, and converted the generated skyline from PNG to WebP. Full lint/build and the final browser review passed. See travel-ui/design-system/QA_REPORT.md for fixtures, evidence and remaining external-service checks.
+
+Separate user-requested routing repair: e856bca corrects province geocoding precedence (Đồng Tháp previously resolved to a same-named location in Lào Cai). It is separate from frontend presentation changes; model weights, datasets and API response fields were not changed.

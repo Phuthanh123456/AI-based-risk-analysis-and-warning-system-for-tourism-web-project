@@ -6,14 +6,14 @@ import { apiGet } from "../api";
 import { DestinationCard } from "../tourism/SiteChrome";
 import "./ExplorePage.css";
 
-function normalized(value) { return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").toLowerCase(); }
+function normalized(value) { return value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d"); }
 function provincePhoto(name) {
   const key = normalized(name);
   if (key.includes("ho chi minh")) return ["saigon-bridge.webp", "Cảnh sông và đô thị TP. Hồ Chí Minh"];
   if (key === "ha noi") return ["hanoi.webp", "Cuộc sống đường phố Hà Nội"];
   if (key === "quang ninh") return ["halong.webp", "Vịnh Hạ Long, Quảng Ninh"];
   if (key === "quang nam") return ["hoian.webp", "Đèn lồng Hội An, Quảng Nam"];
-  return ["vietnam-skyline.png", "Minh họa cảnh quan Việt Nam"];
+  return ["vietnam-skyline.webp", "Minh họa cảnh quan Việt Nam"];
 }
 
 export default function ExplorePage({ onSelect }) {
@@ -41,7 +41,7 @@ export default function ExplorePage({ onSelect }) {
       <div className="explore-search-row"><div><p className="tour-kicker">ĐIỂM ĐẾN TRONG HỆ THỐNG</p><h2 id="explore-title">Bạn muốn bắt đầu từ đâu?</h2></div><label className="explore-search"><span className="explore-search-label">Tìm tỉnh, thành phố</span><div><SearchIcon aria-hidden="true" /><input type="search" value={query} onChange={(event) => search(event.target.value)} placeholder="Ví dụ: Hà Nội, Quảng Ninh…" /></div></label></div>
       {status === "loading" && <><p role="status">Đang tải danh sách điểm đến…</p><div className="explore-grid" aria-hidden="true">{Array.from({ length: 6 }, (_, index) => <div className="explore-skeleton" key={index} />)}</div></>}
       {status === "error" && <div className="explore-state" role="alert"><h3>Chưa tải được điểm đến</h3><p>{error}</p><button className="tour-button tour-button-blue" onClick={() => { setStatus("loading"); setError(""); setRetry((value) => value + 1); }}>Thử lại</button></div>}
-      {status === "ready" && <><p className="explore-count" role="status" aria-live="polite">{filtered.length} tỉnh, thành phố phù hợp{query ? " với “" + query + "”" : ""}</p>{!filtered.length ? <div className="explore-state"><h3>Chưa tìm thấy địa điểm phù hợp</h3><p>Thử tên tỉnh khác hoặc xóa từ khóa để xem toàn bộ dữ liệu.</p>{query && <button className="tour-button tour-button-blue" onClick={() => search("")}>Xóa tìm kiếm</button>}</div> : <div className="explore-grid">{filtered.slice(currentPage * 12, currentPage * 12 + 12).map((point) => { const [file, alt] = provincePhoto(point.province); return <DestinationCard key={point.province} place={{ name: point.province, image: "/images/landing/" + file, alt, caption: file === "vietnam-skyline.png" ? "MINH HỌA VIỆT NAM" : "HÌNH ẢNH GỢI CẢM HỨNG", tag: "ĐIỂM ĐẾN VIỆT NAM" }} onSelect={onSelect} />; })}</div>}
+      {status === "ready" && <><p className="explore-count" role="status" aria-live="polite">{filtered.length} tỉnh, thành phố phù hợp{query ? " với “" + query + "”" : ""}</p>{!filtered.length ? <div className="explore-state"><h3>Chưa tìm thấy địa điểm phù hợp</h3><p>Thử tên tỉnh khác hoặc xóa từ khóa để xem toàn bộ dữ liệu.</p>{query && <button className="tour-button tour-button-blue" onClick={() => search("")}>Xóa tìm kiếm</button>}</div> : <div className="explore-grid">{filtered.slice(currentPage * 12, currentPage * 12 + 12).map((point) => { const [file, alt] = provincePhoto(point.province); return <DestinationCard key={point.province} place={{ name: point.province, image: "/images/landing/" + file, alt, caption: file === "vietnam-skyline.webp" ? "MINH HỌA VIỆT NAM" : "HÌNH ẢNH GỢI CẢM HỨNG", tag: "ĐIỂM ĐẾN VIỆT NAM" }} onSelect={onSelect} />; })}</div>}
       {pageCount > 1 && <nav className="explore-pagination" aria-label="Trang danh sách điểm đến"><button disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)}>Trang trước</button><span>Trang {currentPage + 1} / {pageCount}</span><button disabled={currentPage + 1 >= pageCount} onClick={() => setPage(currentPage + 1)}>Trang tiếp <ArrowForward fontSize="small" /></button></nav>}
       <p className="explore-note">Danh sách lấy từ dữ liệu tỉnh/thành của dự án qua /map/points. Hình ảnh mang tính biên tập hoặc minh họa, không thể hiện tình trạng rủi ro tại thời điểm hiện tại.</p></>}
     </section>
