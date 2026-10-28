@@ -29,3 +29,9 @@ M5: lint/build passed. Map search calls the existing onPickProvince(point, {fly:
 M6: resumed after the user's demo pause. Verified Discover HCMC's public CSS uses Lexend Deca; locally hosted the variable font with its OFL license and Vietnamese subset, replacing the previous UI font. Fixed hero-header scroll positioning, final CTA gutters, uppercase Đ search normalization, collapsible source explanations, and converted the generated skyline from PNG to WebP. Full lint/build and the final browser review passed. See travel-ui/design-system/QA_REPORT.md for fixtures, evidence and remaining external-service checks.
 
 Separate user-requested routing repair: e856bca corrects province geocoding precedence (Đồng Tháp previously resolved to a same-named location in Lào Cai). It is separate from frontend presentation changes; model weights, datasets and API response fields were not changed.
+
+## Current-province tourism catalogue extension
+
+- C1: Government-sourced 34-province directory; 63 historical names assigned exactly once; Huế rename documented; historical risk datasets preserved. Complete - data integrity checks passed: 34 current provinces, 6 cities, 63 unique historical names, 90 guides and 78 licensed photographs.
+- C2: Province guides, individual place/food/culture stories, five experience groups, source and image-license attribution; public and authenticated navigation. Implemented, visual review in progress.
+- C3: Search old/current names, current origin/marker adapters with explicit legacy risk coverage, responsive screenshots and functional checks; refresh localhost preview and commit reviewed changes. In progress.

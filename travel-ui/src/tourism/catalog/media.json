@@ -1,0 +1,793 @@
+{
+  "ban-gioc": {
+    "image": "/images/explore/ban-gioc.webp",
+    "subject": "Thác Bản Giốc",
+    "artist": "Lê  Minh Phát",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Bangioc9tam.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Bangioc9tam.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "mau-son": {
+    "image": "/images/explore/mau-son.webp",
+    "subject": "Vùng núi Mẫu Sơn",
+    "artist": "Viethavvh at vi.wikipedia",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "source": "https://commons.wikimedia.org/wiki/File:Mau_Son.JPG",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/d/d2/Mau_Son.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "tam-thanh": {
+    "image": "/images/explore/tam-thanh.webp",
+    "subject": "Chùa Tam Thanh",
+    "artist": "Bùi Thụy Đào Nguyên",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Ch%C3%B9a_Tam_Thanh.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/b/b0/Ch%C3%B9a_Tam_Thanh.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "ta-xua": {
+    "image": "/images/explore/ta-xua.webp",
+    "subject": "Dãy núi Tà Xùa",
+    "artist": "NKSTTSSHNVN",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:S%E1%BB%91ng_l%C6%B0ng_kh%E1%BB%A7ng_long_T%C3%A0_X%C3%B9a.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/1/1e/S%E1%BB%91ng_l%C6%B0ng_kh%E1%BB%A7ng_long_T%C3%A0_X%C3%B9a.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "dong-van": {
+    "image": "/images/explore/dong-van.webp",
+    "subject": "Cao nguyên đá Đồng Văn",
+    "artist": "NKSTTSSHNVN",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:B%C3%A3i_%C4%91%C3%A1_m%E1%BA%B7t_tr%C4%83ng_%C4%90%E1%BB%93ng_V%C4%83n_-_NKS.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/f/f5/B%C3%A3i_%C4%91%C3%A1_m%E1%BA%B7t_tr%C4%83ng_%C4%90%E1%BB%93ng_V%C4%83n_-_NKS.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "tan-trao": {
+    "image": "/images/explore/tan-trao.webp",
+    "subject": "Khu di tích Tân Trào",
+    "artist": "Liftold (thảo luận)",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:C%C3%A2y_%C4%90a_l%E1%BB%8Bch_s%E1%BB%AD_T%C3%A2n_Tr%C3%A0o.JPG",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/1/11/C%C3%A2y_%C4%90a_l%E1%BB%8Bch_s%E1%BB%AD_T%C3%A2n_Tr%C3%A0o.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "pac-bo": {
+    "image": "/images/explore/pac-bo.webp",
+    "subject": "Khu di tích Pác Bó",
+    "artist": "[Tycho]  talk , http://shansov.net",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:C%E1%BB%91c_B%C3%B3.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/f/f0/C%E1%BB%91c_B%C3%B3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "den-hung": {
+    "image": "/images/explore/den-hung.webp",
+    "subject": "Khu di tích Đền Hùng",
+    "artist": "Viethavvh at vi.wikipedia",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "source": "https://commons.wikimedia.org/wiki/File:Mausoleum_of_Hung_King.JPG",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/f/f8/Mausoleum_of_Hung_King.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "tam-dao": {
+    "image": "/images/explore/tam-dao.webp",
+    "subject": "Vườn quốc gia Tam Đảo",
+    "artist": "Viethavvh",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "source": "https://commons.wikimedia.org/wiki/File:Tam_Dao_mountain_range.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/7/78/Tam_Dao_mountain_range.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "chua-dau": {
+    "image": "/images/explore/chua-dau.webp",
+    "subject": "Chùa Dâu",
+    "artist": "Chitto",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Dau_pagoda.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Dau_pagoda.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "vinh-nghiem": {
+    "image": "/images/explore/vinh-nghiem.webp",
+    "subject": "Chùa Vĩnh Nghiêm",
+    "artist": "ngocchat1014",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Ch%C3%B9a_V%C4%A9nh_Nghi%C3%AAm_-_Y%C3%AAn_D%C5%A9ng_-_B%E1%BA%AFc_Giang_-_panoramio_(24).jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Ch%C3%B9a_V%C4%A9nh_Nghi%C3%AAm_-_Y%C3%AAn_D%C5%A9ng_-_B%E1%BA%AFc_Giang_-_panoramio_%2824%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "cat-ba": {
+    "image": "/images/explore/cat-ba.webp",
+    "subject": "Quần đảo Cát Bà",
+    "artist": "Viethavvh",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "source": "https://commons.wikimedia.org/wiki/File:QD_Catba2.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/4/4f/QD_Catba2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "ho-hoan-kiem": {
+    "image": "/images/explore/ho-hoan-kiem.webp",
+    "subject": "Hồ Hoàn Kiếm",
+    "artist": "Chuhai07",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "source": "https://commons.wikimedia.org/wiki/File:Hoan_Kiem_10082026.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/8/81/Hoan_Kiem_10082026.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "pho-hien": {
+    "image": "/images/explore/pho-hien.webp",
+    "subject": "Không gian di tích Phố Hiến",
+    "artist": "Hoàng Huy",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Ph%C6%B0%E1%BB%9Dng_Ph%E1%BB%91_Hi%E1%BA%BFn.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/f/fd/Ph%C6%B0%E1%BB%9Dng_Ph%E1%BB%91_Hi%E1%BA%BFn.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "chua-keo": {
+    "image": "/images/explore/chua-keo.webp",
+    "subject": "Chùa Keo",
+    "artist": "Casablanca1911",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Chuakeothaibinh.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/f/fb/Chuakeothaibinh.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "trang-an": {
+    "image": "/images/explore/trang-an.webp",
+    "subject": "Quần thể danh thắng Tràng An",
+    "artist": "Kien1980v (thảo luận)",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "source": "https://commons.wikimedia.org/wiki/File:Muaxuantamcoc.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/0/08/Muaxuantamcoc.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "phu-day": {
+    "image": "/images/explore/phu-day.webp",
+    "subject": "Quần thể di tích Phủ Dầy",
+    "artist": "Hoangcharming",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:LeHoiPhuDay.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/7/7d/LeHoiPhuDay.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "ha-long": {
+    "image": "/images/explore/ha-long.webp",
+    "subject": "Vịnh Hạ Long",
+    "artist": "NKSTTSSHNVN",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:V%E1%BB%8Bnh_H%E1%BA%A1_Long_-_NKS.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/2/29/V%E1%BB%8Bnh_H%E1%BA%A1_Long_-_NKS.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "tan-cuong": {
+    "image": "/images/explore/tan-cuong.webp",
+    "subject": "Vùng chè Tân Cương",
+    "artist": "Bacthai20",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "source": "https://commons.wikimedia.org/wiki/File:Tan_Cuong_Tea_culture.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Tan_Cuong_Tea_culture.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "con-son": {
+    "image": "/images/explore/con-son.webp",
+    "subject": "Chùa Côn Sơn",
+    "artist": "Hoangkid",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Cong_Chua_Con_Son.JPG",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/1/14/Cong_Chua_Con_Son.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "thanh-nha-ho": {
+    "image": "/images/explore/thanh-nha-ho.webp",
+    "subject": "Thành nhà Hồ",
+    "artist": "Cổng Nam Thành Nhà Hồ",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:C%E1%BB%95ng_Nam.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/a/ab/C%E1%BB%95ng_Nam.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "pu-luong": {
+    "image": "/images/explore/pu-luong.webp",
+    "subject": "Khu bảo tồn thiên nhiên Pù Luông",
+    "artist": "NKSTTSSHNVN",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Ru%E1%BB%99ng_b%E1%BA%ADc_thang_P%C3%B9_Lu%C3%B4ng_1_-_NKS.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/a/ad/Ru%E1%BB%99ng_b%E1%BA%ADc_thang_P%C3%B9_Lu%C3%B4ng_1_-_NKS.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "kim-lien": {
+    "image": "/images/explore/kim-lien.webp",
+    "subject": "Khu di tích Kim Liên",
+    "artist": "Liftold at Vietnamese Wikipedia",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Kim_Lien_Monuments_Park.JPG",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/8/82/Kim_Lien_Monuments_Park.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "pu-mat": {
+    "image": "/images/explore/pu-mat.webp",
+    "subject": "Vườn quốc gia Pù Mát",
+    "artist": "Rolf Müller (User:Rolfmueller)",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Annamite_range_pu_mat_2007_05.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/f/fb/Annamite_range_pu_mat_2007_05.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "thien-cam": {
+    "image": "/images/explore/thien-cam.webp",
+    "subject": "Biển Thiên Cầm",
+    "artist": "vi:User:P~viwiki",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Thiencam4.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/c/c2/Thiencam4.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "thien-mu": {
+    "image": "/images/explore/thien-mu.webp",
+    "subject": "Chùa Thiên Mụ",
+    "artist": "Lưu Ly",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "source": "https://commons.wikimedia.org/wiki/File:ThienMuPagoda.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/8/88/ThienMuPagoda.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "dai-noi": {
+    "image": "/images/explore/dai-noi.webp",
+    "subject": "Hoàng thành Huế",
+    "artist": "NguyenThanhBac123",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "source": "https://commons.wikimedia.org/wiki/File:%C4%90%E1%BA%A1i_n%E1%BB%99i.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/b/b9/%C4%90%E1%BA%A1i_n%E1%BB%99i.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "phong-nha": {
+    "image": "/images/explore/phong-nha.webp",
+    "subject": "Vườn quốc gia Phong Nha – Kẻ Bàng",
+    "artist": "Genghiskhanviet",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "source": "https://commons.wikimedia.org/wiki/File:Phongnhakebang6.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/c/c9/Phongnhakebang6.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "hoi-an": {
+    "image": "/images/explore/hoi-an.webp",
+    "subject": "Phố cổ Hội An",
+    "artist": "Crazy3108",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:PhoCoHoiAn.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/f/f3/PhoCoHoiAn.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "thanh-co": {
+    "image": "/images/explore/thanh-co.webp",
+    "subject": "Thành cổ Quảng Trị",
+    "artist": "Bùi Thụy Đào Nguyên",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Th%C3%A0nh_c%E1%BB%95_Qu%E1%BA%A3ng_Tr%E1%BB%8B_4.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/0/09/Th%C3%A0nh_c%E1%BB%95_Qu%E1%BA%A3ng_Tr%E1%BB%8B_4.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "my-son": {
+    "image": "/images/explore/my-son.webp",
+    "subject": "Thánh địa Mỹ Sơn",
+    "artist": "Chainwit.",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:2024_-_M%E1%BB%B9_S%C6%A1n_Group_B,_C_and_D_-_img_23.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/0/07/2024_-_M%E1%BB%B9_S%C6%A1n_Group_B%2C_C_and_D_-_img_23.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "ly-son": {
+    "image": "/images/explore/ly-son.webp",
+    "subject": "Đảo Lý Sơn",
+    "artist": "VuTuanHung1804",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:C%E1%BB%95ng_ch%C3%A0o_tr%C3%AAn_Huy%E1%BB%87n_%C4%90%E1%BA%A3o_L%C3%BD_S%C6%A1n_-_Qu%E1%BA%A3ng_Ng%C3%A3i.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/d/dd/C%E1%BB%95ng_ch%C3%A0o_tr%C3%AAn_Huy%E1%BB%87n_%C4%90%E1%BA%A3o_L%C3%BD_S%C6%A1n_-_Qu%E1%BA%A3ng_Ng%C3%A3i.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "ngu-hanh-son": {
+    "image": "/images/explore/ngu-hanh-son.webp",
+    "subject": "Danh thắng Ngũ Hành Sơn",
+    "artist": "Viethavvh at vi.wikipedia",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "source": "https://commons.wikimedia.org/wiki/File:Ngu_hanh_son_toan_canh.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Ngu_hanh_son_toan_canh.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "mang-den": {
+    "image": "/images/explore/mang-den.webp",
+    "subject": "Măng Đen",
+    "artist": "Weendang",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Pa_S%C4%A9_Waterfall,_Mang_Den_Vietnam.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Pa_S%C4%A9_Waterfall%2C_Mang_Den_Vietnam.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "da-lat": {
+    "image": "/images/explore/da-lat.webp",
+    "subject": "Đà Lạt",
+    "artist": "Tuong Lam Photos",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Da_Lat_-_Viet_Nam.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/e/e2/Da_Lat_-_Viet_Nam.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "ghenh-rang": {
+    "image": "/images/explore/ghenh-rang.webp",
+    "subject": "Danh thắng Ghềnh Ráng",
+    "artist": "Thuydaonguyen",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:B%C3%A3i_%C4%90%C3%A1_Tr%E1%BB%A9ng.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/d/da/B%C3%A3i_%C4%90%C3%A1_Tr%E1%BB%A9ng.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "nui-chua": {
+    "image": "/images/explore/nui-chua.webp",
+    "subject": "Vườn quốc gia Núi Chúa",
+    "artist": "Suriya Vij",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "source": "https://commons.wikimedia.org/wiki/File:Lo_O_Stream,_Nui_Chua_National_Park.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/f/f5/Lo_O_Stream%2C_Nui_Chua_National_Park.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "ho-lak": {
+    "image": "/images/explore/ho-lak.webp",
+    "subject": "Hồ Lắk",
+    "artist": "Nguyễn Đông Sơn at Vietnamese Wikipedia",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Lak_Lake.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Lak_Lake.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "mui-ne": {
+    "image": "/images/explore/mui-ne.webp",
+    "subject": "Mũi Né",
+    "artist": "Woong Deewaa",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:M%C5%A9i_N%C3%A9_Fishing_Village.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/0/06/M%C5%A9i_N%C3%A9_Fishing_Village.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "ganh-da-dia": {
+    "image": "/images/explore/ganh-da-dia.webp",
+    "subject": "Gành Đá Đĩa",
+    "artist": "Đông Hồ",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:G%C3%A0nh_%C4%90%C3%A1_%C4%90%C4%A9a.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/5/5d/G%C3%A0nh_%C4%90%C3%A1_%C4%90%C4%A9a.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "dinh-doc-lap": {
+    "image": "/images/explore/dinh-doc-lap.webp",
+    "subject": "Dinh Độc Lập",
+    "artist": "Yesvn123",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Dinh_%C4%90%E1%BB%99c_L%E1%BA%ADp_v%C3%A0o_n%C3%A0m_2024.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/d/d0/Dinh_%C4%90%E1%BB%99c_L%E1%BA%ADp_v%C3%A0o_n%C3%A0m_2024.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "con-dao": {
+    "image": "/images/explore/con-dao.webp",
+    "subject": "Quần đảo Côn Đảo",
+    "artist": "Lam Tr Th",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:C%C3%B4n_%C4%90%E1%BA%A3o,_B%C3%A0_R%E1%BB%8Ba_-_V%C5%A9ng_T%C3%A0u,_Vietnam_-_panoramio_(33).jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/3/38/C%C3%B4n_%C4%90%E1%BA%A3o%2C_B%C3%A0_R%E1%BB%8Ba_-_V%C5%A9ng_T%C3%A0u%2C_Vietnam_-_panoramio_%2833%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "cat-tien": {
+    "image": "/images/explore/cat-tien.webp",
+    "subject": "Vườn quốc gia Cát Tiên",
+    "artist": "Roy Bateman",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:BenCu_forest_structure_23Dec08.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/4/45/BenCu_forest_structure_23Dec08.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "ba-den": {
+    "image": "/images/explore/ba-den.webp",
+    "subject": "Núi Bà Đen",
+    "artist": "Cuong Tran",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "source": "https://commons.wikimedia.org/wiki/File:Dau_Tieng_Lake_-_50766650163.png",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Dau_Tieng_Lake_-_50766650163.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "cai-rang": {
+    "image": "/images/explore/cai-rang.webp",
+    "subject": "Chợ nổi Cái Răng",
+    "artist": "Bùi Thụy Đào Nguyên",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:M%E1%BB%99t_c%E1%BA%A3nh_%E1%BB%9F_ch%E1%BB%A3_n%E1%BB%95i_C%C3%A1i_R%C4%83ng.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/6/62/M%E1%BB%99t_c%E1%BA%A3nh_%E1%BB%9F_ch%E1%BB%A3_n%E1%BB%95i_C%C3%A1i_R%C4%83ng.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "khleang": {
+    "image": "/images/explore/khleang.webp",
+    "subject": "Chùa Kh'leang",
+    "artist": "Bùi Thụy Đào Nguyên",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:C%E1%BB%95ng_ch%C3%ADnh_ch%C3%B9a_Khl%C3%A9ang.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/5/59/C%E1%BB%95ng_ch%C3%ADnh_ch%C3%B9a_Khl%C3%A9ang.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "hoi-khanh": {
+    "image": "/images/explore/hoi-khanh.webp",
+    "subject": "Chùa Hội Khánh",
+    "artist": "ePi.Longgo",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Reclining_Buddha_at_Hoi_Khanh_Temple.png",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/6/63/Reclining_Buddha_at_Hoi_Khanh_Temple.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "lung-ngoc-hoang": {
+    "image": "/images/explore/lung-ngoc-hoang.webp",
+    "subject": "Khu bảo tồn Lung Ngọc Hoàng",
+    "artist": "Kantcer",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Lung_Ngoc_Hoang_Trees.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/2/29/Lung_Ngoc_Hoang_Trees.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "an-binh": {
+    "image": "/images/explore/an-binh.webp",
+    "subject": "Cù lao An Bình",
+    "artist": "ZuckPham",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "source": "https://commons.wikimedia.org/wiki/File:Nh%C3%A0_Th%E1%BB%9D_%C4%90%E1%BB%93ng_Ph%C3%BA.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/c/cf/Nh%C3%A0_Th%E1%BB%9D_%C4%90%E1%BB%93ng_Ph%C3%BA.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "chua-ang": {
+    "image": "/images/explore/chua-ang.webp",
+    "subject": "Chùa Âng",
+    "artist": "Bùi Thụy Đào Nguyên",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Ch%C3%B9a_%C3%82ng.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/0/0e/Ch%C3%B9a_%C3%82ng.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "vinh-trang": {
+    "image": "/images/explore/vinh-trang.webp",
+    "subject": "Chùa Vĩnh Tràng",
+    "artist": "Kwozyn",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "source": "https://commons.wikimedia.org/wiki/File:Ch%C3%B9a_V%C4%A9nh_Tr%C3%A0ng_%E1%BB%9F_M%E1%BB%B9_Tho.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Ch%C3%B9a_V%C4%A9nh_Tr%C3%A0ng_%E1%BB%9F_M%E1%BB%B9_Tho.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "tram-chim": {
+    "image": "/images/explore/tram-chim.webp",
+    "subject": "Vườn quốc gia Tràm Chim",
+    "artist": "Quoilp at Vietnamese Wikipedia",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:%C4%90%E1%BB%93ng_c%E1%BB%8F_v%C3%A0_chim_n%C6%B0%E1%BB%9Bc.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/f/fa/%C4%90%E1%BB%93ng_c%E1%BB%8F_v%C3%A0_chim_n%C6%B0%E1%BB%9Bc.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "u-minh-ha": {
+    "image": "/images/explore/u-minh-ha.webp",
+    "subject": "Vườn quốc gia U Minh Hạ",
+    "artist": "TuanUt",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Chu%E1%BB%91i_t%E1%BA%A1i_r%E1%BB%ABng_U_Minh_h%E1%BA%A1.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/1/1b/Chu%E1%BB%91i_t%E1%BA%A1i_r%E1%BB%ABng_U_Minh_h%E1%BA%A1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "tra-su": {
+    "image": "/images/explore/tra-su.webp",
+    "subject": "Rừng tràm Trà Sư",
+    "artist": "Bùi Thụy Đào Nguyên",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Tr%C3%A0_S%C6%B0_1.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/b/b8/Tr%C3%A0_S%C6%B0_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "pho-ha-noi": {
+    "image": "/images/explore/pho-ha-noi.webp",
+    "subject": "Phở",
+    "artist": "Codename5281",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Ph%E1%BB%9F_b%C3%B2,_C%E1%BA%A7u_Gi%E1%BA%A5y,_H%C3%A0_N%E1%BB%99i.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/9/99/Ph%E1%BB%9F_b%C3%B2%2C_C%E1%BA%A7u_Gi%E1%BA%A5y%2C_H%C3%A0_N%E1%BB%99i.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop.",
+    "contextual": true
+  },
+  "bun-bo-hue": {
+    "image": "/images/explore/bun-bo-hue.webp",
+    "subject": "Bún bò Huế",
+    "artist": "Kham Tran - www.khamtran.com",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Bun-Bo-Hue-from-Huong-Giang-2011.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/0/00/Bun-Bo-Hue-from-Huong-Giang-2011.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop.",
+    "contextual": true
+  },
+  "phu-quoc": {
+    "image": "/images/explore/phu-quoc.webp",
+    "subject": "Đảo Phú Quốc",
+    "artist": "[//commons.wikimedia.org/wiki/User:Trantuonglam Trantuonglam]",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Phu_Quoc,_Viet_Nam.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Phu_Quoc%2C_Viet_Nam.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "mi-quang": {
+    "image": "/images/explore/mi-quang.webp",
+    "subject": "Mì Quảng",
+    "artist": "Jpatokal",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Mi_Quang_1A_Danang.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/d/df/Mi_Quang_1A_Danang.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop.",
+    "contextual": true
+  },
+  "com-tam": {
+    "image": "/images/explore/com-tam.webp",
+    "subject": "Cơm tấm",
+    "artist": "Christopher Crouzet",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:C%C6%A1m_T%E1%BA%A5m,_Da_Nang,_Vietnam.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/b/b0/C%C6%A1m_T%E1%BA%A5m%2C_Da_Nang%2C_Vietnam.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop.",
+    "contextual": true
+  },
+  "banh-da-cua": {
+    "image": "/images/explore/banh-da-cua.webp",
+    "subject": "Bánh đa cua",
+    "artist": "HoangTuanAnh",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:BANH_DA_CUA_1.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/8/81/BANH_DA_CUA_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop.",
+    "contextual": true
+  },
+  "banh-pia": {
+    "image": "/images/explore/banh-pia.webp",
+    "subject": "Bánh pía",
+    "artist": "Serenity",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Bakpia_pathok.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/3/3c/Bakpia_pathok.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop.",
+    "contextual": true
+  },
+  "keo-dua": {
+    "image": "/images/explore/keo-dua.webp",
+    "subject": "Kẹo dừa",
+    "artist": "Liftold (thảo luận)",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Cocnout_candy_8.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/f/f9/Cocnout_candy_8.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop.",
+    "contextual": true
+  },
+  "nem-chua": {
+    "image": "/images/explore/nem-chua.webp",
+    "subject": "Nem chua",
+    "artist": "Basile Morin",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Fermented_pork_wrapped_in_leaves.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/e/ed/Fermented_pork_wrapped_in_leaves.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop.",
+    "contextual": true
+  },
+  "bat-trang": {
+    "image": "/images/explore/bat-trang.webp",
+    "subject": "Làng gốm Bát Tràng",
+    "artist": "Lưu Ly",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Chan_den_gom_lam_Bat_Trang.jpeg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/2/21/Chan_den_gom_lam_Bat_Trang.jpeg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "dong-ho": {
+    "image": "/images/explore/dong-ho.webp",
+    "subject": "Tranh dân gian Đông Hồ",
+    "artist": "Unknown artisan from the village of Dong Ho.",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "source": "https://commons.wikimedia.org/wiki/File:%C4%90%C3%A1m_c%C6%B0%E1%BB%9Bi_chu%E1%BB%99t.JPG",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/7/77/%C4%90%C3%A1m_c%C6%B0%E1%BB%9Bi_chu%E1%BB%99t.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "don-ca-tai-tu": {
+    "image": "/images/explore/don-ca-tai-tu.webp",
+    "subject": "Đờn ca tài tử Nam Bộ",
+    "artist": "không rõ",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "source": "https://commons.wikimedia.org/wiki/File:Ban_nh%E1%BA%A1c_%C4%91%E1%BB%9Dn_ca_t%C3%A0i_t%E1%BB%AD_S%C3%A0i_G%C3%B2n_(1911).jpeg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Ban_nh%E1%BA%A1c_%C4%91%E1%BB%9Dn_ca_t%C3%A0i_t%E1%BB%AD_S%C3%A0i_G%C3%B2n_%281911%29.jpeg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "ben-thanh": {
+    "image": "/images/explore/ben-thanh.webp",
+    "subject": "Chợ Bến Thành",
+    "artist": "Riza",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Ben_Thanh_market_2.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/9/91/Ben_Thanh_market_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "yen-tu": {
+    "image": "/images/explore/yen-tu.webp",
+    "subject": "Danh thắng Yên Tử",
+    "artist": "Thang Nguyen from Nottingham, United Kingdom",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:N%C3%BAi_Y%C3%AAn_T%E1%BB%AD.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/3/31/N%C3%BAi_Y%C3%AAn_T%E1%BB%AD.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "dong-loc": {
+    "image": "/images/explore/dong-loc.webp",
+    "subject": "Di tích Ngã ba Đồng Lộc",
+    "artist": "Newone at Vietnamese Wikipedia",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Lighting_incense_at_the_Dong_Loc_Junction_memorial.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/7/74/Lighting_incense_at_the_Dong_Loc_Junction_memorial.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "ba-be": {
+    "image": "/images/explore/ba-be.webp",
+    "subject": "Hồ Ba Bể",
+    "artist": "Rolf Müller (User:Rolfmueller)",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Babenp_2007_01_3.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Babenp_2007_01_3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "van-mieu": {
+    "image": "/images/explore/van-mieu.webp",
+    "subject": "Văn Miếu – Quốc Tử Giám",
+    "artist": "The original uploader was Chuoibk at English Wikipedia.",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Hanoi_Temple_of_Literature_(cropped).jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/3/39/Hanoi_Temple_of_Literature_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "sin-suoi-ho": {
+    "image": "/images/explore/sin-suoi-ho.webp",
+    "subject": "Đèo Ô Quy Hồ, cảnh quan giáp Lai Châu – Lào Cai",
+    "contextual": true,
+    "artist": "Dansapa",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Sunset_on_O_Quy_Ho_pass.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/a/a0/Sunset_on_O_Quy_Ho_pass.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "sa-pa": {
+    "image": "/images/explore/sa-pa.webp",
+    "subject": "Sa Pa",
+    "contextual": false,
+    "artist": "Bùi Thụy Đào Nguyên",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "source": "https://commons.wikimedia.org/wiki/File:Sa_Pa.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/5/56/Sa_Pa.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "doi-a1": {
+    "image": "/images/explore/doi-a1.webp",
+    "subject": "Tượng đài chiến thắng Điện Biên Phủ",
+    "contextual": true,
+    "artist": "Pilip from Hanoi, Vietnam",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Dien_Bien_Phu,_statue.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/8/86/Dien_Bien_Phu%2C_statue.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "mu-cang-chai": {
+    "image": "/images/explore/mu-cang-chai.webp",
+    "subject": "Ruộng bậc thang Mù Cang Chải",
+    "artist": "VŨ HÙNG",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:KHAU_PH%E1%BA%A0_M%C3%99A_N%C6%AF%E1%BB%9AC_%C4%90%E1%BB%94_-_panoramio.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/5/56/KHAU_PH%E1%BA%A0_M%C3%99A_N%C6%AF%E1%BB%9AC_%C4%90%E1%BB%94_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "mai-chau": {
+    "image": "/images/explore/mai-chau.webp",
+    "subject": "Thung lũng Mai Châu",
+    "artist": "Viethavvh at vi.wikipedia",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "source": "https://commons.wikimedia.org/wiki/File:Mai_Chau_2008.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/7/78/Mai_Chau_2008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "bien-ho": {
+    "image": "/images/explore/bien-ho.webp",
+    "subject": "Biển Hồ Pleiku",
+    "artist": "Phó Nháy (talk)",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Ho_T%27Nung_(2).jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/1/15/Ho_T%27Nung_%282%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  },
+  "po-nagar": {
+    "image": "/images/explore/po-nagar.webp",
+    "subject": "Tháp Bà Po Nagar",
+    "artist": "Makarenko Sasha",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Th%C3%A1p_B%C3%A0_PONAGAR_-_panoramio.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/1/12/Th%C3%A1p_B%C3%A0_PONAGAR_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized and encoded as WebP; displayed with a responsive crop."
+  }
+}
