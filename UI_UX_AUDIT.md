@@ -57,6 +57,8 @@ Keep getVerdict, RiskChip thresholds, stale-news response handling, highest-scor
 
 Read https://discoverhcmc.com/, /dia-diem/ and attempted /ban-do/. Homepage was inspected in the previous part of this session: pale sky/illustrated skyline hero, very large left-aligned typography, transparent navigation, blue pill actions, navy ticker, image-first cards and broad section spacing. The new specification explicitly requests a photographic hero; use original/local licensed photography for that treatment while retaining the observed typography/navigation rhythm. Destination index has location and experience filters, search, photo cards and pagination. Its tourism categories cannot be reused as if supported by this project's province API. Web retrieval of /ban-do/ returned a cache-miss error; browser inspection will be attempted and any remaining limitation recorded.
 
+Browser follow-up successfully loaded all three reference URLs, including /ban-do/, and saved full-page 1440px screenshots plus a 390px homepage screenshot locally under travel-ui/artifacts/tourism-review/. The map reference uses a wide map area, controls above it and image-led discovery below; the destination index has a three-column photo grid and search/filter region. These screenshots are review evidence only, not shipped page assets.
+
 Assets: licensed Unsplash WebP files with PHOTO_CREDITS.md; separately generated original Vietnam skyline illustration, not copied from Discover HCMC. All important text remains HTML and supports Vietnamese.
 
 ## Validation

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { CircleMarker, MapContainer, Polyline, Popup, TileLayer, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import Alert from "@mui/material/Alert";
+import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -9,6 +10,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Stack from "@mui/material/Stack";
 import Switch from "@mui/material/Switch";
 import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
 import { apiGet } from "../api";
 import HeatmapLayer from "../components/HeatmapLayer";
 import { useTravel } from "../portal/TravelContext";
@@ -46,7 +48,8 @@ export default function MapPage() {
   const trip = travel.tripRes;
   const hasRouteGeometry = Boolean(trip?.traffic?.route_polyline);
   return <div className="portal-page">
-    <PageIntro eyebrow="Bản đồ và tuyến đường" title={trip?.to?.name ? `Bản đồ đến ${travel.destination || trip.to.name}` : "Bản đồ Việt Nam"} description="Bản đồ chỉ xuất hiện tại trang này. Các lớp rủi ro phản ánh bài báo đã thu thập, không phải cảnh báo thời gian thực." />
+    <PageIntro eyebrow="Bản đồ và tuyến đường" title={trip?.to?.name ? `Bản đồ đến ${travel.destination || trip.to.name}` : "Bản đồ Việt Nam"} description="Khám phá theo địa phương và theo dõi tuyến đường của bạn. Lớp rủi ro dùng bài báo đã thu thập, có thể chứa dữ liệu cũ." />
+    <Box className="portal-section"><Autocomplete options={travel.provinces} getOptionLabel={(point) => point.province} isOptionEqualToValue={(a, b) => a.province === b.province} value={travel.selectedProv} onChange={(_, point) => { if (point) { setShowProvinces(true); travel.onPickProvince(point, { fly: true }); } }} noOptionsText="Chưa có tỉnh phù hợp trong dữ liệu" renderInput={(params) => <TextField {...params} label="Tìm tỉnh, thành phố trên bản đồ" helperText="Chọn một địa phương để di chuyển bản đồ và tra cứu dữ liệu hiện có." />} /></Box>
     <Box className="portal-section" sx={{ py: 1.3 }}><Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems={{ xs: "start", sm: "center" }} sx={{ gap: 1.5 }}><Stack direction="row" flexWrap="wrap" sx={{ gap: 1 }}><Button variant="outlined" onClick={travel.focusUser} disabled={!travel.userPos} sx={{ whiteSpace: "nowrap", px: 1 }}>Điểm xuất phát</Button><Button variant="outlined" onClick={travel.focusRoute} disabled={!travel.routeCoords.length} sx={{ whiteSpace: "nowrap", px: 1 }}>Toàn tuyến</Button><Button variant="text" onClick={travel.resetVN} sx={{ whiteSpace: "nowrap", px: 1 }}>Đặt lại</Button></Stack><Stack direction="row" flexWrap="wrap" sx={{ gap: 1 }}><FormControlLabel control={<Switch checked={showProvinces} onChange={(event) => setShowProvinces(event.target.checked)} />} label="Mốc tỉnh" /><FormControlLabel control={<Switch checked={showHeat} onChange={(event) => setShowHeat(event.target.checked)} disabled={!heatPoints.length} />} label="Lớp rủi ro" /></Stack></Stack></Box>
     {heatLoading && <Alert severity="info" icon={<CircularProgress size={18} />}>Đang tải lớp rủi ro…</Alert>}
     {heatError && <Alert severity="warning">Không tải được lớp rủi ro: {heatError}. Bản đồ và tuyến đường vẫn có thể sử dụng.</Alert>}

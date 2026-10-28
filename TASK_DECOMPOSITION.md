@@ -9,7 +9,7 @@ Scope: existing travel-ui; preserve backend, model logic, data and API contracts
 | M2 Homepage | Photographic hero, image-first destinations, real feature actions, storytelling/how-it-works/CTA; reduced motion | Complete — local imagery and real navigation |
 | M3 Explore | Existing province API, working search, image associations, loading/error/empty states; choose destination for plan | Complete — public /explore backed by /map/points |
 | M4 Risk + weather | Preserve all score/response meanings; coherent banners/forms/verdict; chart only from returned forecast | Complete — direct forecast chart with accessible data table |
-| M5 Map + other pages | Large dedicated map/search, existing markers/layers; news/traffic/compare/alerts/history/auth follow shared system | Pending |
+| M5 Map + other pages | Large dedicated map/search, existing markers/layers; news/traffic/compare/alerts/history/auth follow shared system | Complete — map search and shared route/auth presentation |
 | M6 Visual QA | Build/lint, desktop/mobile/tablet screenshots, no horizontal overflow, route/auth/error checks, document real API limits | Pending |
 
 ## Session baseline
@@ -23,3 +23,5 @@ M1: npm run build passed. Initial lint found two JSX naming issues in new files;
 M2/M3 are committed together because public home navigation and its Explore destination must be introduced atomically. BrowserRouter now lives at the entry point; existing auth/session behavior remains and selected destinations are carried to the existing plan form after login. Full build and lint passed before the commit. Experience-category filters are deliberately omitted: the existing province API supplies no such taxonomy. Search and pagination operate on returned province records.
 
 M4: npm run lint and npm run build passed. Weather chart reads the existing temperature and adjusted_risk_score/risk_score fields; missing values remain gaps. The original verdict mapping, thresholds and result calculations were not changed. Plan form retains GPS, date, purpose and request behavior.
+
+M5: lint/build passed. Map search calls the existing onPickProvince(point, {fly:true}) and retains layer toggles and geometry. Authentication forms keep the same endpoints, payload and callback mapping; nonfunctional old remember/password-reset controls were removed. All existing route views use the shared photographic banner, navigation, footer and responsive presentation. Backend /health at localhost:8000 was not reachable at this checkpoint.
