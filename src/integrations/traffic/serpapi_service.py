@@ -60,6 +60,22 @@ _GEOCODE_QUERY_ALIASES = {
     "dalat": "Da Lat",
 }
 
+
+def _local_province_geocode(plain_city: str) -> Optional[Tuple[float, float, str]]:
+    """Return a canonical configured point for an exact province name/alias."""
+    try:
+        from src.api.utils import load_provinces_yaml, load_province_centroids
+
+        for province in load_provinces_yaml().get("provinces", []):
+            name = province.get("name") or ""
+            names = [name, *(province.get("aliases") or [])]
+            if any(_plain_place(str(candidate)) == plain_city for candidate in names):
+                lat, lon = load_province_centroids()[name]
+                return lat, lon, f"{name}, Việt Nam"
+    except (KeyError, OSError, ValueError) as exc:
+        print(f"[Geocode] Local province lookup failed: {exc}")
+    return None
+
 # ===================== PRE-COMPILED REGEX PATTERNS =====================
 _RE_HOURS = re.compile(r'(\d+)\s*(giờ|tiếng|h\b|hour|hrs?)')
 _RE_MINUTES = re.compile(r'(\d+)\s*(phút|p\b|min|m\b)')
@@ -267,11 +283,19 @@ def traffic_score_0_10(ratio: float, speed_kmh: float) -> int:
 
 
 def _public_geocode(query: str) -> Tuple[Optional[float], Optional[float], Optional[str]]:
-    """Resolve Vietnamese cities without a SerpAPI key; reject unrelated matches."""
+    """Resolve Vietnamese places, preferring the project's canonical province points."""
     city = query.split(",", 1)[0].strip()
     plain_city = _plain_place(city)
     if plain_city in _LOCAL_CITY_COORDS:
         return _LOCAL_CITY_COORDS[plain_city]
+
+    # For an exact province name/alias, use the same canonical coordinates as
+    # the map. Public geocoders can return a same-named ward/district in another
+    # province (for example, resolving "Đồng Tháp" to a place in Lào Cai),
+    # which then makes routing fail or sends the trip to the wrong location.
+    local_province = _local_province_geocode(plain_city)
+    if local_province:
+        return local_province
 
     search_name = _GEOCODE_QUERY_ALIASES.get(plain_city, plain_city.title())
     try:
@@ -296,21 +320,17 @@ def _public_geocode(query: str) -> Tuple[Optional[float], Optional[float], Optio
     except (requests.RequestException, ValueError, TypeError, KeyError) as exc:
         print(f"[Geocode] Open-Meteo unavailable for {query!r}: {exc}")
 
-    # Province names have reliable coordinates in the project's map data.
-    try:
-        from src.api.utils import load_provinces_yaml, load_province_centroids
-        for province in load_provinces_yaml().get("provinces", []):
-            name = province.get("name") or ""
-            if _plain_place(name) == plain_city:
-                lat, lon = load_province_centroids()[name]
-                return lat, lon, f"{name}, Việt Nam"
-    except (KeyError, OSError, ValueError) as exc:
-        print(f"[Geocode] Local province lookup failed for {query!r}: {exc}")
     return None, None, None
 
 
 def search_location_google(query: str) -> Tuple[Optional[float], Optional[float], Optional[str]]:
     """Return a resolved place, using public geocoding when SerpAPI is unavailable."""
+    city = query.split(",", 1)[0].strip()
+    local_province = _local_province_geocode(_plain_place(city))
+    if local_province:
+        _serpapi_geo_cache_set(query, local_province)
+        return local_province
+
     cached = _serpapi_geo_cache_get(query)
     if cached is not None:
         return cached
