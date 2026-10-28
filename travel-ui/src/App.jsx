@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import polyline from "@mapbox/polyline";
 import "./App.css";
@@ -8,6 +9,12 @@ import { LandingPage } from "./screens/LandingPage";
 import { RegisterScreen } from "./screens/RegisterScreen";
 import { LoginScreen } from "./screens/LoginScreen";
 import TravelPortal from "./portal/TravelPortal";
+import ExplorePage from "./pages/ExplorePage";
+import { SiteHeader, SiteFooter } from "./tourism/SiteChrome";
+
+const LANDING_PORTAL_ROUTES = new Set([
+  "/plan", "/map", "/weather", "/traffic", "/news", "/compare", "/alerts", "/history",
+]);
 
 function localDate() {
   const now = new Date();
@@ -92,6 +99,8 @@ function decodeRoutePolyline(enc, type) {
 
 
 export default function App() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [initialContext] = useState(readSavedContext);
   // ===== LOGIN (new) =====
   const [session, setSession] = useState(() => {
@@ -129,6 +138,8 @@ export default function App() {
   // ===== Control Navigation (SỬA Ở ĐÂY) =====
   // Trạng thái màn hình: 'landing' | 'login' | 'register'
   const [currentScreen, setCurrentScreen] = useState('landing');
+  const [pendingLandingRoute, setPendingLandingRoute] = useState(null);
+  useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [location.pathname, currentScreen]);
 
   // ===== Trip history (requires login) =====
   const [tripHistory, setTripHistory] = useState([]);
@@ -223,6 +234,10 @@ export default function App() {
 
   function login(user) {
     const s = { user, ts: Date.now() };
+    if (pendingLandingRoute) {
+      navigate(pendingLandingRoute);
+      setPendingLandingRoute(null);
+    }
     setSession(s);
     try {
       localStorage.setItem("va_session", JSON.stringify(s));
@@ -265,6 +280,8 @@ export default function App() {
     // Reset state
     setSession(null);
     setCurrentScreen('landing');
+    setPendingLandingRoute(null);
+    navigate("/");
     setTheme('light');
     setUserPos(null);
     setOriginName("");
@@ -626,26 +643,39 @@ export default function App() {
 
   // Keep every Hook above this authentication branch so login/logout can
   // change screens without changing the component's Hook call order.
+  function openPublicTool(route = "/plan", place) {
+    setPendingLandingRoute(LANDING_PORTAL_ROUTES.has(route) ? route : "/plan");
+    if (typeof place === "string" && place.trim()) updateDestination(place.trim());
+    setCurrentScreen("login");
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
+  function returnHome() {
+    setCurrentScreen("landing");
+    navigate("/");
+  }
   if (!session) {
-    if (currentScreen === "landing") {
-      return <LandingPage onGoToLogin={() => setCurrentScreen("login")} />;
-    }
     if (currentScreen === "register") {
       return (
         <RegisterScreen
           onRegister={login}
-          onBack={() => setCurrentScreen("landing")}
+          onBack={returnHome}
           onGoToLogin={() => setCurrentScreen("login")}
         />
       );
     }
-    return (
+    const loginScreen = (
       <LoginScreen
         onLogin={login}
-        onBack={() => setCurrentScreen("landing")}
+        onBack={returnHome}
         onGoToRegister={() => setCurrentScreen("register")}
       />
     );
+    if (currentScreen === "login") return loginScreen;
+    return <Routes>
+      <Route path="/" element={<LandingPage onGoToLogin={openPublicTool} />} />
+      <Route path="/explore" element={<div className="tour-site"><SiteHeader onLogin={openPublicTool} /><main id="public-explore"><ExplorePage onSelect={(place) => openPublicTool("/plan", place)} /></main><SiteFooter /></div>} />
+      <Route path="*" element={loginScreen} />
+    </Routes>;
   }
 
   return (

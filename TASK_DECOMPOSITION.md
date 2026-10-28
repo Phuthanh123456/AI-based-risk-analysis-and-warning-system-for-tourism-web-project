@@ -6,8 +6,8 @@ Scope: existing travel-ui; preserve backend, model logic, data and API contracts
 | --- | --- | --- |
 | M0 Audit + reference | Source/routes/endpoints and preservation constraints documented; reference observations and limits explicit | Complete — UI_UX_AUDIT.md |
 | M1 Tokens + shared layout | Vietnamese font, shared colors/spacing/buttons, travel top navigation/mobile menu/footer, no permanent admin sidebar | Complete — design-system/MASTER.md and shared tourism presentation |
-| M2 Homepage | Photographic hero, image-first destinations, real feature actions, storytelling/how-it-works/CTA; reduced motion | Pending |
-| M3 Explore | Existing province API, working search, image associations, loading/error/empty states; choose destination for plan | Pending |
+| M2 Homepage | Photographic hero, image-first destinations, real feature actions, storytelling/how-it-works/CTA; reduced motion | Complete — local imagery and real navigation |
+| M3 Explore | Existing province API, working search, image associations, loading/error/empty states; choose destination for plan | Complete — public /explore backed by /map/points |
 | M4 Risk + weather | Preserve all score/response meanings; coherent banners/forms/verdict; chart only from returned forecast | Pending |
 | M5 Map + other pages | Large dedicated map/search, existing markers/layers; news/traffic/compare/alerts/history/auth follow shared system | Pending |
 | M6 Visual QA | Build/lint, desktop/mobile/tablet screenshots, no horizontal overflow, route/auth/error checks, document real API limits | Pending |
@@ -19,3 +19,5 @@ Initial HEAD b37aeb5, clean working tree. This session's pre-spec landing work i
 ## Checks and evidence
 
 M1: npm run build passed. Initial lint found two JSX naming issues in new files; corrected before milestone commit. Full regression/visual QA is recorded at M6.
+
+M2/M3 are committed together because public home navigation and its Explore destination must be introduced atomically. BrowserRouter now lives at the entry point; existing auth/session behavior remains and selected destinations are carried to the existing plan form after login. Full build and lint passed before the commit. Experience-category filters are deliberately omitted: the existing province API supplies no such taxonomy. Search and pagination operate on returned province records.
