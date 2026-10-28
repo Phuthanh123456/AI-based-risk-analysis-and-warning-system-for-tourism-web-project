@@ -38,7 +38,7 @@ export default function ResultPage() {
 
   return <div className="portal-page">
     <PageIntro eyebrow="Kết quả rủi ro" title={`Kết quả đến ${destination || tripRes.to?.name}`} description={`${originName || "Điểm xuất phát đã chọn"} → ${tripRes.to?.name || destination} · Ngày đi dự kiến ${dateLabel(departureDate)}`} action={<Button component={Link} to="/plan" variant="outlined">Chỉnh sửa chuyến đi</Button>} />
-    <Box className="portal-section" sx={{ borderLeft: "5px solid", borderLeftColor: verdict.tone === "error" ? "error.main" : verdict.tone === "warning" ? "warning.main" : "success.main" }}>
+    <Box className="portal-section portal-verdict" sx={{ borderLeft: "5px solid", borderLeftColor: verdict.tone === "error" ? "error.main" : verdict.tone === "warning" ? "warning.main" : "success.main" }}>
       <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems={{ xs: "start", sm: "center" }} gap={2}>
         <Box><Chip label={verdict.label} color={verdict.tone} sx={{ fontWeight: 750, mb: 1.5 }} /><Typography component="h2" variant="h2">{verdict.vi}</Typography><Typography color="text.secondary" sx={{ mt: 1 }}>{reasons.length ? reasons.join(" ") : "Đánh giá dựa trên dữ liệu đang có; hãy xem từng yếu tố trước khi quyết định."}</Typography></Box>
         <Box sx={{ minWidth: 170 }}><Typography variant="body2" color="text.secondary">Điểm rủi ro cao nhất hiện có</Typography><Typography className="portal-metric-value">{highestScore ? `${highestScore}/10` : "Chưa có"}</Typography></Box>

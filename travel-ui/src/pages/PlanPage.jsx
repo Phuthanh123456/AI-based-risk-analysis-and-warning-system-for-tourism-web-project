@@ -49,7 +49,8 @@ export default function PlanPage() {
         <Button size="large" variant="contained" type="submit" startIcon={travel.tripLoading ? <CircularProgress size={17} color="inherit" /> : <SearchOutlinedIcon />} disabled={!travel.canTrip || travel.tripLoading}>{travel.tripLoading ? "Đang tổng hợp dữ liệu…" : "Đánh giá chuyến đi"}</Button>
         {!travel.canTrip && <Typography variant="body2" color="text.secondary">Chọn điểm xuất phát và nhập điểm đến để tiếp tục.</Typography>}
       </Box>
-      <Box className="portal-section" sx={{ display: "grid", alignContent: "start", gap: 2 }}>
+      <Box className="portal-section plan-story-panel" sx={{ display: "grid", alignContent: "start", gap: 2 }}>
+        <img className="plan-story-image" src="/images/landing/hoian-lanterns.webp" alt="Ánh đèn trên phố Hội An" loading="lazy" />
         <Typography component="h2" variant="h3">Bạn sẽ nhận được gì?</Typography>
         <Divider />
         <Stack spacing={2.2}>
