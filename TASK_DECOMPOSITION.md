@@ -33,5 +33,5 @@ Separate user-requested routing repair: e856bca corrects province geocoding prec
 ## Current-province tourism catalogue extension
 
 - C1: Government-sourced 34-province directory; 63 historical names assigned exactly once; Huế rename documented; historical risk datasets preserved. Complete - data integrity checks passed: 34 current provinces, 6 cities, 63 unique historical names, 90 guides and 78 licensed photographs.
-- C2: Province guides, individual place/food/culture stories, five experience groups, source and image-license attribution; public and authenticated navigation. Implemented, visual review in progress.
-- C3: Search old/current names, current origin/marker adapters with explicit legacy risk coverage, responsive screenshots and functional checks; refresh localhost preview and commit reviewed changes. In progress.
+- C2: Province guides, individual place/food/culture stories, five experience groups, source and image-license attribution; public and authenticated navigation. Complete - province/place/experience routes, original content, licensed photos and public/authenticated navigation reviewed.
+- C3: Search old/current names, current origin/marker adapters with explicit legacy risk coverage, responsive screenshots and functional checks; refresh localhost preview and commit reviewed changes. Complete - lint/build/data checks passed; 27 browser views and 10 interaction checks passed. See travel-ui/design-system/TOURISM_CATALOG_QA.md.

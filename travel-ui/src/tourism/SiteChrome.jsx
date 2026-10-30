@@ -26,7 +26,7 @@ export function SiteHeader({ overlay = false, signedIn = false, onLogin, themeMo
     window.addEventListener("scroll", scroll, { passive: true });
     return () => window.removeEventListener("scroll", scroll);
   }, []);
-  const item = ([path, label]) => <Link key={path} to={path} aria-current={pathname === path ? "page" : undefined} onClick={() => setOpen(false)}>{label}</Link>;
+  const item = ([path, label]) => <Link key={path} to={path} aria-current={pathname === path || (path === "/explore" && (pathname.startsWith("/explore/") || pathname.startsWith("/experiences/"))) ? "page" : undefined} onClick={() => setOpen(false)}>{label}</Link>;
   return <>
     <header className={`tour-header ${overlay ? "over-hero" : ""} ${overlay && !scrolled ? "is-overlay" : ""}`}>
       <div className="tour-header-inner"><Brand /><nav className="tour-desktop-nav" aria-label="Điều hướng chính">{primary.map(item)}<details className="tour-more" onKeyDown={(event) => { if (event.key === "Escape") event.currentTarget.open = false; }}><summary>Tiện ích <span aria-hidden="true">⌄</span></summary><div>{tools.map(([path, label]) => <Link key={path} to={path} onClick={(event) => { event.currentTarget.closest("details").open = false; }}>{label}</Link>)}</div></details></nav>
@@ -38,7 +38,7 @@ export function SiteHeader({ overlay = false, signedIn = false, onLogin, themeMo
 }
 
 export function SiteFooter() {
-  return <footer className="tour-footer"><div className="tour-container tour-footer-grid"><div><Brand /><p>Khám phá những miền đất đẹp.<br />Chủ động trên mỗi hành trình.</p><span className="tour-footer-caption">VIỆT NAM · ĐI ĐỂ HIỂU THÊM</span></div><div><h2>Khám phá Việt Nam</h2><Link to="/explore">Điểm đến</Link><Link to="/map">Bản đồ Việt Nam</Link><Link to="/news">Tin tức địa phương</Link></div><div><h2>Hành trình của bạn</h2><Link to="/plan">Lên kế hoạch</Link><Link to="/weather">Thời tiết & dự báo</Link><Link to="/alerts">Theo dõi cảnh báo</Link></div><div><h2>Đi cùng thông tin</h2><p>Thông tin hỗ trợ chuẩn bị chuyến đi. Luôn kiểm tra nguồn và các thông báo chính thức trước khi khởi hành.</p><a href="/images/landing/PHOTO_CREDITS.md">Nguồn hình ảnh</a></div></div><div className="tour-container tour-footer-bottom"><span>© {new Date().getFullYear()} Vietnam Travel Risk AI</span><span>Một hành trình, nhiều góc nhìn.</span></div></footer>;
+  return <footer className="tour-footer"><div className="tour-container tour-footer-grid"><div><Brand /><p>Khám phá những miền đất đẹp.<br />Chủ động trên mỗi hành trình.</p><span className="tour-footer-caption">VIỆT NAM · ĐI ĐỂ HIỂU THÊM</span></div><div><h2>Khám phá Việt Nam</h2><Link to="/explore">Điểm đến</Link><Link to="/map">Bản đồ Việt Nam</Link><Link to="/news">Tin tức địa phương</Link></div><div><h2>Hành trình của bạn</h2><Link to="/plan">Lên kế hoạch</Link><Link to="/weather">Thời tiết & dự báo</Link><Link to="/alerts">Theo dõi cảnh báo</Link></div><div><h2>Đi cùng thông tin</h2><p>Thông tin hỗ trợ chuẩn bị chuyến đi. Luôn kiểm tra nguồn và các thông báo chính thức trước khi khởi hành.</p><a href="/images/landing/PHOTO_CREDITS.md">Nguồn hình ảnh</a><a href="/images/explore/PHOTO_CREDITS.json">Nguồn ảnh mục Khám phá</a></div></div><div className="tour-container tour-footer-bottom"><span>© {new Date().getFullYear()} Vietnam Travel Risk AI</span><span>Một hành trình, nhiều góc nhìn.</span></div></footer>;
 }
 
 export function Reveal({ children, className = "", delay = 0 }) {
@@ -55,5 +55,7 @@ export function SectionHeading({ number, eyebrow, title, description, children }
 }
 
 export function DestinationCard({ place, onSelect, featured = false }) {
-  return <button className={`tour-destination ${featured ? "is-featured" : ""}`} onClick={() => onSelect(place.name)}><TravelImage src={place.image} alt={place.alt || `Hình ảnh gợi cảm hứng tại ${place.name}`} /><span className="tour-destination-shade" /><span className="tour-destination-top">{place.tag || "VIỆT NAM"}<span aria-hidden="true">↗</span></span><span className="tour-destination-bottom"><small>{place.caption || "HÀNH TRÌNH CỦA RIÊNG BẠN"}</small><strong>{place.name}</strong><span>Khám phá & lên kế hoạch <ArrowForward fontSize="small" /></span></span></button>;
+  const Card = place.href ? Link : "button";
+  const action = place.href ? { to: place.href } : { onClick: () => onSelect(place.name) };
+  return <Card className={`tour-destination ${featured ? "is-featured" : ""}`} {...action}><TravelImage src={place.image} alt={place.alt || `Hình ảnh gợi cảm hứng tại ${place.name}`} /><span className="tour-destination-shade" /><span className="tour-destination-top">{place.tag || "VIỆT NAM"}<span aria-hidden="true">↗</span></span><span className="tour-destination-bottom"><small>{place.caption || "HÀNH TRÌNH CỦA RIÊNG BẠN"}</small><strong>{place.name}</strong><span>Khám phá & lên kế hoạch <ArrowForward fontSize="small" /></span></span></Card>;
 }

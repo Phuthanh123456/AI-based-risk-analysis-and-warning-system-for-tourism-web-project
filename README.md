@@ -65,7 +65,8 @@ These three signals are combined into a single **recommendation**: ✅ **GO** / 
 - **One-click trip check** — Single `/trip` API call returns traffic + weather AI + news risk + recommendation
 - **7-day weather forecast** — AI predicts risk for each day, highlights best/worst travel days
 - **Trip purpose adjustment** — Risk scores adapt based on trip type (dating, family, adventure, solo)
-- **Interactive map** — 63 province markers, route polyline, risk heatmap, weather popup
+- **Travel discovery** — 34 current provinces/cities, former-name search, 90 sourced place/food/culture guides and five experience themes
+- **Interactive map** — 34 current reference markers, route polyline and historical risk heatmap; original-area risk coverage stays explicit
 - **Multi-city comparison** — Compare weather risk across up to 10 cities simultaneously
 - **Province risk trends** — Historical risk trends from news article analysis
 - **7-layer in-memory caching** — Minimizes external API calls, sub-second responses after first load
@@ -73,6 +74,8 @@ These three signals are combined into a single **recommendation**: ✅ **GO** / 
 - **Air quality** — PM2.5 uses OpenWeatherMap when configured, then Open-Meteo Air Quality; a fixed value is used only if both calls fail
 - **Severe-weather push alerts** — Self-hosted Web Push (VAPID) notifies you when a watched destination's risk turns severe
 - **One-command local run** — `docker compose up --build` starts backend + frontend together
+
+The current tourism directory follows the 2025 administrative reorganization. Historical news/model data and configuration retain their original province labels; current-marker grouping does not combine old risk scores. See [catalogue and source documentation](travel-ui/design-system/TOURISM_CATALOG.md) and [browser review](travel-ui/design-system/TOURISM_CATALOG_QA.md).
 - **CI on every push** — GitHub Actions runs the full pytest suite + frontend build
 
 ---
@@ -383,16 +386,12 @@ Invoke-RestMethod "http://127.0.0.1:8000/trip?destination=Da+Lat&lat=10.77&lon=1
 
 ### 6.9 Frontend Walkthrough
 
-1. Open **http://localhost:5173** in Chrome/Edge
-2. Click **"📡 Lấy GPS"** → Allow browser location access
-3. Type **"Đà Lạt"** in the Destination field
-4. Click **"Check Trip"** → Observe:
-   - Route drawn on map (blue polyline)
-   - Weather popup appears on map (top-right, glass card)
-   - Trip results appear in left panel (traffic status, distance, recommendation)
-   - 7-day forecast strip loads below the input
-5. Click any **blue province marker** on the map → Bottom panel slides up with risk breakdown + trend chart
-6. If trip destination matches a province, a **"🔍 Rủi ro tại [province]"** button appears next to the trip purpose badge → Click it to view that province's risk panel
+1. Open **http://localhost:5173** in Chrome/Edge (or **http://localhost:4173** while the production preview is running).
+2. Open **Khám phá**, search **Quang Nam**, then open **Đà Nẵng** and **Phố cổ Hội An**. Verify current/former province information and source links.
+3. Choose **Xem rủi ro khu vực**, log in if prompted, and verify the historical area **Quảng Nam** is retained in the plan form.
+4. Select an origin or use **Dùng GPS**, complete the trip form and submit. Review the result; open the separate weather and map pages for forecast/route details.
+5. On the map, choose a current province and verify the displayed historical risk coverage. If routing data is unavailable, the app must show its limitation rather than inventing a road route.
+6. Open an experience theme such as **Ẩm thực**, filter by a current province, and inspect a guide's sources, photographs and historical-area explanation.
 
 ### 6.10 Automated Test Script
 

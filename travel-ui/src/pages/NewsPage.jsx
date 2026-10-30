@@ -16,7 +16,7 @@ const GROUP_NAMES = { Pricing_Issue: "Giá cả", Environmental_Cleanliness: "M�
 
 export default function NewsPage() {
   const travel = useTravel();
-  const [place, setPlace] = useState(() => travel.tripRes?.to?.province_inferred || travel.selectedProv?.province || "");
+  const [place, setPlace] = useState(() => travel.tripRes?.to?.province_inferred || travel.selectedProv?.dataProvince || travel.selectedProv?.province || "");
   const [summary, setSummary] = useState(null);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(Boolean(place));

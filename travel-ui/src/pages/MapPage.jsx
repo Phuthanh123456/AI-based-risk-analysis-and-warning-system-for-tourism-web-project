@@ -15,6 +15,7 @@ import { apiGet } from "../api";
 import HeatmapLayer from "../components/HeatmapLayer";
 import { useTravel } from "../portal/TravelContext";
 import { PageIntro, SourceNote } from "../portal/UiPrimitives";
+import { currentProvincePoints } from "../tourism/catalog/provinces";
 
 const VN_CENTER = [16.2, 107.8];
 
@@ -35,6 +36,7 @@ function MapController({ action, route }) {
 
 export default function MapPage() {
   const travel = useTravel();
+  const currentPoints = currentProvincePoints(travel.provinces);
   const [heatPoints, setHeatPoints] = useState([]);
   const [heatLoading, setHeatLoading] = useState(true);
   const [heatError, setHeatError] = useState("");
@@ -49,7 +51,8 @@ export default function MapPage() {
   const hasRouteGeometry = Boolean(trip?.traffic?.route_polyline);
   return <div className="portal-page">
     <PageIntro eyebrow="Bản đồ và tuyến đường" title={trip?.to?.name ? `Bản đồ đến ${travel.destination || trip.to.name}` : "Bản đồ Việt Nam"} description="Khám phá theo địa phương và theo dõi tuyến đường của bạn. Lớp rủi ro dùng bài báo đã thu thập, có thể chứa dữ liệu cũ." />
-    <Box className="portal-section"><Autocomplete options={travel.provinces} getOptionLabel={(point) => point.province} isOptionEqualToValue={(a, b) => a.province === b.province} value={travel.selectedProv} onChange={(_, point) => { if (point) { setShowProvinces(true); travel.onPickProvince(point, { fly: true }); } }} noOptionsText="Chưa có tỉnh phù hợp trong dữ liệu" renderInput={(params) => <TextField {...params} label="Tìm tỉnh, thành phố trên bản đồ" helperText="Chọn một địa phương để di chuyển bản đồ và tra cứu dữ liệu hiện có." />} /></Box>
+    <Alert severity="info">Mốc bản đồ dùng 34 tỉnh/thành hiện hành, với tọa độ tham chiếu có sẵn. Lớp nhiệt và tin tức vẫn theo khu vực dữ liệu trước sắp xếp; điểm của một khu vực cũ không đại diện cho toàn tỉnh mới.{travel.selectedProv?.dataProvince && <> Đang tra cứu khu vực <strong>{travel.selectedProv.dataProvince}</strong> trước sắp xếp.</>}</Alert>
+    <Box className="portal-section"><Autocomplete options={currentPoints} getOptionLabel={(point) => point.province} isOptionEqualToValue={(a, b) => a.province === b.province} value={currentPoints.find((p) => p.province === travel.selectedProv?.province) || null} onChange={(_, point) => { if (point) { setShowProvinces(true); travel.onPickProvince(point, { fly: true }); } }} noOptionsText="Chưa có tỉnh phù hợp trong dữ liệu" renderInput={(params) => <TextField {...params} label="Tìm tỉnh, thành phố trên bản đồ" helperText="Chọn một địa phương để di chuyển bản đồ và tra cứu dữ liệu hiện có." />} /></Box>
     <Box className="portal-section" sx={{ py: 1.3 }}><Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems={{ xs: "start", sm: "center" }} sx={{ gap: 1.5 }}><Stack direction="row" flexWrap="wrap" sx={{ gap: 1 }}><Button variant="outlined" onClick={travel.focusUser} disabled={!travel.userPos} sx={{ whiteSpace: "nowrap", px: 1 }}>Điểm xuất phát</Button><Button variant="outlined" onClick={travel.focusRoute} disabled={!travel.routeCoords.length} sx={{ whiteSpace: "nowrap", px: 1 }}>Toàn tuyến</Button><Button variant="text" onClick={travel.resetVN} sx={{ whiteSpace: "nowrap", px: 1 }}>Đặt lại</Button></Stack><Stack direction="row" flexWrap="wrap" sx={{ gap: 1 }}><FormControlLabel control={<Switch checked={showProvinces} onChange={(event) => setShowProvinces(event.target.checked)} />} label="Mốc tỉnh" /><FormControlLabel control={<Switch checked={showHeat} onChange={(event) => setShowHeat(event.target.checked)} disabled={!heatPoints.length} />} label="Lớp rủi ro" /></Stack></Stack></Box>
     {heatLoading && <Alert severity="info" icon={<CircularProgress size={18} />}>Đang tải lớp rủi ro…</Alert>}
     {heatError && <Alert severity="warning">Không tải được lớp rủi ro: {heatError}. Bản đồ và tuyến đường vẫn có thể sử dụng.</Alert>}
@@ -59,7 +62,7 @@ export default function MapPage() {
         <MapController action={travel.mapAction} route={travel.routeCoords} />
         <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         {showHeat && heatPoints.length > 0 && <HeatmapLayer points={heatPoints} />}
-        {showProvinces && travel.provinces.map((p) => <CircleMarker key={p.province} center={[p.lat, p.lon]} radius={6} pathOptions={{ color: "#fff", weight: 2, fillColor: "#277a64", fillOpacity: 1 }} eventHandlers={{ click: () => travel.onPickProvince(p) }}><Popup><strong>{p.province}</strong>{travel.selectedProv?.province === p.province && <p>{travel.selectedRisk ? `${travel.selectedRisk.num_articles} bài đã ghi nhận. ${travel.selectedRisk.is_stale ? "Dữ liệu đã cũ." : `Điểm báo chí: ${travel.selectedRisk.overall_risk_score}/10.`}` : "Đang tải dữ liệu…"}</p>}</Popup></CircleMarker>)}
+        {showProvinces && currentPoints.map((p) => <CircleMarker key={p.province} center={[p.lat, p.lon]} radius={6} pathOptions={{ color: "#fff", weight: 2, fillColor: "#277a64", fillOpacity: 1 }} eventHandlers={{ click: () => travel.onPickProvince(p) }}><Popup><strong>{p.province}</strong>{travel.selectedProv?.province === p.province && <p>{travel.selectedRisk ? `${travel.selectedRisk.num_articles} bài đã ghi nhận. ${travel.selectedRisk.is_stale ? "Dữ liệu đã cũ." : `Điểm báo chí: ${travel.selectedRisk.overall_risk_score}/10.`}` : "Đang tải dữ liệu…"}</p>}</Popup></CircleMarker>)}
         {travel.userPos && <CircleMarker center={[travel.userPos.lat, travel.userPos.lon]} radius={10} pathOptions={{ color: "#fff", weight: 3, fillColor: "#176b58", fillOpacity: 1 }}><Popup>Điểm xuất phát: {travel.originName || "Vị trí đã chọn"}</Popup></CircleMarker>}
         {trip?.to?.lat != null && trip?.to?.lon != null && <CircleMarker center={[trip.to.lat, trip.to.lon]} radius={10} pathOptions={{ color: "#fff", weight: 3, fillColor: "#b7702f", fillOpacity: 1 }}><Popup>Điểm đến: {trip.to.name}</Popup></CircleMarker>}
         {travel.routeCoords.length >= 2 && <Polyline positions={travel.routeCoords} pathOptions={{ color: "#176b58", weight: 5, opacity: .9, dashArray: hasRouteGeometry ? undefined : "9 8" }} />}

@@ -6,6 +6,7 @@ import path from "node:path";
 import os from "node:os";
 
 const reference = process.argv.includes("--reference");
+const catalogMode = process.argv.includes("--catalog");
 const output = path.resolve(process.env.UI_REVIEW_OUTPUT || "artifacts/tourism-review");
 await mkdir(output, { recursive: true });
 const port = 9400 + Math.floor(Math.random() * 1000);
@@ -97,21 +98,29 @@ async function interactions() {
  await c.send("Emulation.setDeviceMetricsOverride",{width:390,height:844,deviceScaleFactor:1,mobile:true});
  await c.send("Page.addScriptToEvaluateOnNewDocument",{source:fixture});
  await c.send("Page.navigate",{url:baseURL+"/explore"});await wait(2200);
- async function check(name,expression){const pass=Boolean(await c.evaluate(expression));checks.push({name,pass});if(!pass)throw new Error("Interaction failed: "+name);}
+ async function check(name,expression){const pass=Boolean(await c.evaluate("Boolean("+expression+")"));checks.push({name,pass});if(!pass)throw new Error("Interaction failed: "+name);}
  async function type(selector,text){await c.evaluate("document.querySelector("+JSON.stringify(selector)+").focus()");await c.send("Input.insertText",{text});await wait(250);}
- await type("input[type=search]","Da Nang");
- await check("Vietnamese accent-insensitive search","document.querySelectorAll('.tour-destination').length===1&&document.querySelector('.tour-destination').textContent.includes('Đà Nẵng')");
- await c.evaluate("document.querySelector('.tour-destination').click()");await wait(400);
+ await type("input[type=search]","Quang Nam");
+ await check("Legacy province search without accents","document.querySelectorAll('.guide-province-card').length===1&&document.querySelector('.guide-province-card').textContent.includes('Đà Nẵng')");
+ await c.evaluate("document.querySelector('.guide-province-card').click()");await wait(500);
+ await check("Province guide opens with places and merger note", "location.pathname==='/explore/da-nang'&&document.querySelectorAll('.guide-place-card').length>=3&&document.body.textContent.includes('Qu\u1ea3ng Nam')");
+ await c.evaluate("document.querySelector('.guide-place-card a[href=\"/explore/da-nang/hoi-an\"]').click()");await wait(500);
+ await check("Place detail retains current and historical geography", "location.pathname==='/explore/da-nang/hoi-an'&&document.querySelector('.guide-detail-story')&&document.querySelector('.guide-sources a')");
+ await c.evaluate("document.querySelector('.guide-detail-actions button').click()");await wait(400);
  await check("Destination action opens login","Boolean(document.querySelector('#login-email'))");
  await type("#login-email","qa@example.test");await type("#login-password","qa-password-only");
  await c.evaluate("document.querySelector('.auth-form').requestSubmit()");await wait(1000);
- await check("Login retains selected destination and opens plan","location.pathname==='/plan'&&[...document.querySelectorAll('input')].some(x=>x.value==='Đà Nẵng')");
+ await check("Login retains selected destination and opens plan","location.pathname==='/plan'&&[...document.querySelectorAll('input')].some(x=>x.value==='Quảng Nam')");
  await c.evaluate("document.querySelector('.tour-mobile-toggle').click()");await wait(350);
  await check("Mobile menu opens","Boolean(document.querySelector('.tour-mobile-menu'))");
  await c.evaluate("document.querySelector('.tour-mobile-menu a[href=\"/weather\"]').click()");await wait(700);
  await check("Mobile navigation closes drawer and reaches weather","location.pathname==='/weather'&&!document.querySelector('.tour-mobile-menu')&&document.body.textContent.includes('Chưa chọn chuyến đi')");
  await c.evaluate("[...document.querySelectorAll('button')].find(x=>x.textContent==='Đăng xuất').click()");await wait(500);
  await check("Logout restores public home","location.pathname==='/'&&Boolean(document.querySelector('.home-hero'))&&!localStorage.getItem('va_session')");
+ await c.evaluate("document.querySelector('.guide-experience-card[href=\"/experiences/am-thuc\"]').click()");await wait(600);
+ await check("Food category opens with real editorial entries", "location.pathname==='/experiences/am-thuc'&&document.querySelectorAll('.guide-place-card').length===9");
+ await c.evaluate("const el=document.querySelector('select');Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,'can-tho');el.dispatchEvent(new Event('change',{bubbles:true}))");await wait(350);
+ await check("Food filter uses current province with historical locality", "document.querySelectorAll('.guide-place-card').length===1&&document.querySelector('.guide-place-card').textContent.includes('S\u00f3c Tr\u0103ng')");
  c.ws.close();await fetch("http://127.0.0.1:"+port+"/json/close/"+target.id);
  return checks;
 }
@@ -119,17 +128,31 @@ async function interactions() {
 const reports = [];
 try {
  if(reference){for(const [route,name] of [["","reference-home"],["dia-diem/","reference-explore"],["ban-do/","reference-map"]]){reports.push(await snapshot("https://discoverhcmc.com/"+route,name+"-1440",1440));}reports.push(await snapshot("https://discoverhcmc.com/","reference-home-390",390));}
+ else if(catalogMode&&process.argv.includes("--interactions-only")){
+  const checks=await interactions();await writeFile(path.join(output,"catalog-interactions.json"),JSON.stringify(checks,null,2)+"\n");console.log(JSON.stringify(checks,null,2));
+ }
+ else if(catalogMode&&process.argv.includes("--authenticated-only")){
+  for(const [route,name,width] of [["explore?qa=private","catalog-auth-explore-1440",1440],["explore?qa=private","catalog-auth-explore-390",390],["explore/da-nang?qa=private","catalog-auth-province-390",390],["explore/da-nang/hoi-an?qa=private","catalog-auth-place-390",390],["experiences/am-thuc?qa=private","catalog-auth-food-390",390]])reports.push(await snapshot(baseURL+"/"+route,name,width,true));
+ }
+ else if(catalogMode){
+  for(const width of [1440,768,390,375])reports.push(await snapshot(baseURL+"/explore","catalog-explore-"+width,width,true));
+  for(const [route,name] of [["explore/da-nang","province-da-nang"],["explore/ho-chi-minh","province-hcm"],["explore/lao-cai","province-lao-cai"],["explore/lai-chau","province-lai-chau"],["explore/da-nang/hoi-an","place-hoi-an"],["experiences/am-thuc","food"],["experiences/van-hoa","culture"],["experiences/thien-nhien?province=tuyen-quang","nature-filtered"],["explore/can-tho/banh-pia","food-detail"],["explore?q=khongcodiadiemnay","catalog-empty"],["explore/unknown","catalog-not-found"],["map?qa=private","catalog-map"],["plan?qa=private","catalog-plan"]])reports.push(await snapshot(baseURL+"/"+route,name+"-390",390,true));
+  for(const route of ["explore/da-nang","explore/da-nang/hoi-an","experiences/am-thuc"])reports.push(await snapshot(baseURL+"/"+route,"catalog-"+route.replaceAll("/","-")+"-1440",1440,true));
+  reports.push(await snapshot(baseURL+"/","catalog-home-1440",1440,true));
+  reports.push(await snapshot(baseURL+"/","catalog-home-390",390,true));
+  const checks=await interactions();await writeFile(path.join(output,"catalog-interactions.json"),JSON.stringify(checks,null,2)+"\n");console.log(JSON.stringify(checks,null,2));
+ }
  else{
   for(const width of [1440,768,390,375])reports.push(await snapshot(baseURL+"/","home-"+width,width,true));
   for(const [route,name] of [["explore","explore"],["plan?qa=private","plan"],["result?qa=private","risk"],["weather?qa=private","weather"],["map?qa=private","map"],["news?qa=private","news"],["compare?qa=private","compare"],["alerts?qa=private","alerts"],["history?qa=private","history"],["traffic?qa=private","traffic"]])reports.push(await snapshot(baseURL+"/"+route,name+"-390",390,true));
   for(const [route,name] of [["explore","explore"],["result?qa=private","risk"],["weather?qa=private","weather"],["map?qa=private","map"]])reports.push(await snapshot(baseURL+"/"+route,name+"-1440",1440,true));
   reports.push(await snapshot(baseURL+"/plan","login-390",390,true));
   reports.push(await snapshot(baseURL+"/explore?q=khongcodiadiemnay","explore-empty-390",390,true));
-  reports.push(await snapshot(baseURL+"/explore?qa=api-error","explore-error-390",390,true));
+  reports.push(await snapshot(baseURL+"/explore/unknown","explore-not-found-390",390,true));
   reports.push(await snapshot(baseURL+"/","home-reduced-390",390,true,true));
   reports.push(await snapshot(baseURL+"/explore","explore-live-1440",1440,false));
   const checks=await interactions();await writeFile(path.join(output,"interaction-report.json"),JSON.stringify(checks,null,2)+"\n");console.log(JSON.stringify(checks,null,2));
  }
- await writeFile(path.join(output,reference?"reference-report.json":"review-report.json"),JSON.stringify(reports,null,2)+"\n");console.log(JSON.stringify(reports,null,2));
+ await writeFile(path.join(output,reference?"reference-report.json":catalogMode?(process.argv.includes("--authenticated-only")?"catalog-authenticated-report.json":"catalog-report.json"):"review-report.json"),JSON.stringify(reports,null,2)+"\n");console.log(JSON.stringify(reports,null,2));
  if(!reference&&reports.some(r=>r.scrollWidth>r.width+1||r.runtimeErrors.length||r.brokenImages.length))process.exitCode=1;
 }finally{try{const c=await connect(connection.webSocketDebuggerUrl);await c.send("Browser.close");c.ws.close();}catch{}clearInterval(keepAlive);browser.kill();}

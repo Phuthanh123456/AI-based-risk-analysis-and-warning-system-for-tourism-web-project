@@ -20,6 +20,9 @@ const MapPage = lazy(() => import("../pages/MapPage"));
 const ComparePage = lazy(() => import("../pages/ComparePage"));
 const AlertsPage = lazy(() => import("../pages/AlertsPage"));
 const HistoryPage = lazy(() => import("../pages/HistoryPage"));
+const ProvinceGuidePage = lazy(() => import("../pages/ProvinceGuidePage"));
+const PlaceGuidePage = lazy(() => import("../pages/PlaceGuidePage"));
+const ExperiencePage = lazy(() => import("../pages/ExperiencePage"));
 
 function PortalRoutes({ context }) {
   const location = useLocation();
@@ -40,7 +43,10 @@ function PortalRoutes({ context }) {
         {context.err && <Alert severity="error" sx={{ mb: 2 }} onClose={context.clearError}>{context.err}</Alert>}
         <Suspense fallback={<Box className="portal-loading"><CircularProgress size={28} /><span>Đang mở trang…</span></Box>}>
           <Routes>
-            <Route path="/explore" element={<ExplorePage onSelect={(place) => openTool("/plan", place)} />} />
+            <Route path="/explore" element={<ExplorePage />} />
+            <Route path="/explore/:provinceId" element={<ProvinceGuidePage onSelect={(place) => openTool("/plan", place)} />} />
+            <Route path="/explore/:provinceId/:placeId" element={<PlaceGuidePage onSelect={(place) => openTool("/plan", place)} />} />
+            <Route path="/experiences/:categoryId" element={<ExperiencePage />} />
             <Route path="/plan" element={<PlanPage />} />
             <Route path="/result" element={<ResultPage />} />
             <Route path="/weather" element={<WeatherPage />} />

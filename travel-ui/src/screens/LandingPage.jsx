@@ -6,13 +6,14 @@ import NewsIcon from "@mui/icons-material/ArticleOutlined";
 import RouteIcon from "@mui/icons-material/RouteOutlined";
 import { DestinationCard, Reveal, SectionHeading, SiteHeader, SiteFooter, TravelImage } from "../tourism/SiteChrome";
 import "./LandingPage.css";
+import { ExperienceGrid } from "../tourism/ExploreComponents";
 
 const images = "/images/landing/";
 const places = [
-  { name: "Hồ Chí Minh", image: images + "saigon-bridge.webp", tag: "NHỊP SỐNG ĐÔ THỊ", caption: "BÊN DÒNG SÔNG SÀI GÒN" },
-  { name: "Hội An", image: images + "hoian.webp", tag: "NHỮNG MIỀN DI SẢN", caption: "ÁNH ĐÈN VÀ NÉT XƯA" },
-  { name: "Hạ Long", image: images + "halong.webp", tag: "THIÊN NHIÊN RỘNG MỞ", caption: "GIỮA TRÙNG ĐIỆP NÚI VÀ BIỂN" },
-  { name: "Hà Nội", image: images + "hanoi.webp", tag: "VĂN HÓA & CUỘC SỐNG", caption: "NHỮNG GÓC PHỐ ĐẦY CÂU CHUYỆN" },
+  { name: "Hồ Chí Minh", image: images + "saigon-bridge.webp", href: "/explore/ho-chi-minh", tag: "NHỊP SỐNG ĐÔ THỊ", caption: "BÊN DÒNG SÔNG SÀI GÒN" },
+  { name: "Hội An", image: images + "hoian.webp", href: "/explore/da-nang/hoi-an", tag: "NHỮNG MIỀN DI SẢN", caption: "ÁNH ĐÈN VÀ NÉT XƯA" },
+  { name: "Hạ Long", image: images + "halong.webp", href: "/explore/quang-ninh/ha-long", tag: "THIÊN NHIÊN RỘNG MỞ", caption: "GIỮA TRÙNG ĐIỆP NÚI VÀ BIỂN" },
+  { name: "Hà Nội", image: images + "hanoi.webp", href: "/explore/ha-noi", tag: "VĂN HÓA & CUỘC SỐNG", caption: "NHỮNG GÓC PHỐ ĐẦY CÂU CHUYỆN" },
 ];
 const features = [
   { Icon: RouteIcon, title: "Hành trình của riêng bạn", text: "Chọn điểm đi, điểm đến và mục đích để xem nhận định phù hợp.", route: "/plan" },
@@ -39,6 +40,7 @@ export function LandingPage({ onGoToLogin, signedIn = false, themeMode, toggleTh
         <span className="home-photo-caption">VỊNH HẠ LONG, QUẢNG NINH</span>
       </section>
       <div className="home-ribbon"><span>VIỆT NAM RỘNG MỞ</span><i aria-hidden="true">✦</i><span>ĐI ĐỂ HIỂU THÊM</span><i aria-hidden="true">✦</i><span>SẴN SÀNG CHO CHUYẾN ĐI</span></div>
+      <ExperienceGrid />
       <section className="home-section" id="home-destinations"><div className="tour-container">
         <Reveal><SectionHeading number="01" eyebrow="CẢM HỨNG KHÁM PHÁ" title={<>Một Việt Nam.<br />Vô vàn trải nghiệm.</>} description="Từ những góc phố rộn ràng đến miền di sản bên dòng nước. Chọn một nơi để bắt đầu câu chuyện của bạn."><Link className="tour-text-link" to="/explore">Khám phá các tỉnh thành <ArrowForward fontSize="small" /></Link></SectionHeading></Reveal>
         <div className="home-destination-grid">{places.map((place, i) => <Reveal key={place.name} delay={i * .06}><DestinationCard place={place} featured={i === 0 || i === 3} onSelect={(name) => onGoToLogin("/plan", name)} /></Reveal>)}</div>

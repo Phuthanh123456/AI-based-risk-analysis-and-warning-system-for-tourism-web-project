@@ -13,11 +13,13 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { TRIP_PURPOSES } from "../components/tripPurposeConfig";
 import { useTravel } from "../portal/TravelContext";
 import { PageIntro, SourceNote } from "../portal/UiPrimitives";
+import { currentProvincePoints } from "../tourism/catalog/provinces";
 
 export default function PlanPage() {
   const travel = useTravel();
   const navigate = useNavigate();
   const originValue = travel.originName || "";
+  const originPoints = currentProvincePoints(travel.provinces);
 
   async function submit(event) {
     event.preventDefault();
@@ -31,13 +33,14 @@ export default function PlanPage() {
       <Box component="form" onSubmit={submit} className="portal-section" sx={{ display: "grid", gap: 2.2, alignContent: "start" }}>
         <Typography component="h2" variant="h3">Thông tin chuyến đi</Typography>
         <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} alignItems="stretch">
-          <TextField select fullWidth label="Điểm xuất phát" value={originValue} onChange={(event) => { const p = travel.provinces.find((item) => item.province === event.target.value); if (p) travel.chooseOrigin({ label: p.province, lat: p.lat, lon: p.lon }); }} helperText={travel.originName ? `Đang dùng: ${travel.originName}` : "Chọn tỉnh hoặc dùng vị trí hiện tại"}>
+          <TextField select fullWidth label="Điểm xuất phát" value={originValue} onChange={(event) => { const p = originPoints.find((item) => item.province === event.target.value); if (p) travel.chooseOrigin({ label: p.province, lat: p.lat, lon: p.lon }); }} helperText={travel.originName ? `Đang dùng: ${travel.originName}` : "Chọn tỉnh hoặc dùng vị trí hiện tại"}>
             <MenuItem value="" disabled>Chọn tỉnh, thành phố</MenuItem>
-            {originValue && !travel.provinces.some((p) => p.province === originValue) && <MenuItem value={originValue}>{originValue} (đang dùng)</MenuItem>}
-            {travel.provinces.map((p) => <MenuItem key={p.province} value={p.province}>{p.province}</MenuItem>)}
+            {originValue && !originPoints.some((p) => p.province === originValue) && <MenuItem value={originValue}>{originValue} (đang dùng)</MenuItem>}
+            {originPoints.map((p) => <MenuItem key={p.province} value={p.province}>{p.province}</MenuItem>)}
           </TextField>
           <Button variant="outlined" startIcon={travel.gpsLoading ? <CircularProgress size={16} /> : <MyLocationOutlinedIcon />} onClick={travel.getGPS} disabled={travel.gpsLoading} sx={{ minWidth: { sm: 160 }, alignSelf: { sm: "start" }, mt: { sm: 1 } }}>{travel.gpsLoading ? "Đang lấy vị trí" : "Dùng GPS"}</Button>
         </Stack>
+        <Typography variant="caption" color="text.secondary">Danh sách dùng 34 tỉnh/thành hiện hành. Tọa độ là điểm tham chiếu từ bản đồ sẵn có; dùng GPS để chọn vị trí xuất phát chính xác.</Typography>
         <TextField label="Điểm đến" value={travel.destination} onChange={(event) => travel.updateDestination(event.target.value)} placeholder="Ví dụ: Đà Lạt, Nha Trang" fullWidth required autoComplete="off" helperText="Có thể nhập tên thành phố hoặc điểm đến cụ thể tại Việt Nam." />
         <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
           <TextField type="date" label="Ngày đi dự kiến" value={travel.departureDate} onChange={(event) => travel.updateDepartureDate(event.target.value)} fullWidth required slotProps={{ inputLabel: { shrink: true } }} helperText="Dự báo thời tiết chi tiết chỉ có cho những ngày dữ liệu còn hiệu lực." />

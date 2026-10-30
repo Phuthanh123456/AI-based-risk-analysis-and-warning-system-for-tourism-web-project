@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import polyline from "@mapbox/polyline";
@@ -10,7 +10,10 @@ import { RegisterScreen } from "./screens/RegisterScreen";
 import { LoginScreen } from "./screens/LoginScreen";
 import TravelPortal from "./portal/TravelPortal";
 import ExplorePage from "./pages/ExplorePage";
-import { SiteHeader, SiteFooter } from "./tourism/SiteChrome";
+import PublicGuideLayout from "./tourism/PublicGuideLayout";
+const ProvinceGuidePage = lazy(() => import("./pages/ProvinceGuidePage"));
+const PlaceGuidePage = lazy(() => import("./pages/PlaceGuidePage"));
+const ExperiencePage = lazy(() => import("./pages/ExperiencePage"));
 
 const LANDING_PORTAL_ROUTES = new Set([
   "/plan", "/map", "/weather", "/traffic", "/news", "/compare", "/alerts", "/history",
@@ -421,7 +424,7 @@ export default function App() {
       setSelectedProv(p);
       setSelectedRisk(null);
 
-      const r = await getRiskCached(p.province);
+      const r = await getRiskCached(p.dataProvince || p.province);
       if (requestId === riskRequestRef.current) setSelectedRisk(r);
 
       // NEW: fly to province
@@ -673,7 +676,12 @@ export default function App() {
     if (currentScreen === "login") return loginScreen;
     return <Routes>
       <Route path="/" element={<LandingPage onGoToLogin={openPublicTool} />} />
-      <Route path="/explore" element={<div className="tour-site"><SiteHeader onLogin={openPublicTool} /><main id="public-explore"><ExplorePage onSelect={(place) => openPublicTool("/plan", place)} /></main><SiteFooter /></div>} />
+      <Route element={<PublicGuideLayout onLogin={openPublicTool} />}>
+        <Route path="/explore" element={<ExplorePage />} />
+        <Route path="/explore/:provinceId" element={<ProvinceGuidePage onSelect={(place) => openPublicTool("/plan", place)} />} />
+        <Route path="/explore/:provinceId/:placeId" element={<PlaceGuidePage onSelect={(place) => openPublicTool("/plan", place)} />} />
+        <Route path="/experiences/:categoryId" element={<ExperiencePage />} />
+      </Route>
       <Route path="*" element={loginScreen} />
     </Routes>;
   }
