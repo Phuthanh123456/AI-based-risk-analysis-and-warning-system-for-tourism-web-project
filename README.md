@@ -1,6 +1,6 @@
 # Vietnam Travel Risk AI — Full Documentation
 
-[![CI](https://github.com/YOUR-USERNAME/YOUR-REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR-USERNAME/YOUR-REPO/actions/workflows/ci.yml)
+[![CI](https://github.com/Phuthanh123456/AI-based-risk-analysis-and-warning-system-for-tourism-web-project/actions/workflows/ci.yml/badge.svg)](https://github.com/Phuthanh123456/AI-based-risk-analysis-and-warning-system-for-tourism-web-project/actions/workflows/ci.yml)
 
 ## 🌐 Live Demo
 
@@ -17,7 +17,7 @@
 >
 > An end-to-end travel risk assessment system for Vietnam, combining a trained XGBoost weather classifier, a trained Vietnamese news classifier with keyword-based severity rules, live traffic data, user accounts, Web Push alerts, and a React + Leaflet map. PhoBERT training and inference are available as an optional higher-capacity news model when a checkpoint is supplied.
 >
-> *(Badge above becomes live once this repo is pushed to GitHub — replace `YOUR-USERNAME/YOUR-REPO` with the actual path.)*
+> *(The badge reports this coursework repository GitHub Actions workflow.)*
 
 ---
 
@@ -1003,3 +1003,8 @@ The local UI review captures each new page at 1440 px and 390 px in [`travel-ui/
 > **Last updated**: October 2026
 >
 > For live system diagnosis, use the debug endpoints: `/debug/where` (paths), `/debug/stats` (data), `/debug/caches` (cache status). These expose full system state without needing server logs.
+
+
+## Course training pipeline
+
+The repository's separate PhoBERT training workflow, its CPU smoke-test report, dependencies, evaluation commands, and output locations are documented in [TRAINING.md](TRAINING.md). Previously committed data files are preserved; the repository does not independently verify complete source or license details for every dataset.

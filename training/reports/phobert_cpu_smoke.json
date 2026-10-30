@@ -1,0 +1,72 @@
+{
+  "run_type": "smoke",
+  "model": "vinai/phobert-base",
+  "model_revision": "01daacda68afe13d83023d16ec647239e344a1e6",
+  "seed": 42,
+  "device": "cpu",
+  "software": {
+    "python": "3.12.4",
+    "torch": "2.13.0+cpu",
+    "transformers": "5.13.1",
+    "pyvi": "0.1.1",
+    "pandas": "3.0.1",
+    "numpy": "2.4.3",
+    "scikit-learn": "1.8.0"
+  },
+  "max_length": 64,
+  "batch_size": 8,
+  "epochs": 1,
+  "split": {
+    "split_source": "committed CSV files; no new split generated",
+    "train_rows_in_csv": 11608,
+    "validation_rows_in_csv": 2902,
+    "train_rows_after_deduplication": 2217,
+    "validation_rows_after_deduplication": 586,
+    "validation_overlap_rows_removed": 44,
+    "train_label_counts": {
+      "0": 585,
+      "1": 1632
+    },
+    "validation_label_counts": {
+      "0": 121,
+      "1": 421
+    }
+  },
+  "rows_used": {
+    "train": 64,
+    "validation": 128,
+    "train_label_counts": {
+      "0": 17,
+      "1": 47
+    },
+    "validation_label_counts": {
+      "0": 29,
+      "1": 99
+    }
+  },
+  "optimizer_steps_total": 8,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.3745686262845993,
+      "learning_rate_after_epoch": 0.0,
+      "validation": {
+        "validation_rows": 128,
+        "threshold": 0.5,
+        "precision": 0.7894736842105263,
+        "recall": 0.7575757575757576,
+        "f1": 0.7731958762886598,
+        "average_precision": 0.8106840874776015
+      }
+    }
+  ],
+  "final_metrics": {
+    "validation_rows": 128,
+    "threshold": 0.5,
+    "precision": 0.7894736842105263,
+    "recall": 0.7575757575757576,
+    "f1": 0.7731958762886598,
+    "average_precision": 0.8106840874776015
+  },
+  "checkpoint_saved": false
+}

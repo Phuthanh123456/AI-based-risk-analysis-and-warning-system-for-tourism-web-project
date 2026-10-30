@@ -32,3 +32,6 @@ data/outputs/checkpoints/
 
 # Unused duplicate/old model file (not referenced by any code path)
 src/integrations/weather/Final_Model_AI_For_Weather_Detect.pkl
+
+data/outputs/training/
+*.py[cod]
