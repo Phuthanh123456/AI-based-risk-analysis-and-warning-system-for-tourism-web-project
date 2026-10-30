@@ -326,7 +326,13 @@ def _public_geocode(query: str) -> Tuple[Optional[float], Optional[float], Optio
 def search_location_google(query: str) -> Tuple[Optional[float], Optional[float], Optional[str]]:
     """Return a resolved place, using public geocoding when SerpAPI is unavailable."""
     city = query.split(",", 1)[0].strip()
-    local_province = _local_province_geocode(_plain_place(city))
+    plain_city = _plain_place(city)
+    if plain_city in _LOCAL_CITY_COORDS:
+        result = _LOCAL_CITY_COORDS[plain_city]
+        _serpapi_geo_cache_set(query, result)
+        return result
+
+    local_province = _local_province_geocode(plain_city)
     if local_province:
         _serpapi_geo_cache_set(query, local_province)
         return local_province

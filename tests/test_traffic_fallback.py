@@ -31,7 +31,8 @@ def test_public_geocode_ignores_unrelated_same_country_result():
         {"name": "Hanoi", "country_code": "VN", "latitude": 21.02,
          "longitude": 105.84, "admin1": "Hanoi", "population": 8000000},
     ]})
-    with patch.object(traffic.requests, "get", return_value=response) as get:
+    with patch.object(traffic, "_local_province_geocode", return_value=None), \
+         patch.object(traffic.requests, "get", return_value=response) as get:
         lat, lon, _ = traffic._public_geocode("Hà Nội")
     assert (lat, lon) == (21.02, 105.84)
     assert get.call_args.kwargs["params"]["name"] == "Hanoi"
