@@ -531,6 +531,15 @@ def _geocode_openmeteo(city_name: str) -> dict:
     """Use Open-Meteo Geocoding API to resolve city name -> lat/lon.
     Falls back to Vietnamese aliases if initial search fails.
     Also tries extracting known province/city names from long address strings."""
+    from src.integrations.traffic.serpapi_service import resolve_configured_location
+
+    configured = resolve_configured_location(city_name)
+    if configured:
+        lat, lon, name = configured
+        result = {"latitude": lat, "longitude": lon, "name": name, "country_code": "VN"}
+        _geocode_cache_set(city_name, result)
+        return result
+
     cached_result = _geocode_cache_get(city_name)
     if cached_result:
         return cached_result

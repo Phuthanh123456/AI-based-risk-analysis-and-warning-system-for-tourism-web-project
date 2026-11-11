@@ -3,7 +3,7 @@ import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import polyline from "@mapbox/polyline";
 import "./App.css";
-import { API_BASE } from "./api";
+import { apiGet, apiDelete } from "./api";
 import { subscribeToPush, unsubscribeFromPush, isPushSupported, getCurrentPushSubscription, checkNow } from "./push";
 import { LandingPage } from "./screens/LandingPage";
 import { RegisterScreen } from "./screens/RegisterScreen";
@@ -34,54 +34,6 @@ function readSavedContext() {
     }
     return saved;
   } catch { return {}; }
-}
-
-async function apiGet(path, token) {
-  let r;
-  try {
-    r = await fetch(`${API_BASE}${path}`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
-  } catch (networkErr) {
-    // Network error = server chưa chạy, CORS block, hoặc mất mạng
-    throw new Error(
-      "Không kết nối được server. Kiểm tra backend đang chạy tại " +
-        API_BASE +
-        " (lỗi: " +
-        networkErr.message +
-        ")"
-    );
-  }
-  const data = await r.json().catch(() => ({}));
-  if (!r.ok) {
-    const msg = data?.detail || data?.error || JSON.stringify(data);
-    throw new Error(msg);
-  }
-  return data;
-}
-
-async function apiDelete(path, token) {
-  let r;
-  try {
-    r = await fetch(`${API_BASE}${path}`, {
-      method: "DELETE",
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
-  } catch (networkErr) {
-    throw new Error(
-      "Không kết nối được server. Kiểm tra backend đang chạy tại " +
-        API_BASE +
-        " (lỗi: " +
-        networkErr.message +
-        ")"
-    );
-  }
-  const data = await r.json().catch(() => ({}));
-  if (!r.ok) {
-    const msg = data?.detail || data?.error || JSON.stringify(data);
-    throw new Error(msg);
-  }
-  return data;
 }
 
 // ===== polyline decode helper =====
@@ -265,6 +217,9 @@ export default function App() {
   }
 
   function logout() {
+    tripRequestRef.current += 1;
+    setTripLoading(false);
+    setForecastLoading(false);
     // Reset theme immediately on DOM
     try {
       document.documentElement.removeAttribute("data-theme");
@@ -339,6 +294,7 @@ export default function App() {
   // ===== NEW: cache risk to reduce API calls =====
   const riskCacheRef = useRef(new Map()); // key: province -> risk json
   const riskRequestRef = useRef(0);
+  const tripRequestRef = useRef(0);
 
   // ===== theme (dark / light) - default is LIGHT =====
   const [theme, setTheme] = useState("light");
@@ -372,6 +328,9 @@ export default function App() {
   }, [userPos, originName, destination, departureDate, tripPurpose, tripRes, tripCheckedAt, routeCoords, forecastData, selectedDateIndex]);
 
   function invalidateTrip() {
+    tripRequestRef.current += 1;
+    setTripLoading(false);
+    setForecastLoading(false);
     setTripRes(null);
     setTripCheckedAt(null);
     setRouteCoords([]);
@@ -508,6 +467,7 @@ export default function App() {
       return;
     }
     const activePurpose = purposeOverride !== undefined ? purposeOverride : tripPurpose;
+    const requestId = ++tripRequestRef.current;
     setErr("");
     setTripLoading(true);
     setTripRes(null);
@@ -526,6 +486,7 @@ export default function App() {
       }
 
       const data = await apiGet(url, session?.user?.token);
+      if (requestId !== tripRequestRef.current) return null;
       setTripRes(data);
       setTripCheckedAt(Date.now());
       if (session?.user?.token) loadTripHistory();
@@ -550,47 +511,52 @@ export default function App() {
         }
       }
 
-      // ===== Fetch 7-day forecast for destination (best-effort) =====
-      try {
-        setForecastLoading(true);
-        // Prefer short name: user input > inferred province > full resolved name
-        const cityName = destination.trim()
-          || data?.to?.province_inferred
-          || data?.to?.name
-          || "Unknown";
-        const provParam = data?.to?.province_inferred
-          ? `&province=${encodeURIComponent(data.to.province_inferred)}`
-          : "";
-        const purposeParam = activePurpose
-          ? `&trip_purpose=${encodeURIComponent(activePurpose)}`
-          : "";
-        const coordsParam = Number.isFinite(data?.to?.lat) && Number.isFinite(data?.to?.lon)
-          ? `&lat=${encodeURIComponent(String(data.to.lat))}&lon=${encodeURIComponent(String(data.to.lon))}`
-          : "";
-        const fcUrl = `/weather/ai/forecast?city=${encodeURIComponent(cityName)}&days=7${provParam}${purposeParam}${coordsParam}`;
-        const fcData = await apiGet(fcUrl);
-        if (fcData?.daily?.length) {
-          setForecastData(fcData.daily);
-          const dayIndex = fcData.daily.findIndex((day) => day.date === departureDate);
-          setSelectedDateIndex(dayIndex >= 0 ? dayIndex : 0);
+      // Show the completed trip immediately; the optional forecast loads separately.
+      setForecastLoading(true);
+      void (async () => {
+        try {
+          // Prefer short name: user input > inferred province > full resolved name
+          const cityName = destination.trim()
+            || data?.to?.province_inferred
+            || data?.to?.name
+            || "Unknown";
+          const provParam = data?.to?.province_inferred
+            ? `&province=${encodeURIComponent(data.to.province_inferred)}`
+            : "";
+          const purposeParam = activePurpose
+            ? `&trip_purpose=${encodeURIComponent(activePurpose)}`
+            : "";
+          const coordsParam = Number.isFinite(data?.to?.lat) && Number.isFinite(data?.to?.lon)
+            ? `&lat=${encodeURIComponent(String(data.to.lat))}&lon=${encodeURIComponent(String(data.to.lon))}`
+            : "";
+          const fcUrl = `/weather/ai/forecast?city=${encodeURIComponent(cityName)}&days=7${provParam}${purposeParam}${coordsParam}`;
+          const fcData = await apiGet(fcUrl);
+          if (requestId === tripRequestRef.current && fcData?.daily?.length) {
+            setForecastData(fcData.daily);
+            const dayIndex = fcData.daily.findIndex((day) => day.date === departureDate);
+            setSelectedDateIndex(dayIndex >= 0 ? dayIndex : 0);
+          }
+        } catch (fcErr) {
+          console.warn("[Forecast] Could not load 7-day forecast:", fcErr);
+        } finally {
+          if (requestId === tripRequestRef.current) setForecastLoading(false);
         }
-      } catch (fcErr) {
-        console.warn("[Forecast] Could not load 7-day forecast:", fcErr);
-      } finally {
-        setForecastLoading(false);
-      }
+      })();
       return data;
     } catch (e) {
-      setErr(`Không thể đánh giá chuyến đi: ${String(e.message || e)}`);
+      if (requestId === tripRequestRef.current) setErr(`Không thể đánh giá chuyến đi: ${String(e.message || e)}`);
       return null;
     } finally {
-      setTripLoading(false);
+      if (requestId === tripRequestRef.current) setTripLoading(false);
     }
   }
 
 
   // ===== NEW: map quick actions =====
   function resetVN() {
+    tripRequestRef.current += 1;
+    setTripLoading(false);
+    setForecastLoading(false);
     // Xóa hết các địa điểm đã chọn
     riskRequestRef.current += 1;
     setSelectedProv(null);

@@ -9,7 +9,10 @@ function _url(path) {
 }
 
 async function _handleResponse(r) {
-  const data = await r.json().catch(() => ({}));
+  const data = await r.json().catch((error) => {
+    if (error.name === "AbortError") throw error;
+    return {};
+  });
   if (!r.ok) {
     const msg =
       data?.detail ||
@@ -28,44 +31,44 @@ function _networkError(networkErr) {
   );
 }
 
-export async function apiGet(path, token) {
-  let r;
+async function request(path, options) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 45000);
+  let response;
   try {
-    r = await fetch(_url(path), {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
-  } catch (networkErr) {
-    throw _networkError(networkErr);
+    response = await fetch(_url(path), { ...options, signal: controller.signal });
+    return await _handleResponse(response);
+  } catch (error) {
+    if (controller.signal.aborted) {
+      throw new Error("Tra cứu mất quá nhiều thời gian. Vui lòng thử lại sau ít phút.");
+    }
+    if (!response) throw _networkError(error);
+    throw error;
+  } finally {
+    clearTimeout(timer);
   }
-  return _handleResponse(r);
+}
+
+export async function apiGet(path, token) {
+  return request(path, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
 }
 
 export async function apiPost(path, body, token) {
-  let r;
-  try {
-    r = await fetch(_url(path), {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-      body: JSON.stringify(body || {}),
-    });
-  } catch (networkErr) {
-    throw _networkError(networkErr);
-  }
-  return _handleResponse(r);
+  return request(path, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(body || {}),
+  });
 }
 
 export async function apiDelete(path, token) {
-  let r;
-  try {
-    r = await fetch(_url(path), {
-      method: "DELETE",
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
-  } catch (networkErr) {
-    throw _networkError(networkErr);
-  }
-  return _handleResponse(r);
+  return request(path, {
+    method: "DELETE",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
 }

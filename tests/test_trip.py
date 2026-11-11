@@ -1,6 +1,8 @@
 """Covers /trip end-to-end via TestClient. External services (SerpAPI geocode +
 directions) are mocked so CI doesn't depend on live keys/network."""
 from unittest.mock import patch
+from concurrent.futures import ThreadPoolExecutor
+from threading import Event
 import pytest
 
 
@@ -115,3 +117,48 @@ def test_traffic_route_provider_error_returns_explicit_missing_data(client):
     assert resp.json()["traffic"]["time_normal_min"] is None
     ensure_polyline.assert_not_called()
     assert "private detail" not in resp.text
+
+
+@pytest.mark.parametrize("slow_stage", ["air_quality", "news_features"])
+def test_trip_blocking_work_does_not_block_other_requests(client, monkeypatch, slow_stage):
+    from src.api import app as api_module
+    import pandas as pd
+
+    entered, release = Event(), Event()
+
+    def slow_transform(*args, **kwargs):
+        if slow_stage == "air_quality":
+            entered.set()
+            assert release.wait(timeout=5)
+        return {"temperature": 25, "humidity": 70, "precipitation": 0, "wind": 5}
+
+    def load_news(*args, **kwargs):
+        if slow_stage == "news_features":
+            entered.set()
+            assert release.wait(timeout=5)
+        return pd.DataFrame()
+
+    class Model:
+        def predict(self, frame):
+            return 2.0, 0, "TEST_MODEL"
+
+    monkeypatch.setattr(api_module, "_trip_cache_get", lambda key: None)
+    monkeypatch.setattr(api_module, "_weather_cache_get", lambda key: None)
+    monkeypatch.setattr(api_module, "search_location_google", lambda query: (11.94, 108.44, "worker-isolation"))
+    monkeypatch.setattr(api_module, "check_route_traffic_google", lambda *args: api_module.unavailable_route())
+    monkeypatch.setattr(api_module, "_fetch_openmeteo_weather", lambda *args: {})
+    monkeypatch.setattr(api_module, "load_features_df", load_news)
+    monkeypatch.setattr(api_module, "transform_openmeteo_to_ai_format", slow_transform)
+    monkeypatch.setattr(api_module, "weather_model_system", Model())
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        trip = pool.submit(client.get, "/trip", params={
+            "destination": "worker-isolation", "lat": "10.77", "lon": "106.69",
+        })
+        try:
+            assert entered.wait(timeout=5)
+            health = pool.submit(client.get, "/health")
+            assert health.result(timeout=2).status_code == 200
+        finally:
+            release.set()
+        assert trip.result(timeout=5).status_code == 200

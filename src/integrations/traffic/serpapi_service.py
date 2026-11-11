@@ -76,6 +76,13 @@ def _local_province_geocode(plain_city: str) -> Optional[Tuple[float, float, str
         print(f"[Geocode] Local province lookup failed: {exc}")
     return None
 
+
+def resolve_configured_location(query: str) -> Optional[Tuple[float, float, str]]:
+    """Resolve an exact city/province reference without an external geocoder."""
+    city = query.split(",", 1)[0].strip()
+    plain_city = _plain_place(city)
+    return _LOCAL_CITY_COORDS.get(plain_city) or _local_province_geocode(plain_city)
+
 # ===================== PRE-COMPILED REGEX PATTERNS =====================
 _RE_HOURS = re.compile(r'(\d+)\s*(giờ|tiếng|h\b|hour|hrs?)')
 _RE_MINUTES = re.compile(r'(\d+)\s*(phút|p\b|min|m\b)')
@@ -286,16 +293,13 @@ def _public_geocode(query: str) -> Tuple[Optional[float], Optional[float], Optio
     """Resolve Vietnamese places, preferring the project's canonical province points."""
     city = query.split(",", 1)[0].strip()
     plain_city = _plain_place(city)
-    if plain_city in _LOCAL_CITY_COORDS:
-        return _LOCAL_CITY_COORDS[plain_city]
-
     # For an exact province name/alias, use the same canonical coordinates as
     # the map. Public geocoders can return a same-named ward/district in another
     # province (for example, resolving "Đồng Tháp" to a place in Lào Cai),
     # which then makes routing fail or sends the trip to the wrong location.
-    local_province = _local_province_geocode(plain_city)
-    if local_province:
-        return local_province
+    configured = resolve_configured_location(query)
+    if configured:
+        return configured
 
     search_name = _GEOCODE_QUERY_ALIASES.get(plain_city, plain_city.title())
     try:
@@ -325,17 +329,10 @@ def _public_geocode(query: str) -> Tuple[Optional[float], Optional[float], Optio
 
 def search_location_google(query: str) -> Tuple[Optional[float], Optional[float], Optional[str]]:
     """Return a resolved place, using public geocoding when SerpAPI is unavailable."""
-    city = query.split(",", 1)[0].strip()
-    plain_city = _plain_place(city)
-    if plain_city in _LOCAL_CITY_COORDS:
-        result = _LOCAL_CITY_COORDS[plain_city]
-        _serpapi_geo_cache_set(query, result)
-        return result
-
-    local_province = _local_province_geocode(plain_city)
-    if local_province:
-        _serpapi_geo_cache_set(query, local_province)
-        return local_province
+    configured = resolve_configured_location(query)
+    if configured:
+        _serpapi_geo_cache_set(query, configured)
+        return configured
 
     cached = _serpapi_geo_cache_get(query)
     if cached is not None:

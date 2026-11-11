@@ -566,7 +566,7 @@ async def trip_check(
 
         # 2) Pre-load features DF (from cache, very fast after startup)
         try:
-            df = load_features_df(force=False)
+            df = await loop.run_in_executor(_executor, lambda: load_features_df(force=False))
         except Exception as e:
             print(f"[/trip] WARNING: news features unavailable: {e}")
             df = pd.DataFrame()
@@ -619,7 +619,14 @@ async def trip_check(
                     "longitude": dest_lon,
                 }
                 purpose = trip_purpose or "standard"
-                ai_input = transform_openmeteo_to_ai_format(om_data, province=province_label, geo=geo_info, purpose=purpose)
+                # Transforming also fetches air quality over HTTP. Keep that
+                # blocking I/O off the event loop so other API calls stay usable.
+                ai_input = await loop.run_in_executor(
+                    _executor,
+                    lambda: transform_openmeteo_to_ai_format(
+                        om_data, province=province_label, geo=geo_info, purpose=purpose
+                    ),
+                )
                 _wdf = pd.DataFrame([ai_input])
                 w_score, w_level, w_method = weather_model_system.predict(_wdf)
 

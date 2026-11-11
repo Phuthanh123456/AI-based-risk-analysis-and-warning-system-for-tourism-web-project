@@ -6,6 +6,20 @@ from fastapi import HTTPException
 from src.api import weather_ai
 
 
+@pytest.mark.parametrize("query,coords", [
+    ("Quảng Nam", (15.5394, 108.0191)),
+    ("Hà Nội", (21.0278, 105.8342)),
+    ("Ha Noi", (21.0278, 105.8342)),
+    ("Đà Lạt", (11.94646, 108.44193)),
+])
+def test_weather_uses_same_configured_location_as_trip(query, coords):
+    weather_ai._geocode_cache.clear()
+    with patch.object(weather_ai.requests, "get") as external_geocode:
+        result = weather_ai._geocode_openmeteo(query)
+    assert (result["latitude"], result["longitude"]) == coords
+    external_geocode.assert_not_called()
+
+
 def test_trip_forecast_uses_resolved_destination_coordinates():
     class ForecastReached(Exception):
         pass
