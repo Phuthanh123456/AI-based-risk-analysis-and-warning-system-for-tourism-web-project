@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "test": "node --test tests/tripAssessment.test.mjs tests/locationSearchClient.test.mjs tests/i18n.test.mjs",
     "dev": "vite",
     "lint": "eslint .",
     "build": "vite build",

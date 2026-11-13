@@ -26,19 +26,19 @@ import traceback
 from html import unescape
 from urllib.parse import urlparse
 from contextlib import asynccontextmanager
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime, timezone
 from typing import Optional, Dict
 from concurrent.futures import ThreadPoolExecutor
 
 import pandas as pd
 import numpy as np
 from fastapi import FastAPI, Query, HTTPException, Request, Depends
-from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi.responses import JSONResponse, HTMLResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 import joblib
 
 # ---- pickle compat for weather model ----
-from src.integrations.weather.main import HybridSafetyPredictor, WeatherPreprocessor, map_risk_level_v17, normalize_weather_score
+from src.integrations.weather.main import HybridSafetyPredictor, WeatherPreprocessor, WeatherInferenceError, map_risk_level_v17, normalize_weather_score
 sys.modules['__main__'].WeatherPreprocessor = WeatherPreprocessor
 sys.modules['__main__'].map_risk_level_v17 = map_risk_level_v17
 
@@ -46,7 +46,7 @@ sys.modules['__main__'].map_risk_level_v17 = map_risk_level_v17
 from src.api.config import (
     FEATURES_PATH, PROVINCES_CFG, WEATHER_MODEL_PATH,
     WEATHER_MODEL_FEATURES_PATH,
-    TRACKASIA_BASE, TRACKASIA_KEY, RISK_GROUPS, NEWS_RISK_MAX_AGE_DAYS,
+    TRACKASIA_BASE, TRACKASIA_KEY, RISK_GROUPS, NEWS_RISK_MAX_AGE_DAYS, validate_production_config,
 )
 from src.api.utils import (
     load_features_df, resolve_place, score_from_subset,
@@ -62,6 +62,8 @@ from src.api.weather_ai import (
     _weather_cache_get, _weather_cache_set,
     transform_openmeteo_to_ai_format, MSG_MAP,
     adjust_risk_for_purpose,
+    air_quality_metadata,
+    _fetch_air_quality,
 )
 from src.integrations.traffic.serpapi_service import (
     search_location_google,
@@ -72,6 +74,8 @@ from src.integrations.traffic.serpapi_service import (
 from src.api.db import init_db, save_trip_history, list_trip_history, delete_trip_history
 from src.api.auth import auth_router, get_current_user, get_current_user_optional
 from src.api.notifications import notification_router
+from src.integrations.traffic.place_search import search_places_async, close_search_client
+from src.api.recent_news import fetch_recent_news
 
 # ============================================================
 # Thread pool for parallel I/O in async endpoints
@@ -145,9 +149,15 @@ def _sanitize_for_json(obj):
 # ============================================================
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
+    validate_production_config()
     load_weather_model()
+    if os.getenv("APP_ENV", "development").lower() == "production" and weather_model_system is None:
+        raise RuntimeError("Production weather model failed to load")
     init_database()
-    yield
+    try:
+        yield
+    finally:
+        await close_search_client()
 
 
 app = FastAPI(title="Vietnam Travel Risk API", version="2.5", lifespan=lifespan)
@@ -164,6 +174,8 @@ app.add_middleware(
 # ---- Request logging middleware ----
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
+    if os.getenv("APP_ENV", "development").lower() == "production" and request.url.path.startswith("/debug"):
+        return JSONResponse(status_code=404, content={"detail": "Not found"})
     start = time.time()
     response = await call_next(request)
     elapsed = time.time() - start
@@ -215,6 +227,12 @@ def init_database():
         print("[Startup] SQLite app database ready.")
     except Exception as e:
         print(f"[Startup] Failed to init database: {e}")
+        raise
+
+
+@app.exception_handler(WeatherInferenceError)
+async def weather_inference_error_handler(request: Request, exc: WeatherInferenceError):
+    return JSONResponse(status_code=503, content={"detail": "Weather assessment temporarily unavailable"})
 
 
 @app.exception_handler(Exception)
@@ -498,7 +516,9 @@ def _trip_cache_get(key: str) -> Optional[dict]:
     entry = _trip_cache.get(key)
     if not entry:
         return None
-    if time.time() - entry["ts"] > _TRIP_CACHE_TTL:
+    result = entry["response"]
+    partial = result.get("traffic", {}).get("route_available") is False or not result.get("weather") or result.get("weather", {}).get("error")
+    if time.time() - entry["ts"] > (30 if partial else _TRIP_CACHE_TTL):
         _trip_cache.pop(key, None)
         return None
     return entry["response"]
@@ -517,12 +537,46 @@ def _trip_cache_set(key: str, response: dict):
 # ============================================================
 # TRIP  (async + parallel I/O)
 # ============================================================
+@app.get("/api/locations/search", tags=["locations"], summary="Suggest Vietnamese addresses and places")
+async def location_suggestions(
+    request: Request,
+    q: str = Query(..., min_length=3, max_length=250),
+    lat: Optional[float] = Query(None, ge=-90, le=90),
+    lon: Optional[float] = Query(None, ge=-180, le=180),
+):
+    """Return address candidates for the user to choose; coordinates are not guessed from a name."""
+    if (lat is None) != (lon is None):
+        raise HTTPException(status_code=422, detail="Provide both lat and lon, or neither")
+    task = asyncio.create_task(search_places_async(q, lat, lon))
+    try:
+        while not task.done():
+            await asyncio.wait({task}, timeout=.1)
+            if not task.done() and await request.is_disconnected():
+                task.cancel()
+                return Response(status_code=499)
+        return task.result()
+    finally:
+        if not task.done():
+            task.cancel()
+        await asyncio.gather(task, return_exceptions=True)
+
+
+@app.get("/api/news/recent", tags=["news"], summary="Recent local risk headlines with source links")
+async def recent_local_news(place: str = Query(..., min_length=2, max_length=120)):
+    """Headlines from the past 7 days, not confirmed incidents or full-text ML scores."""
+    resolved = infer_province_from_text(place) or resolve_place(place)
+    return await asyncio.get_running_loop().run_in_executor(_executor, fetch_recent_news, resolved)
+
+
 @app.get("/trip")
 async def trip_check(
     destination: str = Query(...),
     lat: str = Query(...),
     lon: str = Query(...),
     trip_purpose: Optional[str] = Query("standard", description="Trip purpose: standard, dating, family, adventure, solo"),
+    destination_lat: Optional[float] = Query(None, ge=-90, le=90, description="Latitude of the address selected from suggestions"),
+    destination_lon: Optional[float] = Query(None, ge=-180, le=180, description="Longitude of the address selected from suggestions"),
+    refresh: bool = Query(False, description="Bypass the cached trip result"),
     current_user: Optional[dict] = Depends(get_current_user_optional),
 ):
     import urllib.parse
@@ -542,8 +596,13 @@ async def trip_check(
             raise HTTPException(status_code=422, detail="lat/lon must be valid coordinates")
 
         # --- Check cache first ---
-        cache_key = _trip_cache_key(destination, lat_f, lon_f, trip_purpose)
-        cached = _trip_cache_get(cache_key)
+        if (destination_lat is None) != (destination_lon is None):
+            raise HTTPException(status_code=422, detail="Select both destination coordinates")
+        cache_destination = destination
+        if destination_lat is not None:
+            cache_destination += f"|selected:{destination_lat:.6f},{destination_lon:.6f}"
+        cache_key = _trip_cache_key(cache_destination, lat_f, lon_f, trip_purpose)
+        cached = None if refresh else _trip_cache_get(cache_key)
         if cached:
             if current_user:
                 try:
@@ -556,20 +615,28 @@ async def trip_check(
 
         # 1) Resolve destination (geocode) — run in thread pool
         try:
-            dest_lat, dest_lon, dest_name = await loop.run_in_executor(
-                _executor, search_location_google, destination
-            )
+            if destination_lat is not None:
+                dest_lat, dest_lon, dest_name = destination_lat, destination_lon, destination
+            else:
+                dest_lat, dest_lon, dest_name = await loop.run_in_executor(
+                    _executor, search_location_google, destination
+                )
         except Exception as e:
             raise HTTPException(status_code=502, detail=f"Lỗi tìm vị trí: {e}")
         if dest_lat is None or dest_lon is None or not dest_name:
-            raise HTTPException(status_code=404, detail=f"Không tìm thấy điểm đến: {destination}")
+            raise HTTPException(
+                status_code=404,
+                detail=(
+                    f"Chưa xác định được vị trí của điểm đến “{destination}”. "
+                    "Nếu là trường học, khách sạn hoặc địa điểm cụ thể, hãy nhập thêm "
+                    "địa chỉ, quận/huyện và tỉnh/thành phố. Nếu vẫn không tìm thấy, "
+                    "hãy nhập tên tỉnh/thành phố để đánh giá ở cấp địa phương. "
+                    "Hệ thống chưa tạo kết quả vì chưa có tọa độ điểm đến."
+                ),
+            )
 
-        # 2) Pre-load features DF (from cache, very fast after startup)
-        try:
-            df = await loop.run_in_executor(_executor, lambda: load_features_df(force=False))
-        except Exception as e:
-            print(f"[/trip] WARNING: news features unavailable: {e}")
-            df = pd.DataFrame()
+        # Start the lazy news load without delaying independent provider calls.
+        features_future = loop.run_in_executor(_executor, lambda: load_features_df(force=False))
 
         prov = None
         try:
@@ -602,7 +669,11 @@ async def trip_check(
             try:
                 if not weather_model_system or not dest_name:
                     return None
-                w_cache_key = _weather_cache_key(dest_name)
+                w_cache_key = _weather_cache_key(f"{dest_name}|{dest_lat:.5f},{dest_lon:.5f}")
+                air_future = loop.run_in_executor(_executor, _fetch_air_quality, float(dest_lat), float(dest_lon))
+                # Air quality and weather use different providers; fetch concurrently.
+                # Retrieve any failure even if the weather provider fails first.
+                air_future.add_done_callback(lambda done: None if done.cancelled() else done.exception())
                 cached_w = _weather_cache_get(w_cache_key)
                 if cached_w:
                     om_data = cached_w
@@ -619,6 +690,7 @@ async def trip_check(
                     "longitude": dest_lon,
                 }
                 purpose = trip_purpose or "standard"
+                await air_future
                 # Transforming also fetches air quality over HTTP. Keep that
                 # blocking I/O off the event loop so other API calls stay usable.
                 ai_input = await loop.run_in_executor(
@@ -634,6 +706,7 @@ async def trip_check(
                 w_score = float(w_score)
 
                 normalized_w_score = normalize_weather_score(w_score)
+                air_quality = air_quality_metadata(float(dest_lat), float(dest_lon))
                 w_result = {
                     "risk_level": int(w_level),
                     "risk_score": round(normalized_w_score, 2),
@@ -646,6 +719,12 @@ async def trip_check(
                     "wind": ai_input.get("wind"),
                     "visibility_km": ai_input.get("visibility_km"),
                     "uv_index": ai_input.get("uv_index"),
+                    "pm25": air_quality["pm25"],
+                    "air_quality": air_quality,
+                    "health_advice": ai_input.get("health_advice"),
+                    "provider": "Open-Meteo",
+                    "checked_at": datetime.now(timezone.utc).isoformat(),
+                    "observed_at": (om_data.get("current_weather") or {}).get("time"),
                 }
 
                 # Trip purpose adjustment (always runs — defaults to "standard")
@@ -669,7 +748,7 @@ async def trip_check(
                 print(traceback.format_exc())
                 return {"error": str(e)}
 
-        def compute_risk():
+        def compute_risk(df):
             risk_score, risk_num_articles = None, 0
             historical_num_articles = 0
             historical_risk_score, latest_article_date = None, None
@@ -711,13 +790,21 @@ async def trip_check(
         # Fire all three tasks concurrently
         traffic_task = asyncio.create_task(fetch_traffic())
         weather_task = asyncio.create_task(fetch_weather())
-        risk_future = loop.run_in_executor(_executor, compute_risk)
+        async def ready_risk():
+            try:
+                frame = await features_future
+            except Exception as exc:
+                print(f"[/trip] News features unavailable: {type(exc).__name__}")
+                frame = pd.DataFrame()
+            return await loop.run_in_executor(_executor, compute_risk, frame)
+        risk_future = asyncio.create_task(ready_risk())
+        recent_news_future = loop.run_in_executor(_executor, fetch_recent_news, prov)
 
         traffic, weather_info, (risk_score, risk_num_articles, risk_assessment, model_source,
                                 model_scored_articles, historical_risk_score, historical_num_articles,
                                 latest_article_date,
-                                risk_data_status) = await asyncio.gather(
-            traffic_task, weather_task, risk_future
+                                risk_data_status), recent_news = await asyncio.gather(
+            traffic_task, weather_task, risk_future, recent_news_future
         )
 
         # Routing providers are optional. Weather and news remain useful if they fail.
@@ -729,33 +816,34 @@ async def trip_check(
             )
 
         # 5) Recommendation (enhanced with weather + trip purpose)
-        recommendation = "✅ NÊN ĐI"
+        recommendation = "Có thể cân nhắc hành trình theo dữ liệu hiện có"
         reasons = []
         caution_reasons = []
-        if "🔴" in str(traffic.get("status_emoji") or "") or traffic.get("status") == "heavy":
-            reasons.append("kẹt xe nặng")
         if traffic.get("route_available") is False:
             caution_reasons.append("chưa lấy được tuyến đường; cần kiểm tra chỉ đường trước khi đi")
-        elif traffic.get("traffic_available") is False:
-            caution_reasons.append("chưa có dữ liệu giao thông trực tiếp; thời gian đi chỉ là ước tính")
         if isinstance(risk_score, int) and risk_score >= 7:
             reasons.append("rủi ro báo chí cao")
-        if risk_data_status == "stale":
+        elif isinstance(risk_score, int) and risk_score >= 4:
+            caution_reasons.append("tin đã phân loại còn mới có tín hiệu cần lưu ý")
+        if risk_data_status == "stale" and recent_news.get("status") != "available":
             caution_reasons.append("tin tức rủi ro chưa được cập nhật")
-        elif risk_data_status == "no_data":
+        elif risk_data_status == "no_data" and recent_news.get("status") != "available":
             caution_reasons.append("chưa có dữ liệu tin tức cho điểm đến")
+        if ((recent_news.get("assessment") or {}).get("score") or 0) >= 3:
+            caution_reasons.append(f"có {recent_news['count']} tin rủi ro gần đây; cần đọc nguồn để xác minh ảnh hưởng")
 
         # Use adjusted risk score if trip_purpose provided, else base score
         w_risk_score = None
         if weather_info and not weather_info.get("error"):
             adj_val = weather_info.get("adjusted_risk_score")
-            w_risk_score = adj_val if adj_val is not None else weather_info.get("risk_score", 0)
+            w_risk_score = adj_val if adj_val is not None else weather_info.get("risk_score")
             try:
                 w_risk_score = float(w_risk_score)
             except (TypeError, ValueError):
-                print(f"[/trip] WARNING: w_risk_score not numeric: {w_risk_score!r}, defaulting to 0")
-                w_risk_score = 0.0
-            if int(weather_info.get("risk_level") or 0) >= 4 or w_risk_score >= 7:
+                w_risk_score = None
+            if w_risk_score is None or not math.isfinite(w_risk_score):
+                caution_reasons.append("không lấy được đánh giá thời tiết")
+            elif int(weather_info.get("risk_level") or 0) >= 4 or w_risk_score >= 7:
                 reasons.append(f"thời tiết nguy hiểm: {weather_info.get('message', '')}")
             elif w_risk_score >= 4:
                 caution_reasons.append(weather_info.get("message") or "thời tiết không thuận lợi")
@@ -763,9 +851,9 @@ async def trip_check(
             caution_reasons.append("không lấy được đánh giá thời tiết")
 
         if reasons:
-            recommendation = "❌ KHÔNG NÊN ĐI (" + ", ".join(reasons) + ")"
+            recommendation = "Cân nhắc điều chỉnh hoặc hoãn hành trình (" + ", ".join(reasons) + ")"
         elif caution_reasons:
-            recommendation = "⚠️ CẨN THẬN (" + ", ".join(caution_reasons) + ")"
+            recommendation = "Cân nhắc các lưu ý trước khi quyết định (" + ", ".join(caution_reasons) + ")"
 
         # 6) Human-readable time
         tn = traffic.get("time_normal_min")
@@ -774,6 +862,7 @@ async def trip_check(
         tth = format_minutes_human(tt)
 
         result = {
+            "assessment_version": 3,
             "from": {"lat": lat_f, "lon": lon_f},
             "to": {
                 "query": destination, "name": dest_name,
@@ -792,7 +881,7 @@ async def trip_check(
                 "time_normal_human": tnh,
                 "time_traffic_human": tth,
                 "speed_kmh": traffic.get("speed_kmh"),
-                "traffic_score": traffic.get("traffic_score"),
+                "traffic_score": None,  # congestion scoring retired; keep schema compatibility
                 "delay_min": traffic.get("delay_min"),
                 "traffic_available": traffic.get("traffic_available", False),
                 "route_available": traffic.get("route_available", True),
@@ -801,6 +890,8 @@ async def trip_check(
                 "route_polyline": traffic.get("route_polyline"),
                 "route_polyline_provider": traffic.get("route_polyline_provider"),
                 "route_polyline_type": traffic.get("route_polyline_type"),
+                "checked_at": datetime.now(timezone.utc).isoformat(),
+                "data_status": "live" if traffic.get("traffic_available") else "route_estimate" if traffic.get("route_available") else "unavailable",
             },
             "risk": {
                 "risk_score": risk_score,
@@ -813,6 +904,7 @@ async def trip_check(
                 "model_scored_articles": model_scored_articles,
                 "news_model_source": model_source,
                 "risk_assessment": risk_assessment,
+                "recent_news": recent_news,
             },
             "weather": weather_info,
             "trip_purpose": trip_purpose,
@@ -831,7 +923,10 @@ async def trip_check(
                 print(f"[/trip] WARNING: failed to save trip history: {e}")
 
         # --- Save to cache ---
-        if result["traffic"]["route_available"]:
+        if (result["traffic"]["route_available"]
+                and result.get("weather") and not result["weather"].get("error")
+                and result["weather"].get("risk_score") is not None
+                and recent_news.get("status") == "available"):
             _trip_cache_set(cache_key, result)
 
         # Return via _safe_json_response to completely bypass FastAPI's jsonable_encoder

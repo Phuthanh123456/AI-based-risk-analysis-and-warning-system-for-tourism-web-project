@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useTranslate } from "../i18n/index.js";import { useMemo, useState } from "react";
 import { Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import { apiGet } from "../api";
@@ -21,10 +21,10 @@ const provinceIcon = L.divIcon({
     "></div>
   `,
   iconSize: [14, 14],
-  iconAnchor: [7, 7],
+  iconAnchor: [7, 7]
 });
 
-export default function ProvinceMarkers({ provinces, onSelect }) {
+export default function ProvinceMarkers({ provinces, onSelect }) {const translate = useTranslate();
   const [cache, setCache] = useState({}); // name -> risk data
   const [loadingName, setLoadingName] = useState("");
 
@@ -44,7 +44,7 @@ export default function ProvinceMarkers({ provinces, onSelect }) {
     } catch (e) {
       setCache((prev) => ({
         ...prev,
-        [placeName]: { error: String(e?.message || e) },
+        [placeName]: { error: String(e?.message || e) }
       }));
     } finally {
       setLoadingName("");
@@ -53,7 +53,7 @@ export default function ProvinceMarkers({ provinces, onSelect }) {
 
   return (
     <>
-      {list.map((p, idx) => {
+      {translate(list.map((p, idx) => {
         const key = `${p.name}-${idx}`;
         const risk = cache[p.name];
         const score = risk?.overall_risk_score ?? null;
@@ -68,13 +68,13 @@ export default function ProvinceMarkers({ provinces, onSelect }) {
               click: async () => {
                 onSelect?.(p);
                 await loadRisk(p.name);
-              },
-            }}
-          >
+              }
+            }}>
+
             <Popup>
               <div style={{ minWidth: 240 }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-                  <div style={{ fontWeight: 700 }}>{p.name}</div>
+                  <div style={{ fontWeight: 700 }}>{translate(p.name)}</div>
                   <div
                     style={{
                       fontSize: 12,
@@ -82,52 +82,52 @@ export default function ProvinceMarkers({ provinces, onSelect }) {
                       borderRadius: 999,
                       background: label.pill,
                       color: "white",
-                      fontWeight: 700,
-                    }}
-                  >
-                    {score === null ? "—" : `Risk ${score}/10`} • {label.text}
+                      fontWeight: 700
+                    }}>
+
+                    {translate(score === null ? "—" : `Risk ${score}/10`)}{translate(" • ")}{translate(label.text)}
                   </div>
                 </div>
 
                 <div style={{ marginTop: 10, fontSize: 13, color: "#333" }}>
-                  {loadingName === p.name && <div>⏳ Đang tải risk…</div>}
+                  {translate(loadingName === p.name && <div>{translate("⏳ Đang tải risk…")}</div>)}
 
-                  {risk?.error && (
-                    <div style={{ color: "#c00" }}>
-                      <b>Lỗi:</b> {risk.error}
-                    </div>
-                  )}
+                  {translate(risk?.error &&
+                  <div style={{ color: "#c00" }}>
+                      <b>{translate("Lỗi:")}</b> {translate(risk.error)}
+                    </div>)
+                  }
 
-                  {risk && !risk.error && (
-                    <>
-                      <div style={{ marginBottom: 6, color: "#666" }}>
-                        Articles: <b>{risk.num_articles}</b>
+                  {translate(risk && !risk.error &&
+                  <>
+                      <div style={{ marginBottom: 6, color: "#666" }}>{translate("Articles: ")}
+                      <b>{translate(risk.num_articles)}</b>
                       </div>
 
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
-                        {Object.entries(risk.risk_assessment || {}).map(([k, v]) => (
-                          <div
-                            key={k}
-                            style={{
-                              border: "1px solid rgba(0,0,0,.08)",
-                              borderRadius: 10,
-                              padding: "6px 8px",
-                              background: "rgba(0,0,0,.02)",
-                            }}
-                          >
-                            <div style={{ fontSize: 11, color: "#666" }}>{k}</div>
-                            <div style={{ fontWeight: 800, fontSize: 14 }}>{v}</div>
+                        {translate(Object.entries(risk.risk_assessment || {}).map(([k, v]) =>
+                      <div
+                        key={k}
+                        style={{
+                          border: "1px solid rgba(0,0,0,.08)",
+                          borderRadius: 10,
+                          padding: "6px 8px",
+                          background: "rgba(0,0,0,.02)"
+                        }}>
+
+                            <div style={{ fontSize: 11, color: "#666" }}>{translate(k)}</div>
+                            <div style={{ fontWeight: 800, fontSize: 14 }}>{translate(v)}</div>
                           </div>
-                        ))}
+                      ))}
                       </div>
-                    </>
-                  )}
+                    </>)
+                  }
                 </div>
               </div>
             </Popup>
-          </Marker>
-        );
-      })}
-    </>
-  );
+          </Marker>);
+
+      }))}
+    </>);
+
 }

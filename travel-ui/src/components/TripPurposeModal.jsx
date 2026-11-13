@@ -1,10 +1,10 @@
-import { TRIP_PURPOSES } from "./tripPurposeConfig";
+import { useTranslate } from "../i18n/index.js";import { TRIP_PURPOSES } from "./tripPurposeConfig";
 
-export function TripPurposeModal({ open, selected, onSelect, onConfirm, onClose }) {
+export function TripPurposeModal({ open, selected, onSelect, onConfirm, onClose }) {const translate = useTranslate();
   if (!open) return null;
   return (
     <>
-      <style>{`
+      <style>{translate(`
         @keyframes purpose-modal-in {
           0% { transform: scale(0.88) translateY(24px); opacity: 0 }
           100% { transform: scale(1) translateY(0); opacity: 1 }
@@ -21,7 +21,7 @@ export function TripPurposeModal({ open, selected, onSelect, onConfirm, onClose 
         .purpose-card:hover {
           transform: scale(1.05) translateY(-4px) !important;
         }
-      `}</style>
+      `)}</style>
       <div
         onClick={onClose}
         style={{
@@ -33,9 +33,9 @@ export function TripPurposeModal({ open, selected, onSelect, onConfirm, onClose 
           zIndex: 700,
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+          justifyContent: "center"
+        }}>
+
         <div
           onClick={(e) => e.stopPropagation()}
           style={{
@@ -49,15 +49,15 @@ export function TripPurposeModal({ open, selected, onSelect, onConfirm, onClose 
             boxShadow: "0 20px 60px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15)",
             padding: "28px 24px 22px",
             color: "#e2e8f0",
-            animation: "purpose-modal-in 0.45s cubic-bezier(.22,.9,.36,1) forwards",
-          }}
-        >
+            animation: "purpose-modal-in 0.45s cubic-bezier(.22,.9,.36,1) forwards"
+          }}>
+
           <div style={{ textAlign: "center", marginBottom: 20 }}>
-            <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: 0.3 }}>
-               Mục đích chuyến đi
+            <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: 0.3 }}>{translate("Mục đích chuyến đi")}
+
             </div>
-            <div style={{ fontSize: 13, opacity: 0.75, marginTop: 6 }}>
-              Chọn mục đích để AI điều chỉnh đánh giá rủi ro phù hợp hơn
+            <div style={{ fontSize: 13, opacity: 0.75, marginTop: 6 }}>{translate("Chọn mục đích để AI điều chỉnh đánh giá rủi ro phù hợp hơn")}
+
             </div>
           </div>
 
@@ -65,10 +65,10 @@ export function TripPurposeModal({ open, selected, onSelect, onConfirm, onClose 
             style={{
               display: "grid",
               gridTemplateColumns: "1fr 1fr",
-              gap: 14,
-            }}
-          >
-            {TRIP_PURPOSES.map((p, i) => {
+              gap: 14
+            }}>
+
+            {translate(TRIP_PURPOSES.map((p, i) => {
               const isActive = selected === p.key;
               return (
                 <div
@@ -79,48 +79,48 @@ export function TripPurposeModal({ open, selected, onSelect, onConfirm, onClose 
                     borderRadius: 16,
                     padding: "18px 16px",
                     background: isActive ? p.gradient : p.bg,
-                    border: isActive
-                      ? "2px solid rgba(255,255,255,0.5)"
-                      : "1px solid rgba(255,255,255,0.10)",
-                    boxShadow: isActive
-                      ? `0 8px 28px ${p.shadow}, inset 0 1px 0 rgba(255,255,255,0.20)`
-                      : "0 2px 8px rgba(0,0,0,0.12)",
+                    border: isActive ?
+                    "2px solid rgba(255,255,255,0.5)" :
+                    "1px solid rgba(255,255,255,0.10)",
+                    boxShadow: isActive ?
+                    `0 8px 28px ${p.shadow}, inset 0 1px 0 rgba(255,255,255,0.20)` :
+                    "0 2px 8px rgba(0,0,0,0.12)",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
                     gap: 8,
-                    animation: `purpose-card-in 0.35s ${0.08 * i}s cubic-bezier(.22,.9,.36,1) both`,
-                  }}
-                >
-                  <div style={{ fontSize: 32 }}>{p.icon}</div>
-                  <div style={{ fontWeight: 800, fontSize: 15 }}>{p.label}</div>
+                    animation: `purpose-card-in 0.35s ${0.08 * i}s cubic-bezier(.22,.9,.36,1) both`
+                  }}>
+
+                  <div style={{ fontSize: 32 }}>{translate(p.icon)}</div>
+                  <div style={{ fontWeight: 800, fontSize: 15 }}>{translate(p.label)}</div>
                   <div
                     style={{
                       fontSize: 11,
                       opacity: isActive ? 0.95 : 0.7,
                       textAlign: "center",
-                      lineHeight: 1.4,
-                    }}
-                  >
-                    {p.desc}
+                      lineHeight: 1.4
+                    }}>
+
+                    {translate(p.desc)}
                   </div>
-                  {isActive && (
-                    <div
-                      style={{
-                        marginTop: 4,
-                        fontSize: 11,
-                        fontWeight: 800,
-                        background: "rgba(255,255,255,0.22)",
-                        borderRadius: 999,
-                        padding: "3px 12px",
-                      }}
-                    >
-                      ✓ Đã chọn
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                  {translate(isActive &&
+                  <div
+                    style={{
+                      marginTop: 4,
+                      fontSize: 11,
+                      fontWeight: 800,
+                      background: "rgba(255,255,255,0.22)",
+                      borderRadius: 999,
+                      padding: "3px 12px"
+                    }}>{translate("✓ Đã chọn")}
+
+
+                  </div>)
+                  }
+                </div>);
+
+            }))}
           </div>
 
           <div
@@ -128,9 +128,9 @@ export function TripPurposeModal({ open, selected, onSelect, onConfirm, onClose 
               display: "flex",
               gap: 10,
               marginTop: 22,
-              justifyContent: "center",
-            }}
-          >
+              justifyContent: "center"
+            }}>
+
             <button
               onClick={onClose}
               style={{
@@ -141,10 +141,10 @@ export function TripPurposeModal({ open, selected, onSelect, onConfirm, onClose 
                 color: "#e2e8f0",
                 cursor: "pointer",
                 fontWeight: 700,
-                fontSize: 13,
-              }}
-            >
-              Bỏ qua
+                fontSize: 13
+              }}>{translate("Bỏ qua")}
+
+
             </button>
             <button
               onClick={onConfirm}
@@ -153,24 +153,24 @@ export function TripPurposeModal({ open, selected, onSelect, onConfirm, onClose 
                 padding: "10px 28px",
                 borderRadius: 12,
                 border: "none",
-                background: selected
-                  ? "#2563EB"
-                  : "rgba(148,163,184,0.25)",
+                background: selected ?
+                "#2563EB" :
+                "rgba(148,163,184,0.25)",
                 color: selected ? "#fff" : "rgba(255,255,255,0.4)",
                 cursor: selected ? "pointer" : "not-allowed",
                 fontWeight: 800,
                 fontSize: 14,
-                boxShadow: selected
-                  ? "0 4px 18px rgba(37,99,235,0.4)"
-                  : "none",
-                transition: "all 0.2s ease",
-              }}
-            >
-              ✓ Xác nhận & Check Trip
+                boxShadow: selected ?
+                "0 4px 18px rgba(37,99,235,0.4)" :
+                "none",
+                transition: "all 0.2s ease"
+              }}>{translate("✓ Xác nhận & Check Trip")}
+
+
             </button>
           </div>
         </div>
       </div>
-    </>
-  );
+    </>);
+
 }

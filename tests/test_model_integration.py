@@ -177,7 +177,7 @@ def test_trip_severe_weather_remains_no_go_for_adventure(client):
     result = response.json()
     assert result["weather"]["risk_score"] == 7.0
     assert result["weather"]["adjusted_risk_score"] >= 7.0
-    assert result["recommendation"].startswith("❌ KHÔNG NÊN ĐI")
+    assert result["recommendation"].startswith("Cân nhắc điều chỉnh hoặc hoãn")
 
 
 def test_trip_marks_old_news_as_stale(client):
@@ -204,7 +204,7 @@ def test_trip_marks_old_news_as_stale(client):
     assert result["risk"]["data_status"] == "stale"
     assert result["risk"]["risk_score"] is None
     assert result["risk"]["historical_risk_score"] == 10
-    assert result["recommendation"].startswith("⚠️ CẨN THẬN")
+    assert result["recommendation"].startswith("Cân nhắc các lưu ý")
 
 
 def test_trip_current_news_score_excludes_old_articles(client):

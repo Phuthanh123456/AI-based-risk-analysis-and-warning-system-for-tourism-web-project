@@ -4,6 +4,10 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import "./tourism/Fonts.css";
 import "./index.css";
+import "./tourism/Readability.css";
+import { syncDocumentLanguage } from "./i18n/store.js";
+
+syncDocumentLanguage();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

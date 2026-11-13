@@ -1,5 +1,5 @@
 import { lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import polyline from "@mapbox/polyline";
 import "./App.css";
@@ -11,6 +11,9 @@ import { LoginScreen } from "./screens/LoginScreen";
 import TravelPortal from "./portal/TravelPortal";
 import ExplorePage from "./pages/ExplorePage";
 import PublicGuideLayout from "./tourism/PublicGuideLayout";
+import { localToday } from "./portal/tripAssessment";
+import { needsTripRecovery, claimRecoveryAttempt } from "./portal/tripRecovery";
+import { missingTripFields } from "./portal/tripFormValidation";
 const ProvinceGuidePage = lazy(() => import("./pages/ProvinceGuidePage"));
 const PlaceGuidePage = lazy(() => import("./pages/PlaceGuidePage"));
 const ExperiencePage = lazy(() => import("./pages/ExperiencePage"));
@@ -20,16 +23,18 @@ const LANDING_PORTAL_ROUTES = new Set([
 ]);
 
 function localDate() {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  return localToday();
 }
 
 function readSavedContext() {
   try {
     const saved = JSON.parse(localStorage.getItem("vtra_trip_context_v2") || "null");
     if (!saved || typeof saved !== "object") return {};
+    // Old autocomplete records may contain conflicting provider locations.
+    // Expire saved selections/results once when the search policy changes.
+    if (saved.locationSearchVersion !== 2) return {};
     if (!saved.savedAt || Date.now() - saved.savedAt > 7 * 24 * 60 * 60 * 1000) return {};
-    if (!saved.tripCheckedAt || Date.now() - saved.tripCheckedAt > 30 * 60 * 1000) {
+    if (saved.tripRes?.assessment_version !== 3 || !saved.tripCheckedAt || Date.now() - saved.tripCheckedAt > 30 * 60 * 1000) {
       return { ...saved, tripRes: null, routeCoords: [], forecastData: [], tripCheckedAt: null };
     }
     return saved;
@@ -87,14 +92,10 @@ export default function App() {
     }
   });
 
-  // Control whether we show the landing page or the login screen
-  // const [showLanding, setShowLanding] = useState(true);
-
-  // ===== Control Navigation (SỬA Ở ĐÂY) =====
-  // Trạng thái màn hình: 'landing' | 'login' | 'register'
-  const [currentScreen, setCurrentScreen] = useState('landing');
-  const [pendingLandingRoute, setPendingLandingRoute] = useState(null);
-  useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [location.pathname, currentScreen]);
+  // Authentication screens use real routes so browser Back/Forward works.
+  const homeAfterLogout = useRef(false);
+  useEffect(() => { if (location.pathname === "/") homeAfterLogout.current = false; }, [location.pathname, session]);
+  useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [location.pathname]);
 
   // ===== Trip history (requires login) =====
   const [tripHistory, setTripHistory] = useState([]);
@@ -189,10 +190,6 @@ export default function App() {
 
   function login(user) {
     const s = { user, ts: Date.now() };
-    if (pendingLandingRoute) {
-      navigate(pendingLandingRoute);
-      setPendingLandingRoute(null);
-    }
     setSession(s);
     try {
       localStorage.setItem("va_session", JSON.stringify(s));
@@ -217,6 +214,7 @@ export default function App() {
   }
 
   function logout() {
+    homeAfterLogout.current = true;
     tripRequestRef.current += 1;
     setTripLoading(false);
     setForecastLoading(false);
@@ -237,20 +235,19 @@ export default function App() {
     }
     // Reset state
     setSession(null);
-    setCurrentScreen('landing');
-    setPendingLandingRoute(null);
     navigate("/");
     setTheme('light');
     setUserPos(null);
     setOriginName("");
     setDestination("");
+    setDestinationLocation(null);
     setDepartureDate(localDate());
     setTripPurpose(null);
     setTripRes(null);
     setTripCheckedAt(null);
     setRouteCoords([]);
     setForecastData([]);
-    setSelectedDateIndex(0);
+    setSelectedDateIndex(-1);
     setTripHistory([]);
   }
 
@@ -266,7 +263,8 @@ export default function App() {
 
 
   // ===== trip =====
-  const [destination, setDestination] = useState(initialContext.destination ?? "Đà Lạt");
+  const [destination, setDestination] = useState(initialContext.destination ?? "");
+  const [destinationLocation, setDestinationLocation] = useState(initialContext.destinationLocation || null);
   const [departureDate, setDepartureDate] = useState(initialContext.departureDate || localDate());
   const [tripLoading, setTripLoading] = useState(false);
   const [tripRes, setTripRes] = useState(initialContext.tripRes || null);
@@ -281,8 +279,8 @@ export default function App() {
   const [forecastLoading, setForecastLoading] = useState(false);
   const [selectedDateIndex, setSelectedDateIndex] = useState(() => {
     const savedIndex = initialContext.selectedDateIndex;
-    if (Number.isInteger(savedIndex) && savedIndex >= 0 && savedIndex < (initialContext.forecastData?.length || 0)) return savedIndex;
-    return Math.max(0, initialContext.forecastData?.findIndex((day) => day.date === initialContext.departureDate) ?? 0);
+    if (Number.isInteger(savedIndex) && savedIndex >= -1 && savedIndex < (initialContext.forecastData?.length || 0)) return savedIndex;
+    return initialContext.departureDate > localDate() ? (initialContext.forecastData?.findIndex((day) => day.date === initialContext.departureDate) ?? -1) : -1;
   });
 
   // ===== ui =====
@@ -295,6 +293,27 @@ export default function App() {
   const riskCacheRef = useRef(new Map()); // key: province -> risk json
   const riskRequestRef = useRef(0);
   const tripRequestRef = useRef(0);
+
+  const initializePlan = useCallback((prefillDestination = "") => {
+    tripRequestRef.current += 1;
+    riskRequestRef.current += 1;
+    setUserPos(null);
+    setOriginName("");
+    setDestination(typeof prefillDestination === "string" ? prefillDestination : "");
+    setDestinationLocation(null);
+    setDepartureDate(localDate());
+    setTripPurpose(null);
+    setTripRes(null);
+    setTripCheckedAt(null);
+    setRouteCoords([]);
+    setForecastData([]);
+    setSelectedDateIndex(-1);
+    setTripLoading(false);
+    setForecastLoading(false);
+    setErr("");
+    setSelectedProv(null);
+    setSelectedRisk(null);
+  }, []);
 
   // ===== theme (dark / light) - default is LIGHT =====
   const [theme, setTheme] = useState("light");
@@ -319,27 +338,29 @@ export default function App() {
   useEffect(() => {
     try {
       localStorage.setItem("vtra_trip_context_v2", JSON.stringify({
-        savedAt: Date.now(), userPos, originName, destination, departureDate,
+        locationSearchVersion: 2, savedAt: Date.now(), userPos, originName, destination, destinationLocation, departureDate,
         tripPurpose, tripRes, tripCheckedAt, routeCoords, forecastData, selectedDateIndex,
       }));
     } catch {
       // Keep the current tab usable if browser storage is disabled or full.
     }
-  }, [userPos, originName, destination, departureDate, tripPurpose, tripRes, tripCheckedAt, routeCoords, forecastData, selectedDateIndex]);
+  }, [userPos, originName, destination, destinationLocation, departureDate, tripPurpose, tripRes, tripCheckedAt, routeCoords, forecastData, selectedDateIndex]);
 
   function invalidateTrip() {
     tripRequestRef.current += 1;
+    setErr("");
     setTripLoading(false);
     setForecastLoading(false);
     setTripRes(null);
     setTripCheckedAt(null);
     setRouteCoords([]);
     setForecastData([]);
-    setSelectedDateIndex(0);
+    setSelectedDateIndex(-1);
     setPushStatus("");
   }
 
-  function updateDestination(value) { setDestination(value); invalidateTrip(); }
+  function updateDestination(value) { setDestination(value); setDestinationLocation(null); invalidateTrip(); }
+  function chooseDestination(place) { setDestination(place.label); setDestinationLocation(place); invalidateTrip(); }
   function updateDepartureDate(value) { setDepartureDate(value); invalidateTrip(); }
   function updatePurpose(value) { setTripPurpose(value); invalidateTrip(); }
 
@@ -449,24 +470,35 @@ export default function App() {
     setMapAction({ type: "flyTo", center: [pos.lat, pos.lon], zoom: 9, ts: Date.now() });
   }
 
-  const canTrip = useMemo(() => {
-    return Boolean(destination.trim().length > 0 && departureDate && Number.isFinite(userPos?.lat) && Number.isFinite(userPos?.lon));
-  }, [destination, departureDate, userPos]);
+  function updateOrigin(value) {
+    setOriginName(value);
+    setUserPos(null);
+    invalidateTrip();
+  }
 
-  async function handleCheckTripClick() {
+  const canTrip = useMemo(() => {
+    return missingTripFields({ origin: userPos, destination, selectedDestination: destinationLocation, date: departureDate, purpose: tripPurpose }, localToday()).length === 0;
+  }, [destinationLocation, destination, departureDate, userPos, tripPurpose]);
+
+  async function handleCheckTripClick(forceRefresh = false) {
     if (!userPos) {
       setErr("Chọn điểm xuất phát hoặc dùng vị trí hiện tại trước.");
       return null;
     }
-    return runTrip(tripPurpose);
+    if (!destinationLocation || destinationLocation.label !== destination) {
+      setErr("Hãy chọn điểm đến trong danh sách gợi ý để xác định đúng vị trí.");
+      return null;
+    }
+    return runTrip(tripPurpose, forceRefresh === true);
   }
 
-  async function runTrip(purposeOverride) {
-    if (!userPos) {
-      setErr("Chọn điểm xuất phát hoặc dùng vị trí hiện tại trước.");
-      return;
-    }
+  async function runTrip(purposeOverride, forceRefresh = false, saveHistory = true) {
     const activePurpose = purposeOverride !== undefined ? purposeOverride : tripPurpose;
+    const missing = missingTripFields({ origin: userPos, destination, selectedDestination: destinationLocation, date: departureDate, purpose: activePurpose }, localToday());
+    if (missing.length) {
+      setErr(`Vui lòng chọn ${missing.join(", ")} trước khi đánh giá.`);
+      return null;
+    }
     const requestId = ++tripRequestRef.current;
     setErr("");
     setTripLoading(true);
@@ -474,7 +506,7 @@ export default function App() {
     setTripCheckedAt(null);
     setRouteCoords([]);
     setForecastData([]);
-    setSelectedDateIndex(0);
+    setSelectedDateIndex(-1);
 
     try {
       let url =
@@ -484,12 +516,16 @@ export default function App() {
       if (activePurpose) {
         url += `&trip_purpose=${encodeURIComponent(activePurpose)}`;
       }
+      if (destinationLocation?.label === destination) {
+        url += `&destination_lat=${encodeURIComponent(destinationLocation.lat)}&destination_lon=${encodeURIComponent(destinationLocation.lon)}`;
+      }
+      if (forceRefresh) url += "&refresh=true";
 
-      const data = await apiGet(url, session?.user?.token);
+      const data = await apiGet(url, saveHistory ? session?.user?.token : undefined);
       if (requestId !== tripRequestRef.current) return null;
       setTripRes(data);
       setTripCheckedAt(Date.now());
-      if (session?.user?.token) loadTripHistory();
+      if (saveHistory && session?.user?.token) loadTripHistory();
 
       // ===== Route polyline decode (respect polyline vs polyline6) =====
       const enc = data?.traffic?.route_polyline;
@@ -501,13 +537,11 @@ export default function App() {
         // focus route
         setMapAction({ type: "fitBounds", bounds: decoded, ts: Date.now() });
       } else {
-        // fallback: straight line A->B
+        // Frame the endpoints without inventing a route when geometry is missing.
         const a = [data?.from?.lat, data?.from?.lon];
         const b = [data?.to?.lat, data?.to?.lon];
         if (a[0] && a[1] && b[0] && b[1]) {
-          const straight = [a, b];
-          setRouteCoords(straight);
-          setMapAction({ type: "fitBounds", bounds: straight, ts: Date.now() });
+          setMapAction({ type: "fitBounds", bounds: [a, b], ts: Date.now() });
         }
       }
 
@@ -529,12 +563,13 @@ export default function App() {
           const coordsParam = Number.isFinite(data?.to?.lat) && Number.isFinite(data?.to?.lon)
             ? `&lat=${encodeURIComponent(String(data.to.lat))}&lon=${encodeURIComponent(String(data.to.lon))}`
             : "";
-          const fcUrl = `/weather/ai/forecast?city=${encodeURIComponent(cityName)}&days=7${provParam}${purposeParam}${coordsParam}`;
+          const fcUrl = `/weather/ai/forecast?city=${encodeURIComponent(cityName)}&days=8${provParam}${purposeParam}${coordsParam}`;
           const fcData = await apiGet(fcUrl);
           if (requestId === tripRequestRef.current && fcData?.daily?.length) {
             setForecastData(fcData.daily);
             const dayIndex = fcData.daily.findIndex((day) => day.date === departureDate);
-            setSelectedDateIndex(dayIndex >= 0 ? dayIndex : 0);
+            const todayIndex = fcData.daily.findIndex((day) => day.date === localDate());
+            setSelectedDateIndex(departureDate > localDate() && dayIndex >= 0 ? dayIndex : !data.weather || data.weather.error ? todayIndex : -1);
           }
         } catch (fcErr) {
           console.warn("[Forecast] Could not load 7-day forecast:", fcErr);
@@ -562,12 +597,13 @@ export default function App() {
     setSelectedProv(null);
     setSelectedRisk(null);
     setDestination("");
+    setDestinationLocation(null);
     setDepartureDate(localDate());
     setTripRes(null);
     setTripCheckedAt(null);
     setRouteCoords([]);
     setForecastData([]);
-    setSelectedDateIndex(0);
+    setSelectedDateIndex(-1);
     setTripPurpose(null);
     setUserPos(null);
     setOriginName("");
@@ -588,8 +624,9 @@ export default function App() {
   function openGoogleDirections() {
     try {
       let url = "";
-      if (userPos && tripRes?.to?.lat && tripRes?.to?.lon) {
-        const o = `${userPos.lat},${userPos.lon}`;
+      if ((tripRes?.from || userPos) && tripRes?.to?.lat && tripRes?.to?.lon) {
+        const assessedOrigin = tripRes?.from || userPos;
+        const o = `${assessedOrigin.lat},${assessedOrigin.lon}`;
         const d = `${tripRes.to.lat},${tripRes.to.lon}`;
         url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(o)}&destination=${encodeURIComponent(d)}&travelmode=driving`;
       } else if (userPos && destination) {
@@ -613,43 +650,70 @@ export default function App() {
   // Keep every Hook above this authentication branch so login/logout can
   // change screens without changing the component's Hook call order.
   function openPublicTool(route = "/plan", place) {
-    setPendingLandingRoute(LANDING_PORTAL_ROUTES.has(route) ? route : "/plan");
+    const returnTo = LANDING_PORTAL_ROUTES.has(route) ? route : "/plan";
     if (typeof place === "string" && place.trim()) updateDestination(place.trim());
-    setCurrentScreen("login");
+    navigate("/login", { state: { returnTo } });
     window.scrollTo({ top: 0, behavior: "instant" });
   }
   function returnHome() {
-    setCurrentScreen("landing");
-    navigate("/");
+    navigate("/", { replace: true });
   }
-  if (!session) {
-    if (currentScreen === "register") {
-      return (
-        <RegisterScreen
-          onRegister={login}
-          onBack={returnHome}
-          onGoToLogin={() => setCurrentScreen("login")}
-        />
-      );
+  const recoveryAction = useRef(null);
+  const recoveryState = useRef({});
+  useEffect(() => { recoveryAction.current = runTrip; });
+  useEffect(() => {
+    const detailPage = ["/result", "/weather", "/traffic", "/map", "/news"].includes(location.pathname);
+    if (!session?.user?.token || !canTrip || !detailPage) return;
+    const key = `${userPos.lat},${userPos.lon}|${destinationLocation.lat},${destinationLocation.lon}|${departureDate}`;
+    function recover() {
+      if (tripLoading || document.visibilityState !== "visible" || !navigator.onLine) return;
+      if (!needsTripRecovery(tripRes, tripCheckedAt)) {
+        recoveryState.current = {};
+        return;
+      }
+      if (claimRecoveryAttempt(recoveryState.current, key)) void recoveryAction.current?.(tripPurpose, true, false);
     }
+    recover();
+    window.addEventListener("online", recover);
+    window.addEventListener("focus", recover);
+    document.addEventListener("visibilitychange", recover);
+    const timer = window.setInterval(recover, 30000);
+    return () => {
+      window.removeEventListener("online", recover);
+      window.removeEventListener("focus", recover);
+      document.removeEventListener("visibilitychange", recover);
+      window.clearInterval(timer);
+    };
+  }, [canTrip, session?.user?.token, location.pathname, tripRes, tripCheckedAt, tripLoading, tripPurpose, departureDate, userPos, destinationLocation]);
+  if (!session) {
+    if (homeAfterLogout.current && location.pathname !== "/") return <Navigate to="/" replace />;
+    const registerScreen = <RegisterScreen onRegister={login} onBack={returnHome} onGoToLogin={() => navigate("/login", { replace: true, state: location.state })} />;
     const loginScreen = (
       <LoginScreen
         onLogin={login}
         onBack={returnHome}
-        onGoToRegister={() => setCurrentScreen("register")}
+        onGoToRegister={() => navigate("/register", { state: location.state })}
       />
     );
-    if (currentScreen === "login") return loginScreen;
     return <Routes>
       <Route path="/" element={<LandingPage onGoToLogin={openPublicTool} />} />
+      <Route path="/login" element={loginScreen} />
+      <Route path="/register" element={registerScreen} />
       <Route element={<PublicGuideLayout onLogin={openPublicTool} />}>
         <Route path="/explore" element={<ExplorePage />} />
         <Route path="/explore/:provinceId" element={<ProvinceGuidePage onSelect={(place) => openPublicTool("/plan", place)} />} />
         <Route path="/explore/:provinceId/:placeId" element={<PlaceGuidePage onSelect={(place) => openPublicTool("/plan", place)} />} />
         <Route path="/experiences/:categoryId" element={<ExperiencePage />} />
       </Route>
-      <Route path="*" element={loginScreen} />
+      <Route path="*" element={<Navigate to="/login" replace state={{ returnTo: LANDING_PORTAL_ROUTES.has(location.pathname) ? location.pathname : "/plan" }} />} />
     </Routes>;
+  }
+
+  // Redirect only after authentication has committed, before mounting portal
+  // routes. This prevents their fallback redirect from racing the login target.
+  if (location.pathname === "/login" || location.pathname === "/register") {
+    const target = location.state?.returnTo || "/plan";
+    return <Navigate to={LANDING_PORTAL_ROUTES.has(target) ? target : "/plan"} replace />;
   }
 
   return (
@@ -659,7 +723,10 @@ export default function App() {
       theme={theme}
       toggleTheme={toggleTheme}
       destination={destination}
+      destinationLocation={destinationLocation}
+      chooseDestination={chooseDestination}
       updateDestination={updateDestination}
+      initializePlan={initializePlan}
       departureDate={departureDate}
       updateDepartureDate={updateDepartureDate}
       tripPurpose={tripPurpose}
@@ -667,11 +734,13 @@ export default function App() {
       canTrip={canTrip}
       tripLoading={tripLoading}
       checkTrip={handleCheckTripClick}
+      refreshTrip={() => handleCheckTripClick(true)}
       userPos={userPos}
       originName={originName}
       gpsLoading={gpsLoading}
       getGPS={getGPS}
       chooseOrigin={chooseOrigin}
+      updateOrigin={updateOrigin}
       tripRes={tripRes}
       tripCheckedAt={tripCheckedAt}
       err={err}

@@ -7,7 +7,9 @@ import json
 import os
 import re
 import unicodedata
-from datetime import date
+from datetime import date, datetime
+from email.utils import parsedate_to_datetime
+from threading import RLock
 from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
@@ -25,6 +27,7 @@ from src.api.config import (
 # ============================================================
 _df_cache: Optional[pd.DataFrame] = None
 _df_mtime: Optional[tuple] = None
+_df_load_lock = RLock()
 
 # ============================================================
 # Province YAML cache (file rarely changes)
@@ -51,7 +54,7 @@ def normalize_key(place: str) -> str:
 def strip_accents(s: str) -> str:
     if not s:
         return ""
-    s = unicodedata.normalize("NFD", s)
+    s = unicodedata.normalize("NFD", s.replace("đ", "d").replace("Đ", "D"))
     return "".join(ch for ch in s if unicodedata.category(ch) != "Mn")
 
 
@@ -117,6 +120,14 @@ def _published_to_date(x):
     raw = _published_to_str(x)
     if not raw:
         return None
+    try:
+        return datetime.fromisoformat(raw.replace("Z", "+00:00")).date()
+    except ValueError:
+        pass
+    try:
+        return parsedate_to_datetime(raw).date()
+    except (ValueError, TypeError, OverflowError, IndexError):
+        pass
     timestamp = pd.to_datetime(raw, errors="coerce")
     return None if pd.isna(timestamp) else timestamp.date()
 
@@ -184,6 +195,13 @@ def _attach_news_predictions(df: pd.DataFrame, paths: List[str]) -> pd.DataFrame
 
 
 def load_features_df(force: bool = False) -> pd.DataFrame:
+    # Only one worker parses a changed dataset; others reuse the same result.
+    # The lock is unrelated to address search or provider HTTP I/O.
+    with _df_load_lock:
+        return _load_features_df_locked(force)
+
+
+def _load_features_df_locked(force: bool = False) -> pd.DataFrame:
     global _df_cache, _df_mtime
 
     if not os.path.exists(FEATURES_PATH):

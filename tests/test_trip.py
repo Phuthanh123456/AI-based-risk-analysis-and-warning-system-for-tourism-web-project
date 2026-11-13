@@ -33,6 +33,22 @@ def test_trip_success_anonymous(client):
     assert data["to"]["name"] == "Đà Lạt, Lâm Đồng, Việt Nam"
     assert data["matched_province"] == "Lâm Đồng"
     assert "recommendation" in data
+    assert data["traffic"]["traffic_score"] is None
+
+
+def test_partial_result_with_valid_route_does_not_cache_a_provider_outage(client):
+    from src.api import app as api
+    api._trip_cache.clear()
+    with patch("src.api.app.search_location_google", return_value=(11.94, 108.44, "outage test, Lâm Đồng")), \
+         patch("src.api.app.check_route_traffic_google", return_value=dict(FAKE_TRAFFIC)), \
+         patch("src.api.app.ensure_route_polyline", return_value=None), \
+         patch("src.api.app.weather_model_system", None), \
+         patch("src.api.app._trip_cache_set") as cache:
+        for _ in range(2):
+            response = client.get("/trip", params={"destination": "outage test", "lat": 10.7, "lon": 106.7})
+            assert response.status_code == 200
+            assert response.json()["traffic"]["route_available"] is True
+        cache.assert_not_called()
 
 
 def test_trip_destination_not_found(client):
@@ -42,6 +58,8 @@ def test_trip_destination_not_found(client):
             params={"destination": "Xyz Nowhere", "lat": "10.77", "lon": "106.69"},
         )
     assert resp.status_code == 404
+    assert "quận/huyện" in resp.json()["detail"]
+    assert "chưa có tọa độ" in resp.json()["detail"]
 
 
 def test_trip_invalid_coords(client):
@@ -52,7 +70,7 @@ def test_trip_invalid_coords(client):
     assert resp.status_code == 422
 
 
-def test_trip_without_live_traffic_reports_estimate_as_uncertain(client):
+def test_trip_without_live_traffic_keeps_estimate_without_congestion_scoring(client):
     from src.api import app as api_module
 
     route = {
@@ -73,7 +91,8 @@ def test_trip_without_live_traffic_reports_estimate_as_uncertain(client):
     result = response.json()
     assert result["traffic"]["traffic_available"] is False
     assert result["traffic"]["time_traffic_min"] is None
-    assert "chưa có dữ liệu giao thông trực tiếp" in result["recommendation"]
+    assert result["traffic"]["traffic_score"] is None
+    assert "chưa có dữ liệu giao thông trực tiếp" not in result["recommendation"]
 
 
 @pytest.mark.parametrize("lat,lon", [

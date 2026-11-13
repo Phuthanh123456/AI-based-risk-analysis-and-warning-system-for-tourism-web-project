@@ -43,6 +43,12 @@ JWT_SECRET_DEFAULT = "travel-risk-local-development-secret-change-in-env"
 JWT_SECRET = (os.getenv("JWT_SECRET") or JWT_SECRET_DEFAULT).strip()
 JWT_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES") or "1440")
 
+
+def validate_production_config():
+    if os.getenv("APP_ENV", "development").lower() == "production":
+        if JWT_SECRET == JWT_SECRET_DEFAULT or len(JWT_SECRET.encode("utf-8")) < 32:
+            raise RuntimeError("Production requires a private JWT_SECRET of at least 32 bytes")
+
 # ============================================================
 # SQLITE (users / trip history / push subscriptions)
 # ============================================================

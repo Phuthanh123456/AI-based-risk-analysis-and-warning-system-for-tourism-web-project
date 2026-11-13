@@ -8,6 +8,7 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           const path = id.replaceAll("\\", "/");
+          if (path.includes("/src/i18n/")) return "i18n";
           if (path.includes("/node_modules/@mui/icons-material/")) return "mui-icons";
           if (path.includes("/node_modules/@mui/") || path.includes("/node_modules/@emotion/")) return "mui-core";
           if (["/react/", "/react-dom/", "/scheduler/"].some((part) => path.includes(`/node_modules${part}`))) return "react-core";

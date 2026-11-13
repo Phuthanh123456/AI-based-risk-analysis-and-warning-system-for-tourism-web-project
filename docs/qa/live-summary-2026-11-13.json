@@ -1,0 +1,27 @@
+{
+  "started_at": "2026-11-13T21:02:54+0700",
+  "province_cases": 34,
+  "trip_http_200": 34,
+  "weather_available": 34,
+  "news_available": 34,
+  "forecast_cases": 16,
+  "eight_day_forecast_cases_passed": 16,
+  "all_coordinate_checks": true,
+  "timings_seconds": {
+    "trip": {
+      "median": 5.3125,
+      "p95_nearest_rank": 9.343,
+      "max": 9.656
+    },
+    "repeat": {
+      "median": 0.016,
+      "p95_nearest_rank": 0.032,
+      "max": 7.469
+    },
+    "search": {
+      "median": 0.016,
+      "p95_nearest_rank": 0.047,
+      "max": 0.062
+    }
+  }
+}

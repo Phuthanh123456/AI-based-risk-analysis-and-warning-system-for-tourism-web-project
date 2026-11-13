@@ -24,6 +24,38 @@ def test_da_lat_resolves_without_serpapi():
     assert "Lâm Đồng" in name
 
 
+def test_directions_with_only_duration_does_not_claim_live_congestion():
+    result = traffic._process_directions({"directions": [{"travel_mode": "Driving", "distance": 21397,
+        "formatted_distance": "13.3 miles", "duration": 970}]})
+    assert result["distance_km"] == 21.397
+    assert result["route_available"] is True
+    assert result["traffic_available"] is False
+    assert result["time_traffic_min"] is None
+    assert result["status"] == "unknown"
+
+
+def test_directions_keep_actual_separate_traffic_duration():
+    result = traffic._process_directions({"routes": [{"legs": [{"distance": {"value": 10000},
+        "duration": {"value": 600}, "duration_in_traffic": {"value": 1200}}]}]})
+    assert result["traffic_available"] is True
+    assert result["time_normal_min"] == 10
+    assert result["time_traffic_min"] == 20
+
+
+def test_invalid_traffic_duration_does_not_become_live_data():
+    for duration in [0, -1, float("nan")]:
+        result = traffic._process_directions({"routes": [{"distance": 10000,
+            "duration": 600, "duration_in_traffic": duration}]})
+        assert result["route_available"] is True
+        assert result["traffic_available"] is False
+        assert result["traffic_score"] is None
+
+
+def test_slow_speed_without_delay_does_not_prove_congestion():
+    assert traffic._status_bucket(1.0, 8) == "light"
+    assert traffic.traffic_score_0_10(1.0, 8) == traffic.traffic_score_0_10(1.0, 80)
+
+
 def test_public_geocode_ignores_unrelated_same_country_result():
     response = FakeResponse({"results": [
         {"name": "Hà Nội", "country_code": "VN", "latitude": 20.47,

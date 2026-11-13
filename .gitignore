@@ -19,6 +19,8 @@ travel-ui/dist/
 # Runtime state / logs (SQLite db, seen-ids cache, dev logs)
 data/state/*.sqlite
 data/state/*.sqlite-journal
+data/state/*.sqlite-*
+*.local.json
 backend.log
 frontend.log
 

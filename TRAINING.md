@@ -1,5 +1,21 @@
 # Huấn luyện model
 
+> Cập nhật trạng thái 13/11/2026: phần PhoBERT dưới đây ghi nhận giai đoạn trước. Repository hiện đã tích hợp thêm XGBoost thời tiết và baseline tin tức thực sự; không còn ở phạm vi chỉ có PhoBERT. Không chạy train lại trong đợt QA này.
+
+## Model đang sử dụng trong bản web hiện tại
+
+Thời tiết: dataset `src/integrations/weather/FINAL_DATASET_WITH_RISK-2.csv`, script `python -m src.train.weather_classifier`, artifact `weather_risk_v5_classifier.pkl` và `model_features.json` trong cùng thư mục weather. Train theo năm 2023–2024 (138.159 dòng), validation 2025 (68.985 dòng), seed 42. Lệnh train ghi đè artifact/metric nên chỉ chạy khi chủ động huấn luyện lại.
+
+Tin tức baseline: `python -m src.train.news_baseline`, TF-IDF + Logistic Regression, artifact `data/models/news_risk_tfidf.joblib`; output `data/outputs/news_baseline_predictions.jsonl`. Giữ split được cung cấp, loại bài trùng giữa train/val; 2.217/542 bài. Script train ghi đè artifact; `--predict-only` chỉ chạy lại inference corpus.
+
+Đánh giá lại artifact mà không fit/ghi đè model:
+
+```powershell
+python -m scripts.evaluate_release_models --output model-evaluation.local.json
+```
+
+Kết quả thực chạy ngày 13/11/2026: thời tiết balanced accuracy 0,9324, macro F1 0,9533; tin baseline precision/recall/F1 0,9002, average precision 0,9558. Weather level 4 chỉ có 19 mẫu, recall 0,6842. Đây là khớp nhãn validation, chưa chứng minh hiệu quả thực địa. Không có model giao thông hay model tổng hợp ba yếu tố được train trong đợt này. Tin RSS mới dùng quy tắc tiêu đề, không được đánh đồng với baseline trên corpus cũ.
+
 Giai đoạn này bổ sung pipeline phân loại tin tức rủi ro bằng PhoBERT. Pipeline dùng trực tiếp hai CSV đã có trong `data/datasets/`; không tạo lại nhãn hay dữ liệu. Model pretrained `vinai/phobert-base` được tải từ Hugging Face khi chạy lần đầu và lưu trong cache ngoài repository.
 
 ## Cài đặt
@@ -55,6 +71,6 @@ Ngày 09/10/2026, đã chạy đúng lệnh smoke ở trên với PyTorch `2.13.
 
 CSV train có 11.608 dòng và validation có 2.902 dòng. Sau khi loại trùng, train còn 2.217 mẫu; validation còn 586 mẫu và loại thêm 44 mẫu trùng với train, còn 542 mẫu. Script giữ nguyên split được cung cấp; các file hiện tại không cho biết đủ thông tin để xác minh cách tạo split ban đầu.
 
-Pipeline XGBoost thời tiết chưa được thêm: dataset có các trường đầu vào thời tiết và `risk_level_num` không có trong repository môn học. `data/outputs/agg_province_daily.csv` chỉ có ngày, tỉnh, số bài viết và các tổng hợp rủi ro tin tức nên không thể dùng thay cho dataset thời tiết. Không sao chép dataset từ repository gốc, train XGBoost hoặc báo metric cho giai đoạn này.
+Trong giai đoạn chỉ thêm PhoBERT trước đây, dataset thời tiết chưa có trong repository môn học. Trạng thái đó đã thay đổi sau khi tích hợp ứng dụng: xem mục model hiện tại ở đầu tài liệu. `data/outputs/agg_province_daily.csv` vẫn là tổng hợp tin tức, không phải dataset huấn luyện thời tiết.
 
 PhoBERT có thể chạy trên CPU nhưng fine-tune toàn bộ tập với cấu hình mặc định sẽ chậm hơn đáng kể so với GPU. Smoke test không tạo checkpoint và không được xem là một model đã train đầy đủ. Checkpoint đầy đủ có thể vượt giới hạn 100 MB của GitHub; checkpoint bị ignore và không được stage/push trong giai đoạn này.

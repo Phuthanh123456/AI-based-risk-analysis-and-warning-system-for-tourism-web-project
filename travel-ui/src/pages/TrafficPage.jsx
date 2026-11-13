@@ -1,37 +1,36 @@
-import { Link } from "react-router-dom";
+import { useTranslate, getLocale } from "../i18n/index.js";import { Link } from "react-router-dom";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useTravel } from "../portal/TravelContext";
-import { numberLabel } from "../portal/format";
-import { DataState, MetricCard, PageIntro, SourceNote } from "../portal/UiPrimitives";
+import { DataState, PageIntro, SourceNote } from "../portal/UiPrimitives";
+import TripDetailNavigation from "../components/TripDetailNavigation";
+import JourneyMap from "../components/JourneyMap";
+import { assessTraffic } from "../portal/tripAssessment";
 
-function trafficName(code) {
-  if (code === "heavy") return "Ùn tắc nặng";
-  if (code === "moderate") return "Di chuyển chậm";
-  if (code === "light" || code === "normal") return "Tương đối thông thoáng";
-  return "Chưa có tình trạng trực tiếp";
-}
-
-export default function TrafficPage() {
-  const travel = useTravel();
-  const trip = travel.tripRes;
-  if (!trip) return <div className="portal-page"><PageIntro eyebrow="Giao thông" title="Tình trạng tuyến đường" /><DataState title="Chưa có tuyến đường" description="Đánh giá một chuyến đi để xem quãng đường và thời gian di chuyển." /></div>;
-  const traffic = trip.traffic || {};
-  const live = traffic.traffic_available === true;
-  const routeUnavailable = traffic.route_available === false;
+export default function TrafficPage() {const translate = useTranslate();
+  const travel = useTravel(),trip = travel.tripRes;
+  if (!trip) return <div className="portal-page"><PageIntro eyebrow={translate("Bản đồ và giao thông")} title={translate("Hiểu tuyến đường trước khi đi")} /><DataState title={translate("Chưa có hành trình")} description={translate("Chọn điểm đi và điểm đến để xem bản đồ cùng đánh giá tuyến đường.")} /></div>;
+  const traffic = trip.traffic || {},assessment = assessTraffic(traffic);
+  const facts = [...assessment.facts];
   return <div className="portal-page">
-    <PageIntro eyebrow="Giao thông" title={`Tuyến đường đến ${travel.destination || trip.to?.name}`} description={`${travel.originName || "Điểm xuất phát"} → ${trip.to?.name || travel.destination}. Thời gian có thể đổi theo tình hình đường thực tế.`} action={<Button component={Link} to="/map" variant="contained">Mở bản đồ</Button>} />
-    <Alert severity={live ? "info" : "warning"}>{routeUnavailable ? "Dịch vụ định tuyến hiện chưa phản hồi. Chưa có quãng đường hoặc thời gian di chuyển đáng tin cậy; hãy mở chỉ đường và kiểm tra trước khi đi." : live ? `Tình trạng tuyến đường: ${trafficName(traffic.status_code || traffic.status)}. Thời gian có tính đến dữ liệu giao thông của nhà cung cấp.` : "Chưa có dữ liệu giao thông trực tiếp. Thời gian bên dưới là ước tính theo tuyến đường, không phản ánh kẹt xe hiện tại."}</Alert>
-    <div className="portal-grid portal-grid-four">
-      <MetricCard title="Quãng đường" value={numberLabel(traffic.distance_km, 1, " km")} />
-      <MetricCard title="Thời gian thông thường" value={traffic.time_normal_human || "Chưa có"} />
-      <MetricCard title={live ? "Thời gian theo giao thông" : "Thời gian trực tiếp"} value={live ? traffic.time_traffic_human || "Chưa có" : "Không có dữ liệu"} />
-      <MetricCard title="Chậm trễ ước tính" value={live ? numberLabel(traffic.delay_min, 0, " phút") : "Không có dữ liệu"} />
-    </div>
-    <Box className="portal-section"><Typography component="h2" variant="h3" sx={{ mb: 1 }}>Về tuyến đường này</Typography><Typography variant="body1">{traffic.route_polyline ? "Tuyến đường đã được hiển thị trên trang Bản đồ." : "Chưa có hình tuyến đường chi tiết. Bản đồ sẽ hiển thị điểm xuất phát và điểm đến nếu có tọa độ."}</Typography><SourceNote>{routeUnavailable ? "Chưa có nguồn tuyến đường khả dụng." : `Nguồn tuyến đường: ${traffic.route_polyline_provider === "serpapi" ? "Google Maps qua SerpAPI" : traffic.route_polyline_provider === "trackasia" ? "TrackAsia" : traffic.route_polyline_provider === "osrm" ? "OSRM" : traffic.traffic_source || "chưa rõ"}.`} Hãy đối chiếu chỉ đường và biển báo thực tế trước khi đi.</SourceNote></Box>
-    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}><Button component={Link} to="/map" variant="contained">Xem bản đồ toàn tuyến</Button><Button variant="outlined" onClick={travel.openGoogleDirections}>Mở chỉ đường ngoài ứng dụng</Button></Stack>
+    <TripDetailNavigation />
+    <PageIntro eyebrow={translate("Bản đồ và giao thông")} title={translate("Tuyến đường và những điều cần cân nhắc")} description={translate(`${travel.originName || "Điểm xuất phát"} → ${trip.to?.name || travel.destination}. Tuyến ô tô tham khảo, không đại diện cho mọi phương tiện.`)} />
+    <Box data-testid="route-assessment-layout" sx={{ display: "grid", gridTemplateColumns: { xs: "minmax(0,1fr)", md: "minmax(0,1.25fr) minmax(0,1fr)" }, gap: 3, alignItems: "start" }}>
+      <JourneyMap />
+      <Box component="section" aria-label={translate("Đánh giá tuyến đường")} className="portal-section" sx={{ minWidth: 0 }}>
+        <Typography component="h2" variant="h3">{translate("Đánh giá giao thông và tuyến đường")}</Typography>
+        <Typography fontWeight={700} sx={{ my: 1.5 }}>{translate(assessment.label)}</Typography>
+        <Box component="dl" sx={{ display: "grid", gap: 1.5, my: 2.5 }}>{translate(facts.map(([label, value]) => <Box component="div" key={label} sx={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)", gap: 2 }}><Typography component="dt" variant="body2" color="text.secondary">{translate(label)}</Typography><Typography component="dd" variant="body2" sx={{ m: 0, textAlign: "right", fontWeight: 600, overflowWrap: "anywhere" }}>{translate(value)}</Typography></Box>))}</Box>
+        {translate(!assessment.routeAvailable && <Alert severity="info">{translate("Chưa lấy được tuyến hợp lệ. Bản đồ chỉ giúp đối chiếu vị trí, chưa xác nhận đường đi.")}</Alert>)}
+        <Typography component="h3" variant="subtitle1" fontWeight={700} sx={{ mt: 2.5, mb: 1 }}>{translate("Gợi ý để bạn cân nhắc")}</Typography><Typography variant="body2" data-testid="traffic-detail-advice">{translate(assessment.advice)}</Typography>
+        <Stack direction="row" spacing={2} useFlexGap flexWrap="wrap" sx={{ mt: 2.5, "& > .MuiButton-root": { flexShrink: 0, maxWidth: "100%", whiteSpace: "normal", textAlign: "center" } }}><Button variant="contained" onClick={travel.openGoogleDirections}>{translate("Đối chiếu trên Google Maps")}</Button><Button variant="outlined" onClick={travel.refreshTrip} disabled={travel.tripLoading}>{translate(travel.tripLoading ? "Đang cập nhật…" : "Cập nhật đánh giá")}</Button></Stack>
+        <SourceNote>{translate("Tuyến và thời gian ô tô tham khảo từ dịch vụ định tuyến. Tra cứu lúc ")}{translate(traffic.checked_at ? new Date(traffic.checked_at).toLocaleString(getLocale()) : "chưa rõ")}{translate(". Bạn có thể đối chiếu chỉ đường và điều kiện thực tế trước khi đi.")}</SourceNote>
+      </Box>
+    </Box>
+    <Alert severity="info">{translate("Thông tin tham khảo; bạn chủ động chọn hành trình theo điều kiện thực tế.")}</Alert>
+    <Button component={Link} to="/result" variant="outlined" sx={{ alignSelf: "start" }}>{translate("Quay lại đánh giá tổng quan")}</Button>
   </div>;
 }

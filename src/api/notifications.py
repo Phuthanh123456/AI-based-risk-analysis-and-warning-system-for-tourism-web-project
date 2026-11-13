@@ -83,7 +83,9 @@ def _send_push(sub: dict, title: str, body: str) -> bool:
                 "endpoint": sub["endpoint"],
                 "keys": {"p256dh": sub["p256dh"], "auth": sub["auth"]},
             },
-            data=json.dumps({"title": title, "body": body}, ensure_ascii=False),
+            data=json.dumps({"title": title, "body": body,
+                             "title_en": "⚠️ Weather alert: " + title.split(":", 1)[-1].strip(),
+                             "body_en": "The weather assessment indicates severe conditions at your followed destination. Check the latest forecast and local announcements before travelling."}, ensure_ascii=False),
             vapid_private_key=VAPID_PRIVATE_KEY,
             vapid_claims={"sub": VAPID_CONTACT_EMAIL},
         )

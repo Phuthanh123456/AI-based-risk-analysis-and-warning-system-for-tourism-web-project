@@ -1,0 +1,78 @@
+/* Shared reading sizes and wider content; preserve the existing typeface. */
+:root {
+  --tour-reading-body: 17px;
+  --tour-reading-secondary: 16px;
+  --tour-reading-small: 14px;
+  --tour-gutter: clamp(20px, 4vw, 64px);
+}
+.tour-site, .tourism-shell, .tour-auth { font-size: var(--tour-reading-body); }
+.portal-content { max-width: 1600px; }
+.portal-main-map .portal-content { max-width: 1660px; }
+.tour-container { width: min(calc(100% - 2 * var(--tour-gutter)), 1440px); }
+.tour-desktop-nav { font-size: 17px; gap: 34px; letter-spacing: .02em; }
+@media (min-width: 1001px) and (max-width: 1200px) {
+  .tour-desktop-nav { font-size: 16px; gap: 22px; }
+}
+.tour-button { font-size: 15px; }
+.tour-header-cta { font-size: 13px; }
+.tour-account { font-size: 13px !important; }
+.tour-footer h2 { font-size: 16px; }
+.tour-footer p, .tour-footer a:not(.tour-brand) { font-size: 14px; }
+.tour-footer-bottom { font-size: 12px; }
+.tour-kicker, .portal-eyebrow { font-size: 12px; }
+.portal-page-header h1 { font-size: clamp(32px, 3.6vw, 52px) !important; }
+.portal-banner-content > p:last-child { font-size: 15px; max-width: 950px; }
+.portal-page .MuiAlert-root { font-size: 15px; }
+.portal-source-note, .portal-chart-caption { font-size: 13px; }
+.portal-source-note p { font-size: 15px; }
+.portal-news-item h3 { font-size: 20px !important; max-width: 950px; }
+.portal-metric-value { font-size: clamp(27px, 2.7vw, 38px) !important; }
+.portal-day-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+.portal-day-grid button { font-size: 13px !important; }
+.portal-day-grid button strong { font-size: 25px; }
+.weather-data-table, .weather-data-table table { font-size: 14px; }
+.weather-data-table caption { font-size: 13px; }
+
+.home-hero-description, .tour-section-aside p, .home-journal-grid p,
+.guide-hero-description, .guide-directory-heading > div > p:last-child,
+.guide-province-info p { font-size: var(--tour-reading-body); }
+.home-feature-list p, .guide-content p, .guide-content li { font-size: 17px; }
+.home-story p:not(.tour-kicker) { font-size: 17px; }
+.home-hero h1 { font-size: clamp(44px, 5.7vw, 86px); max-width: 1080px; }
+.tour-section-heading h2 { font-size: clamp(33px, 4.4vw, 58px); }
+.home-story h2 { font-size: clamp(33px, 4vw, 53px); }
+:is(.tour-site, .tourism-shell) .explore-banner h1 { font-size: clamp(37px, 4.9vw, 68px); }
+:is(.tour-site, .tourism-shell) .guide-hero h1 { font-size: clamp(39px, 6vw, 84px); }
+:is(.tour-site, .tourism-shell) .guide-section-heading h2 { font-size: clamp(33px, 4.4vw, 58px); }
+.guide-content p { max-width: 78ch; }
+.home-feature-list h3, .home-journal-grid h3 { font-size: 24px; }
+.tour-text-link, .explore-search input, .explore-pagination,
+.explore-pagination button, .explore-state p { font-size: 15px; }
+.explore-search-label, .explore-count, .explore-note,
+.guide-breadcrumb, .guide-province-info > span { font-size: 14px; }
+.explore-banner .tour-container > p:last-child { font-size: 16px; }
+.guide-filter-chips button { font-size: 15px; }
+.guide-experience-label strong { font-size: 25px; }
+.tour-destination-bottom strong { font-size: 34px; }
+.tour-destination-bottom > span { font-size: 13px; }
+.guide-photo-credit { font-size: 12px; }
+
+.auth-form-content { width: min(100%, 460px); }
+.auth-form-content h1 { font-size: 42px; }
+.auth-subtitle, .auth-field, .auth-switch, .auth-error { font-size: 15px; }
+.auth-field input { font-size: 17px; }
+.auth-switch button, .auth-back, .auth-footer-note { font-size: 14px; }
+
+@media (max-width: 760px) {
+  .portal-page-header h1 { font-size: 34px !important; }
+  .portal-banner-content > p:last-child { font-size: 15px; }
+  .tour-destination-bottom strong { font-size: 29px; }
+  .auth-form-content h1 { font-size: 36px; }
+  .home-hero-description { font-size: 16px; }
+  .home-hero h1 { font-size: 47px; }
+}
+@media (max-width: 430px) {
+  .portal-grid-four { grid-template-columns: minmax(0, 1fr); }
+  .portal-metric-value { font-size: 29px !important; }
+  .tour-header-actions { gap: 5px; }
+}

@@ -20,6 +20,18 @@ def client():
         yield c
 
 
+@pytest.fixture(autouse=True)
+def isolate_recent_news_network(monkeypatch):
+    # Unit tests must not depend on changing live headlines or network latency.
+    monkeypatch.setattr("src.api.app.fetch_recent_news", lambda place: {
+        "place": place, "status": "unavailable", "events": [], "count": 0,
+        "provider": "Google News RSS", "window_days": 7,
+    })
+    # Air-quality fetching itself is tested separately. Keep unrelated trip
+    # concurrency tests independent of the public provider's response time.
+    monkeypatch.setattr("src.api.app._fetch_air_quality", lambda lat, lon: 10.0)
+
+
 @pytest.fixture
 def auth_headers(client):
     """Registers a throwaway user and returns an Authorization header dict."""

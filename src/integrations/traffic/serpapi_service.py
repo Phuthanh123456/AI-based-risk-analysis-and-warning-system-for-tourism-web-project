@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import math
 import re
 import time
 import unicodedata
@@ -255,8 +256,7 @@ def _status_bucket(ratio: float, speed_kmh: float) -> str:
         return "heavy"
     if ratio >= 1.2:
         return "moderate"
-    if speed_kmh < 15:
-        return "heavy"
+    # Low route speed alone can reflect narrow/winding roads, not congestion.
     return "light"
 
 
@@ -278,11 +278,6 @@ def traffic_score_0_10(ratio: float, speed_kmh: float) -> int:
     elif ratio >= 1.05:
         score += 2
     else:
-        score += 1
-
-    if speed_kmh < 10:
-        score += 2
-    elif speed_kmh < 15:
         score += 1
 
     score = max(0.0, min(10.0, score))
@@ -400,7 +395,9 @@ def _process_directions(directions_result: dict) -> dict:
             if not routes:
                 return {"error": "No routes found"}
 
-            route = routes[0]
+            route = next((item for item in routes if str(item.get("travel_mode", "Driving")).lower() == "driving"), None)
+            if route is None:
+                return {"error": "No driving route found"}
             
             if "legs" in route and isinstance(route["legs"], list) and route["legs"]:
                 leg = route["legs"][0]
@@ -408,7 +405,7 @@ def _process_directions(directions_result: dict) -> dict:
                 leg = route
 
             # ===== 1. KHOẢNG CÁCH (Xử lý cả Google và TrackAsia) =====
-            dist_raw = route.get("formatted_distance") or leg.get("distance") or "0 km"
+            dist_raw = leg.get("distance") or route.get("distance") or route.get("formatted_distance") or "0 km"
             dist_km = 0.0
             if isinstance(dist_raw, dict) and "value" in dist_raw:
                 dist_km = float(dist_raw["value"]) / 1000.0
@@ -425,8 +422,9 @@ def _process_directions(directions_result: dict) -> dict:
                 else: dist_km = val
 
             # ===== 2. THỜI GIAN (Xử lý chia 60s -> phút cho TrackAsia) =====
-            normal_raw = leg.get("duration", 0)
-            traffic_raw = leg.get("duration_in_traffic") or normal_raw
+            normal_raw = leg.get("duration") or route.get("duration") or route.get("formatted_duration") or 0
+            traffic_raw = leg.get("duration_in_traffic") or route.get("duration_in_traffic") or route.get("formatted_duration_in_traffic")
+            live_available = traffic_raw is not None
 
             time_normal = 0.0
             time_traffic = 0.0
@@ -450,6 +448,10 @@ def _process_directions(directions_result: dict) -> dict:
                 val_text = traffic_raw.get("text", traffic_raw) if isinstance(traffic_raw, dict) else traffic_raw
                 time_traffic = float(parse_time_str(str(val_text)))
 
+            if not (math.isfinite(dist_km) and math.isfinite(time_normal)) or dist_km <= 0 or time_normal <= 0:
+                return {"error": "Invalid driving route distance or duration"}
+            live_available = live_available and math.isfinite(time_traffic) and time_traffic > 0
+
             # ===== 3. TÍNH TOÁN DELAY, RATIO & VẬN TỐC =====
             delay = time_traffic - time_normal
             if delay < 0: delay = 0
@@ -466,21 +468,21 @@ def _process_directions(directions_result: dict) -> dict:
             return {
                 "distance_km": float(dist_km),
                 "time_normal_min": int(time_normal),
-                "time_traffic_min": int(time_traffic),
-                "delay_min": int(delay),
-                "ratio": float(ratio),
-                "speed_kmh": float(speed_kmh),
-                "status": status,
-                "status_emoji": _emoji(status),
-                "traffic_score": traffic_score_0_10(ratio, speed_kmh),
-                "traffic_available": True,
+                "time_traffic_min": int(time_traffic) if live_available else None,
+                "delay_min": int(delay) if live_available else None,
+                "ratio": float(ratio) if live_available else None,
+                "speed_kmh": float(speed_kmh) if live_available else None,
+                "status": status if live_available else "unknown",
+                "status_emoji": _emoji(status) if live_available else None,
+                "traffic_score": traffic_score_0_10(ratio, speed_kmh) if live_available else None,
+                "traffic_available": live_available,
                 "route_available": True,
                 "traffic_source": "serpapi",
                 "route_polyline": route_polyline,
                 "route_polyline_provider": "serpapi" if route_polyline else None,
                 "route_polyline_type": "polyline" if route_polyline else None,
                 "reported_time_normal_min": int(time_normal),
-                "reported_time_traffic_min": int(time_traffic),
+                "reported_time_traffic_min": int(time_traffic) if live_available else None,
             }
 
         except Exception as e:

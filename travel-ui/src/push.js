@@ -1,6 +1,7 @@
 // Web Push helpers: register the service worker, subscribe the browser to
 // push notifications, and send the subscription to the backend.
 import { apiGet, apiPost } from "./api";
+import { getLanguage } from "./i18n/store.js";
 
 function urlBase64ToUint8Array(base64String) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -15,7 +16,10 @@ export function isPushSupported() {
 
 export async function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return null;
-  return navigator.serviceWorker.register("/sw.js");
+  const registration = await navigator.serviceWorker.register("/sw.js");
+  const ready = await navigator.serviceWorker.ready;
+  ready.active?.postMessage({ type: "VTRA_LANGUAGE", language: getLanguage() });
+  return registration;
 }
 
 function subscriptionUsesKey(subscription, publicKey) {

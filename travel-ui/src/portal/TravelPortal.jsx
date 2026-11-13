@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo } from "react";
+import { useTranslate } from "../i18n/index.js";import { lazy, Suspense, useEffect, useMemo } from "react";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Alert from "@mui/material/Alert";
@@ -11,6 +11,8 @@ import PlanPage from "../pages/PlanPage";
 import ExplorePage from "../pages/ExplorePage";
 import { LandingPage } from "../screens/LandingPage";
 import "./TravelPortal.css";
+import { useLanguage } from "../i18n/index.js";
+import { enUS, viVN } from "@mui/material/locale";
 
 const ResultPage = lazy(() => import("../pages/ResultPage"));
 const WeatherPage = lazy(() => import("../pages/WeatherPage"));
@@ -24,7 +26,7 @@ const ProvinceGuidePage = lazy(() => import("../pages/ProvinceGuidePage"));
 const PlaceGuidePage = lazy(() => import("../pages/PlaceGuidePage"));
 const ExperiencePage = lazy(() => import("../pages/ExperiencePage"));
 
-function PortalRoutes({ context }) {
+function PortalRoutes({ context }) {const translate = useTranslate();
   const location = useLocation();
   const navigate = useNavigate();
   useEffect(() => {
@@ -33,15 +35,18 @@ function PortalRoutes({ context }) {
   }, [location.pathname]);
 
   function openTool(route = "/plan", place) {
-    if (place) context.updateDestination(place);
-    navigate(route);
+    if (route === "/plan") navigate(route, { state: place ? { prefillDestination: place } : null });else
+    {
+      if (place) context.updateDestination(place);
+      navigate(route);
+    }
   }
   if (location.pathname === "/") return <LandingPage signedIn themeMode={context.theme} toggleTheme={context.toggleTheme} logout={context.logout} onGoToLogin={openTool} />;
   return (
     <TravelContext.Provider value={context}>
       <MuiDashboardShell themeMode={context.theme} toggleTheme={context.toggleTheme} logout={context.logout} email={context.session?.user?.email} fullWidth={location.pathname === "/map"}>
-        {context.err && <Alert severity="error" sx={{ mb: 2 }} onClose={context.clearError}>{context.err}</Alert>}
-        <Suspense fallback={<Box className="portal-loading"><CircularProgress size={28} /><span>Đang mở trang…</span></Box>}>
+        {translate(context.err && location.pathname !== "/plan" && <Alert severity="error" sx={{ mb: 2 }} onClose={context.clearError}>{translate(context.err)}</Alert>)}
+        <Suspense fallback={<Box className="portal-loading"><CircularProgress size={28} /><span>{translate("Đang mở trang…")}</span></Box>}>
           <Routes>
             <Route path="/explore" element={<ExplorePage />} />
             <Route path="/explore/:provinceId" element={<ProvinceGuidePage onSelect={(place) => openTool("/plan", place)} />} />
@@ -60,11 +65,12 @@ function PortalRoutes({ context }) {
           </Routes>
         </Suspense>
       </MuiDashboardShell>
-    </TravelContext.Provider>
-  );
+    </TravelContext.Provider>);
+
 }
 
 export default function TravelPortal(props) {
+  const language = useLanguage();
   const theme = useMemo(() => createTheme({
     palette: {
       mode: props.theme === "dark" ? "dark" : "light",
@@ -72,11 +78,11 @@ export default function TravelPortal(props) {
       secondary: { main: "#bd773e" },
       background: props.theme === "dark" ? { default: "#111e2c", paper: "#192a3c" } : { default: "#fbfaf6", paper: "#ffffff" },
       text: props.theme === "dark" ? { primary: "#eef5fc", secondary: "#b7c8d8" } : { primary: "#132b42", secondary: "#536778" },
-      divider: props.theme === "dark" ? "#34485b" : "#dce5e8",
+      divider: props.theme === "dark" ? "#34485b" : "#dce5e8"
     },
-    typography: { fontFamily: '"Lexend Deca", sans-serif', fontSize: 14, h1: { fontSize: "clamp(1.9rem, 2.5vw, 2.25rem)", lineHeight: 1.42, fontWeight: 700, letterSpacing: 0 }, h2: { fontSize: "1.5rem", lineHeight: 1.4, fontWeight: 700, letterSpacing: 0 }, h3: { fontSize: "1.18rem", lineHeight: 1.4, fontWeight: 700, letterSpacing: 0 }, body1: { lineHeight: 1.65 }, body2: { lineHeight: 1.6 } },
+    typography: { fontFamily: '"Lexend Deca", sans-serif', fontSize: 15, h1: { fontSize: "clamp(2.1rem, 2.7vw, 2.5rem)", lineHeight: 1.42, fontWeight: 700, letterSpacing: 0 }, h2: { fontSize: "1.65rem", lineHeight: 1.4, fontWeight: 700, letterSpacing: 0 }, h3: { fontSize: "1.3rem", lineHeight: 1.4, fontWeight: 700, letterSpacing: 0 }, body1: { fontSize: "1.0625rem", lineHeight: 1.8 }, body2: { fontSize: "1rem", lineHeight: 1.8 }, caption: { fontSize: ".8125rem", lineHeight: 1.7 }, subtitle1: { fontSize: "1.0625rem" } },
     shape: { borderRadius: 12 },
-    components: { MuiButton: { styleOverrides: { root: { textTransform: "none", minHeight: 44, borderRadius: 100, fontWeight: 600, fontSize: 12, padding: "10px 22px" } } }, MuiCard: { styleOverrides: { root: { boxShadow: "none", border: "1px solid", borderColor: "var(--portal-border)" } } }, MuiOutlinedInput: { styleOverrides: { root: { borderRadius: 12 } } } },
-  }), [props.theme]);
+    components: { MuiButton: { styleOverrides: { root: { textTransform: "none", minHeight: 44, borderRadius: 100, fontWeight: 600, fontSize: 14, padding: "10px 22px" } } }, MuiCard: { styleOverrides: { root: { boxShadow: "none", border: "1px solid", borderColor: "var(--portal-border)" } } }, MuiOutlinedInput: { styleOverrides: { root: { borderRadius: 12, fontSize: 17 } } }, MuiFormHelperText: { styleOverrides: { root: { fontSize: 13, lineHeight: 1.7 } } } }
+  }, language === "en" ? enUS : viVN), [props.theme, language]);
   return <ThemeProvider theme={theme}><CssBaseline /><PortalRoutes context={props} /></ThemeProvider>;
 }

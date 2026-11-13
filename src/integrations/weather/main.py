@@ -55,11 +55,15 @@ def map_risk_level_v17(score):
     return 5
 
 
+class WeatherInferenceError(RuntimeError):
+    """An unavailable prediction is not evidence of dangerous weather."""
+
+
 def normalize_weather_score(raw_score):
     """Convert the model's 0–20 score to the 0–10 API/advice scale."""
     score = float(raw_score)
     if not np.isfinite(score):
-        return 10.0
+        raise WeatherInferenceError("Non-finite weather score")
     return float(np.clip(score / 2.0, 0.0, 10.0))
 
 
@@ -114,7 +118,7 @@ class HybridSafetyPredictor:
             return CLASS_SCORE_0_20[level], level, "AI_XGBOOST"
         raw_score = float(prediction)
         if not np.isfinite(raw_score):
-            return 20.0, 5, "FAILSAFE_NAN"
+            raise WeatherInferenceError("Non-finite weather prediction")
         return raw_score, map_risk_level_v17(raw_score), "AI_XGBOOST"
 
     def predict(self, input_df):
@@ -129,8 +133,7 @@ class HybridSafetyPredictor:
             prediction = self.pipeline.predict(aligned_df)[0]
             return self._interpret_prediction(prediction)
         except Exception as e:
-            print(f"[Weather AI] Prediction error: {e}")
-            return 20.0, 5, "FAILSAFE_CRASH"
+            raise WeatherInferenceError("Weather prediction failed") from e
 
     def predict_batch(self, input_df):
         """Batch prediction: predict all rows at once. Returns list of (score, level, method).
@@ -156,13 +159,12 @@ class HybridSafetyPredictor:
                 batch_df = input_df.iloc[ml_indices].copy()
                 aligned_df = self._align_features(batch_df)
                 predictions = self.pipeline.predict(aligned_df)
+                if len(predictions) != len(ml_indices):
+                    raise WeatherInferenceError("Incomplete weather predictions")
                 for idx, prediction in zip(ml_indices, predictions):
                     results[idx] = self._interpret_prediction(prediction)
             except Exception as e:
-                print(f"[Weather AI] Batch prediction error: {e}")
-                for idx in ml_indices:
-                    if results[idx] is None:
-                        results[idx] = (20.0, 5, "FAILSAFE_CRASH")
+                raise WeatherInferenceError("Weather batch prediction failed") from e
 
         return results
 

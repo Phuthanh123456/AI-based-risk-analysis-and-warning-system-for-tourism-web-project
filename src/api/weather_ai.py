@@ -4,6 +4,7 @@ import pandas as pd
 from typing import Optional, Dict, List
 from datetime import datetime, timezone, timedelta
 import time
+import math
 import unicodedata
 import re
 from src.integrations.weather.main import HybridSafetyPredictor, WeatherPreprocessor, map_risk_level_v17, normalize_weather_score, derive_weather_features
@@ -94,7 +95,7 @@ def _forecast_cache_set(key: str, response: dict):
 # ===================== AIR QUALITY (OpenWeatherMap) =====================
 _AIR_QUALITY_CACHE_TTL = 1800  # 30 minutes
 _air_quality_cache: Dict[str, dict] = {}  # key -> {"ts": float, "pm25": float}
-_PM25_FALLBACK = 10.0  # used when no API key configured or the call fails
+_PM25_FALLBACK = 10.0  # model-only imputation, never presented as observed data
 
 
 def _air_quality_cache_key(lat: float, lon: float) -> str:
@@ -109,10 +110,12 @@ def _fetch_air_quality(lat: Optional[float], lon: Optional[float]) -> float:
 
     key = _air_quality_cache_key(lat, lon)
     entry = _air_quality_cache.get(key)
-    if entry and time.time() - entry["ts"] <= _AIR_QUALITY_CACHE_TTL:
+    if entry and time.time() - entry["ts"] <= (_AIR_QUALITY_CACHE_TTL if entry.get("status") == "available" else 30):
         return entry["pm25"]
 
     pm25 = None
+    source, observed_at = None, None
+    forecast_daily = {}
     if OPENWEATHERMAP_API_KEY:
         try:
             resp = requests.get(
@@ -122,20 +125,38 @@ def _fetch_air_quality(lat: Optional[float], lon: Optional[float]) -> float:
             )
             resp.raise_for_status()
             pm25 = float(resp.json()["list"][0]["components"]["pm2_5"])
+            if not math.isfinite(pm25) or not 0 <= pm25 < 10000:
+                raise ValueError("Invalid air quality value")
+            source = "OpenWeatherMap"
+            stamp = resp.json()["list"][0].get("dt")
+            observed_at = datetime.fromtimestamp(stamp, timezone.utc).isoformat() if stamp else None
         except Exception as e:
-            print(f"[air_quality] OpenWeatherMap unavailable: {e}")
+            pm25 = None
+            print(f"[air_quality] OpenWeatherMap unavailable: {type(e).__name__}")
 
     if pm25 is None:
         try:
             resp = requests.get(
                 "https://air-quality-api.open-meteo.com/v1/air-quality",
-                params={"latitude": lat, "longitude": lon, "current": "pm2_5"},
-                timeout=5,
+                params={"latitude": lat, "longitude": lon, "current": "pm2_5", "hourly": "pm2_5", "forecast_days": 7, "timezone": "Asia/Ho_Chi_Minh"},
+                timeout=(3, 6),
             )
             resp.raise_for_status()
             pm25 = float(resp.json()["current"]["pm2_5"])
+            if not math.isfinite(pm25) or not 0 <= pm25 < 10000:
+                raise ValueError("Invalid air quality value")
+            source = "Open-Meteo Air Quality / CAMS"
+            stamp = resp.json()["current"].get("time")
+            observed_at = f"{stamp}+07:00" if stamp and not re.search(r"Z|[+-]\d\d:\d\d$", stamp) else stamp
+            hourly = resp.json().get("hourly") or {}
+            for hour, value in zip(hourly.get("time", []), hourly.get("pm2_5", [])):
+                if value is not None and math.isfinite(float(value)) and 0 <= float(value) < 10000:
+                    forecast_daily.setdefault(hour[:10], []).append(float(value))
+            forecast_daily = {day: {"pm25": round(sum(values) / len(values), 2), "hours": len(values)}
+                              for day, values in forecast_daily.items()}
         except Exception as e:
-            print(f"[air_quality] Open-Meteo unavailable; using fallback PM2.5: {e}")
+            print(f"[air_quality] Open-Meteo unavailable: {type(e).__name__}")
+            _air_quality_cache[key] = {"ts": time.time(), "pm25": _PM25_FALLBACK, "status": "unavailable", "source": None, "observed_at": None}
             return _PM25_FALLBACK
 
     if not 0 <= pm25 < 10000:
@@ -146,8 +167,27 @@ def _fetch_air_quality(lat: Optional[float], lon: Optional[float]) -> float:
         expired = [k for k, v in _air_quality_cache.items() if v["ts"] < cutoff]
         for k in expired:
             _air_quality_cache.pop(k, None)
-    _air_quality_cache[key] = {"ts": time.time(), "pm25": pm25}
+    _air_quality_cache[key] = {"ts": time.time(), "pm25": pm25, "status": "available", "source": source, "observed_at": observed_at, "forecast_daily": forecast_daily}
     return pm25
+
+
+def air_quality_metadata(lat: Optional[float], lon: Optional[float]) -> dict:
+    """Expose provider data separately from the number imputed for ML input."""
+    entry = _air_quality_cache.get(_air_quality_cache_key(lat, lon), {}) if lat is not None and lon is not None else {}
+    available = entry.get("status") == "available"
+    return {"pm25": entry.get("pm25") if available else None,
+            "status": "available" if available else "unavailable",
+            "source": entry.get("source"), "observed_at": entry.get("observed_at"),
+            "unit": "µg/m³", "model_fallback_used": not available,
+            "retrieved_at": datetime.fromtimestamp(entry["ts"], timezone.utc).isoformat() if entry.get("ts") else None}
+
+
+def air_quality_day(lat: Optional[float], lon: Optional[float], day: str) -> dict:
+    entry = _air_quality_cache.get(_air_quality_cache_key(lat, lon), {}) if lat is not None and lon is not None else {}
+    value = entry.get("forecast_daily", {}).get(day)
+    return {"pm25": value["pm25"] if value else None, "hours": value["hours"] if value else 0,
+            "status": "available" if value else "unavailable", "source": entry.get("source") if value else None,
+            "date": day, "aggregation": "mean_available_hours", "unit": "µg/m³", "kind": "forecast"}
 
 
 # ===================== WEATHER AI PAYLOADS =====================
@@ -645,7 +685,7 @@ def _fetch_openmeteo_weather(lat: float, lon: float) -> dict:
         "forecast_days": 1,
     }
     try:
-        resp = _get_with_retry(url, params, timeout=20)
+        resp = _get_with_retry(url, params, timeout=(3, 6), attempts=2)
     except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=502, detail=f"Open-Meteo Forecast unreachable: {e}")
     if resp.status_code != 200:
@@ -668,7 +708,7 @@ def _fetch_openmeteo_forecast(lat: float, lon: float, days: int = 7) -> dict:
         "forecast_days": min(max(days, 1), 16),
     }
     try:
-        resp = _get_with_retry(url, params, timeout=20)
+        resp = _get_with_retry(url, params, timeout=(3, 6), attempts=2)
     except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=502, detail=f"Open-Meteo Forecast unreachable: {e}")
     if resp.status_code != 200:
@@ -713,6 +753,8 @@ def _generate_health_advice(*, uv_index: float, temperature: float, precipitatio
         base_advice = "Trời rất nóng, nhớ uống đủ nước để tránh sốc nhiệt. 💧"
     elif precipitation > 5:
         base_advice = "Khả năng mưa lớn, đừng quên mang theo ô hoặc áo mưa nhé. ☔"
+    elif wind > 25:
+        base_advice = "Có gió mạnh; cân nhắc hoạt động ngoài trời và kiểm tra điều kiện trước khi di chuyển."
     else:
         base_advice = "Thời tiết khá lý tưởng cho các hoạt động ngoài trời. ✨"
 
@@ -775,6 +817,18 @@ def transform_openmeteo_to_ai_format(om_data: dict, province: str = "Unknown", g
     hourly_time = hourly.get("time", [])
 
     idx = _get_current_hour_index(hourly_time)
+
+    # Never replace a broken weather response with pleasant invented readings.
+    required = [cw.get("temperature"), cw.get("windspeed")]
+    for key in ("relativehumidity_2m", "precipitation", "uv_index", "visibility"):
+        values = hourly.get(key) or []
+        required.append(values[idx] if idx < len(values) else None)
+    try:
+        valid = bool(hourly_time) and all(v is not None and math.isfinite(float(v)) for v in required)
+    except (ValueError, TypeError):
+        valid = False
+    if not valid:
+        raise HTTPException(status_code=502, detail="Incomplete weather observations from provider")
 
     def _safe_get(arr, i, default=0.0):
         if arr and 0 <= i < len(arr) and arr[i] is not None:
@@ -859,6 +913,12 @@ def _transform_daily_to_ai_inputs(forecast_data: dict, province: str = "Unknown"
 
     results = []
     for i, d in enumerate(dates):
+        # A missing day's measurements must not become a fabricated forecast.
+        daily_values = [arr[i] if i < len(arr) else None for arr in (temp_max, temp_min, precip, wind_max, uv_max)]
+        if any(v is None or not math.isfinite(float(v)) for v in daily_values):
+            continue
+        daily_air = air_quality_day(geo.get("latitude") if geo else None, geo.get("longitude") if geo else None, d)
+        model_pm25 = daily_air["pm25"] if daily_air["pm25"] is not None else pm25
         # Average temperature for the day
         t_max = temp_max[i] if i < len(temp_max) and temp_max[i] is not None else 30.0
         t_min = temp_min[i] if i < len(temp_min) and temp_min[i] is not None else 22.0
@@ -874,14 +934,16 @@ def _transform_daily_to_ai_inputs(forecast_data: dict, province: str = "Unknown"
         vis_slice = visibility_hourly[h_start:h_end]
         hum_vals = [v for v in hum_slice if v is not None]
         vis_vals = [v for v in vis_slice if v is not None]
-        humidity = sum(hum_vals) / len(hum_vals) if hum_vals else 60.0
-        visibility_m = sum(vis_vals) / len(vis_vals) if vis_vals else 10000.0
+        if not hum_vals or not vis_vals or not all(math.isfinite(float(v)) for v in hum_vals + vis_vals):
+            continue
+        humidity = sum(hum_vals) / len(hum_vals)
+        visibility_m = sum(vis_vals) / len(vis_vals)
         visibility_km = visibility_m / 1000.0
 
         # Derived features for v4 model
         slippery_index = round(min(p / 50.0, 1.0) * (humidity / 100.0), 4)
         visibility_block = round(max(1.0 - visibility_km / 10.0, 0.0), 4)
-        smog_impact = round(min(pm25 / 150.0, 1.0), 4)
+        smog_impact = round(min(model_pm25 / 150.0, 1.0), 4)
         vehicle_type = 0
         # For daily forecasts use midday (12) as representative hour
         hour_of_day = 12
@@ -902,7 +964,7 @@ def _transform_daily_to_ai_inputs(forecast_data: dict, province: str = "Unknown"
                 "humidity": round(humidity, 1),
                 "precipitation": round(p, 1),
                 "wind": round(w, 1),
-                "pm25": pm25,
+                "pm25": model_pm25,
                 "visibility_km": round(visibility_km, 2),
                 "uv_index": round(uv_sanitized, 1),
                 "elevation": elevation,
@@ -917,8 +979,11 @@ def _transform_daily_to_ai_inputs(forecast_data: dict, province: str = "Unknown"
                 "temp_max": round(t_max, 1),
                 "temp_min": round(t_min, 1),
                 "health_advice": health_advice,
+                "air_quality": daily_air,
             },
         })
+    if not results:
+        raise HTTPException(status_code=502, detail="Incomplete daily forecast from provider")
     return results
 
 
@@ -1260,6 +1325,8 @@ def weather_ai_live_predict(data: WeatherAILivePayload = Body(...)):
         "city_resolved": resolved_name,
         "coordinates": {"lat": lat, "lon": lon},
         "input": ai_input,
+        "air_quality": air_quality_metadata(lat, lon),
+        "pm25": air_quality_metadata(lat, lon)["pm25"],
         **weather_prediction_fields(score, level, method),
         "health_advice": ai_input.get("health_advice", ""),
         "weather_provider": "Open-Meteo (free, no key)",
@@ -1346,6 +1413,8 @@ def weather_ai_forecast(
             "visibility_km": day_item["input"]["visibility_km"],
             "uv_index": day_item["input"]["uv_index"],
             "health_advice": day_item["detail"].get("health_advice", ""),
+            "air_quality": day_item["detail"].get("air_quality"),
+            "pm25": (day_item["detail"].get("air_quality") or {}).get("pm25"),
         }
         # Trip purpose adjustment per day
         if trip_purpose:
@@ -1369,6 +1438,7 @@ def weather_ai_forecast(
         "coordinates": {"lat": lat, "lon": lon},
         "province": province_label,
         "forecast_days": len(daily_results),
+        "current_air_quality": air_quality_metadata(lat, lon),
         "daily": daily_results,
         "worst_day": worst,
         "best_day": best,

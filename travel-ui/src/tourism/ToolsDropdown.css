@@ -1,0 +1,36 @@
+.tour-desktop-nav .tour-more { position: relative; }
+.tour-desktop-nav .tour-more > summary {
+  display: flex; align-items: center; gap: 5px; min-height: 44px;
+  border-radius: 8px; white-space: nowrap;
+}
+.tour-more > summary > svg { width: 18px; height: 18px; transition: transform 160ms ease; }
+.tour-more[open] > summary > svg { transform: rotate(180deg); }
+.tour-more > summary:focus-visible { outline: 3px solid #d99c24; outline-offset: 4px; }
+.tour-desktop-nav .tour-more > .tour-tools-panel {
+  left: 0; right: auto; top: calc(100% + 10px); z-index: 2;
+  width: 280px; min-width: 0; max-width: calc(100vw - 40px); padding: 8px;
+  border-radius: 18px; border: 1px solid var(--tour-line);
+  background: var(--tour-surface); color: var(--tour-ink);
+  box-shadow: 0 16px 48px #102b4624, 0 3px 10px #102b4610;
+  transform-origin: top left;
+}
+.tour-more[open] > .tour-tools-panel { animation: tools-reveal 160ms ease-out; }
+.tour-tools-panel::before {
+  content: ""; position: absolute; top: -6px; left: 22px; width: 10px; height: 10px;
+  background: var(--tour-surface); border-top: 1px solid var(--tour-line);
+  border-left: 1px solid var(--tour-line); transform: rotate(45deg);
+}
+.tour-desktop-nav .tour-tools-panel > a {
+  position: relative; display: grid; grid-template-columns: 32px minmax(0,1fr) 16px;
+  align-items: center; gap: 10px; min-height: 52px; padding: 9px 12px;
+  border-radius: 11px; font-size: 14px; line-height: 1.5; text-decoration: none;
+  transition: background 140ms ease, color 140ms ease;
+}
+.tour-tools-panel .tour-tool-icon { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; background: var(--tour-sky); color: var(--tour-blue); }
+.tour-tool-icon > svg { width: 19px; height: 19px; }
+.tour-tools-panel .tour-tool-arrow { width: 16px; height: 16px; opacity: 0; transform: translateX(-3px); transition: opacity 140ms ease, transform 140ms ease; }
+.tour-desktop-nav .tour-tools-panel > a:is(:hover,:focus-visible,[aria-current=page]) { background: var(--tour-sky); color: var(--tour-blue); }
+.tour-tools-panel > a:is(:hover,:focus-visible,[aria-current=page]) .tour-tool-arrow { opacity: 1; transform: translateX(0); }
+.tour-tools-panel > a:focus-visible { outline: 2px solid var(--tour-blue); outline-offset: -2px; }
+@keyframes tools-reveal { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .tour-more[open] > .tour-tools-panel { animation: none; } .tour-more > summary > svg, .tour-tools-panel .tour-tool-arrow, .tour-desktop-nav .tour-tools-panel > a { transition: none; } }

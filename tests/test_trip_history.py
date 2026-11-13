@@ -43,8 +43,16 @@ def test_authenticated_trip_is_saved_to_history(client, auth_headers):
 
 
 def test_cached_trip_is_also_saved_to_history(client, auth_headers):
-    first = _run_trip(client, headers=auth_headers, destination="Đà Lạt cache history test")
-    second = _run_trip(client, headers=auth_headers, destination="Đà Lạt cache history test")
+    class Model:
+        def predict(self, frame):
+            return 0.0, 0, "test"
+    # Only a complete provider response is eligible for the trip cache.
+    with patch("src.api.app.fetch_recent_news", return_value={"status": "available", "events": [], "count": 0}), \
+         patch("src.api.app.weather_model_system", Model()), \
+         patch("src.api.app._fetch_openmeteo_weather", return_value={"current_weather": {}}), \
+         patch("src.api.app.transform_openmeteo_to_ai_format", return_value={"temperature": 25, "wind": 0}):
+        first = _run_trip(client, headers=auth_headers, destination="Đà Lạt cache history test")
+        second = _run_trip(client, headers=auth_headers, destination="Đà Lạt cache history test")
     assert first.status_code == second.status_code == 200
     assert second.json()["_cached"] is True
     rows = client.get("/api/trip-history", headers=auth_headers).json()["results"]

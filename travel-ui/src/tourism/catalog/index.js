@@ -1,4 +1,5 @@
 import media from "./media.json";
+import { translateText } from "../../i18n/translate.js";
 import { places } from "./places";
 import { provinces, provinceById, normalize } from "./provinces";
 
@@ -23,5 +24,6 @@ export function photoFor(place) {
 export const coverForProvince = (id) => photoFor(placesForProvince(id)[0]);
 export function matchesPlace(place, query) {
   const province = provinceById[place.provinceId];
-  return normalize([place.name, place.description, place.former, province.name, ...province.former].join(" ")).includes(normalize(query));
+  const values = [place.name, place.description, place.former, province.name, ...province.former];
+  return values.some(value => [value, translateText(value, "en")].some(text => normalize(text).includes(normalize(query))));
 }

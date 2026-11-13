@@ -1,4 +1,16 @@
 from unittest.mock import patch
+import json
+
+
+def test_push_payload_contains_both_languages_without_sending_a_real_notification():
+    from src.api.notifications import _send_push
+    subscription = {"endpoint": "https://push.example.test/local", "p256dh": "test", "auth": "test"}
+    with patch("src.api.notifications.webpush") as send:
+        assert _send_push(subscription, "⚠️ Cảnh báo thời tiết: Hà Nội", "Điều kiện thời tiết cần chú ý.")
+    payload = json.loads(send.call_args.kwargs["data"])
+    assert payload["title"] == "⚠️ Cảnh báo thời tiết: Hà Nội"
+    assert payload["title_en"].startswith("⚠️ Weather alert:")
+    assert "severe conditions" in payload["body_en"]
 
 
 def test_vapid_public_key_no_auth_needed(client):

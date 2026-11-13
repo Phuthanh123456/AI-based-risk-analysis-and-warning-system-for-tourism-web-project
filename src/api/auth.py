@@ -10,6 +10,7 @@ from typing import Optional
 import bcrypt
 import jwt
 from fastapi import APIRouter, Body, Depends, HTTPException, Request
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, EmailStr
 
 from src.api.config import JWT_SECRET, JWT_EXPIRE_MINUTES
@@ -22,10 +23,14 @@ _EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 # PASSWORD HASHING
 # ============================================================
 def hash_password(password: str) -> str:
+    if len(password.encode("utf-8")) > 72:
+        raise ValueError("Password exceeds bcrypt's 72-byte limit")
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 
 def verify_password(password: str, password_hash: str) -> bool:
+    if len(password.encode("utf-8")) > 72:
+        return False
     try:
         return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
     except Exception:
@@ -47,7 +52,10 @@ def create_access_token(user_id: int, email: str) -> str:
 
 
 def decode_access_token(token: str) -> dict:
-    return jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+    payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"], options={"require": ["sub", "exp", "iat"]})
+    if not isinstance(payload["sub"], str) or not payload["sub"].isdigit() or int(payload["sub"]) <= 0:
+        raise jwt.InvalidTokenError("Invalid subject")
+    return payload
 
 
 def _extract_token(request: Request) -> Optional[str]:
@@ -57,7 +65,10 @@ def _extract_token(request: Request) -> Optional[str]:
     return None
 
 
-def get_current_user(request: Request) -> dict:
+_bearer_docs = HTTPBearer(auto_error=False, scheme_name="BearerAuth")
+
+
+def get_current_user(request: Request, _credentials: Optional[HTTPAuthorizationCredentials] = Depends(_bearer_docs)) -> dict:
     token = _extract_token(request)
     if not token:
         raise HTTPException(status_code=401, detail="Missing Authorization header")
@@ -112,6 +123,8 @@ def register(payload: RegisterPayload = Body(...)):
     email = payload.email.strip().lower()
     if len(payload.password) < 6:
         raise HTTPException(status_code=422, detail="Password must be at least 6 characters")
+    if len(payload.password.encode("utf-8")) > 72:
+        raise HTTPException(status_code=422, detail="Password must not exceed 72 UTF-8 bytes")
     if get_user_by_email(email):
         raise HTTPException(status_code=409, detail="Email already registered")
 

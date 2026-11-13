@@ -1,3 +1,4 @@
+import { translateText } from "../../i18n/translate.js";
 // Current administrative directory. Historical datasets keep their original names.
 export const ADMIN_SOURCE = "https://xaydungchinhsach.chinhphu.vn/toan-van-nghi-quyet-so-202-2025-qh15-ve-sap-xep-don-vi-hanh-chinh-cap-tinh-119250612174148722.htm";
 export const HUE_SOURCE = "https://baochinhphu.vn/thanh-lap-thanh-pho-hue-truc-thuoc-trung-uong-102241205150328922.htm";
@@ -45,7 +46,7 @@ export function matchesProvince(province, query) {
   const compact = (name) => normalize(name).replace(/[^a-z0-9]/g, "");
   const key = compact(query);
   const aliases = province.id === "ho-chi-minh" ? ["HCM", "TPHCM", "Sài Gòn", "Saigon"] : province.id === "ha-noi" ? ["Hanoi"] : [];
-  return [province.name, ...province.former, ...aliases].some((name) => compact(name).includes(key));
+  return [province.name, ...province.former, ...aliases].some((name) => [name, translateText(name, "en")].some(value => compact(value).includes(key)));
 }
 
 // One existing reference point per current province. These are not new borders
