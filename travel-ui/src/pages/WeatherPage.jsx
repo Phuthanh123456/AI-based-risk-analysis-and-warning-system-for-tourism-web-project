@@ -26,7 +26,7 @@ export default function WeatherPage() {const translate = useTranslate();
   const advice = assessWeather(display, day ? day.air_quality : current?.air_quality, day ? "forecast" : "current");
   const purposeAdvice = weatherPurposeAdvice(display, travel.tripPurpose || trip.trip_purpose);
   const displayPm25 = day ? day.air_quality?.pm25 : pm25;
-  return <div className="portal-page">
+  return <div className="portal-page" data-weather-rain={Number.isFinite(display?.precipitation) && display.precipitation > 0}>
     <TripDetailNavigation />
     <PageIntro eyebrow={translate("Thời tiết")} title={translate(`Thời tiết tại ${travel.destination || trip.to?.name}`)} description={translate("Xem thời tiết hiện tại và dự báo từng ngày. Chỉ các chỉ số API đã trả về mới được hiển thị.")} action={<Button component={Link} to="/alerts" variant="outlined">{translate("Thiết lập cảnh báo")}</Button>} />
     {translate(travel.forecastLoading && <Alert severity="info" icon={<CircularProgress size={18} />}>{translate("Đang tải dự báo hôm nay và 7 ngày tiếp theo…")}</Alert>)}

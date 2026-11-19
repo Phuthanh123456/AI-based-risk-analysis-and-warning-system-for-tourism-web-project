@@ -94,9 +94,17 @@ def _verified_candidates(items, query):
     results = []
     for item in items:
         label = normalize_query(item["label"])
-        if not (item.get("source") == "photon" and item.get("osm_id")
+        label_words = " ".join(re.findall(r"[a-z0-9]+", label))
+        matched = phrase in label_words
+        if item.get("kind") in {"PointAddress", "StreetAddress"}:
+            # Preserve alley/house numbers while allowing inserted ward and street type.
+            wanted = re.match(r"^([0-9]+[a-z0-9/-]*)\s+", normalize_query(query))
+            if wanted:
+                matched = (label.startswith(wanted[1] + " ") and
+                           set(phrase.split()).issubset(label_words.split()))
+        if not (((item.get("source") == "photon" and item.get("osm_id")) or item.get("source") == "esri")
                 and item.get("country_code") in {"VN", "VNM"}
-                and phrase in " ".join(re.findall(r"[a-z0-9]+", label))):
+                and matched):
             continue
         constraints = [place for place in _place_regions()
                        if {normalize_query(item["name"]), normalize_query(query)} & {normalize_query(n) for n in place["names"]}]
@@ -108,7 +116,8 @@ def _verified_candidates(items, query):
 
 
 class PlaceSearchService:
-    def __init__(self, *, transport=None, budget=None, max_inflight=8):
+    def __init__(self, *, transport=None, budget=None, max_inflight=8, world_search=False):
+        self.world_search = world_search
         self.transport = transport
         self.budget = budget or float(os.getenv("PLACE_SEARCH_BUDGET_SECONDS", "2.5"))
         self.max_inflight = max_inflight
@@ -135,6 +144,14 @@ class PlaceSearchService:
         if "," in query or re.search(r"\d", query):
             return None
         from src.integrations.traffic.serpapi_service import resolve_configured_location
+        # OSM marketplace relation, distinct from the nearby night market.
+        if normalize_query(query) in {"cho da lat", "da lat market", "dalat market"}:
+            item = {"id": "osm:relation:4119185", "name": "Chợ Đà Lạt",
+                    "label": "Chợ Đà Lạt, Lâm Đồng, Việt Nam",
+                    "lat": 11.943436, "lon": 108.437178, "kind": "marketplace", "source": "osm",
+                    "source_url": "https://www.openstreetmap.org/relation/4119185"}
+            return {"items": [item], "status": "ok", "cache": "reference",
+                    "attribution": "© OpenStreetMap contributors"}
         point = resolve_configured_location(query)
         if not point:
             return None
@@ -202,12 +219,6 @@ class PlaceSearchService:
         while interval and time.monotonic() - state["last"] < interval:
             await asyncio.sleep(max(.001, interval - (time.monotonic() - state["last"])))
         state["last"] = time.monotonic()
-        if self.client is None:
-            self.client = httpx.AsyncClient(
-                transport=self.transport, timeout=httpx.Timeout(1.8, connect=.8, pool=.15),
-                limits=httpx.Limits(max_connections=16, max_keepalive_connections=8),
-                headers={"User-Agent": "VietnamTravelRiskAI-coursework/1.0", "Accept": "application/json"},
-            )
         try:
             self.metrics["provider_calls"] += 1
             response = await self.client.get(url, params=params)
@@ -234,7 +245,45 @@ class PlaceSearchService:
                 state["until"] = now + 15
             return {"items": [], "status": "unavailable"}
 
+    async def _world_search(self, query, lat, lon, limit):
+        regions = next((p["regions"] for p in _place_regions()
+                        if normalize_query(query) in map(normalize_query, p["names"])), [])
+        params = {"f": "json", "SingleLine": ", ".join([query, *regions[:1]]),
+                  "sourceCountry": "VNM", "maxLocations": limit, "outSR": 4326,
+                  "outFields": "Country,PlaceName,Place_addr,Addr_type,Region"}
+        if lat is not None and lon is not None:
+            params["location"] = f"{lon},{lat}"
+        url = "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates"
+        try:
+            response = await self.client.get(url, params=params, timeout=2.3)
+            response.raise_for_status()
+            rows = response.json()["candidates"]
+            items = []
+            for row in rows:
+                fields, point = row["attributes"], row["location"]
+                if fields.get("Addr_type") not in {"POI", "PointAddress", "StreetAddress", "StreetName", "Locality"}:
+                    continue
+                name = fields.get("PlaceName") or row["address"]
+                label = ", ".join(dict.fromkeys(filter(None, [name, fields.get("Place_addr"), fields.get("Region")])))
+                x, y = point["x"], point["y"]
+                if row["score"] < 85 or not (102 <= x <= 118 and 8 <= y <= 24):
+                    continue
+                items.append({"id": f"esri:{x}:{y}", "label": label, "name": name,
+                              "lon": x, "lat": y, "country_code": fields["Country"],
+                              "kind": fields["Addr_type"], "source": "esri"})
+            items = _verified_candidates(items, query)
+            return {"items": _rank(items, query, lat, lon), "status": "ok" if items else "no_results",
+                    "attribution": "Esri World Geocoding Service"}
+        except (httpx.HTTPError, ValueError, TypeError, KeyError):
+            return {"items": [], "status": "unavailable"}
+
     async def _lookup(self, query, lat, lon, limit, key):
+        if self.client is None:
+            self.client = httpx.AsyncClient(
+                transport=self.transport, timeout=httpx.Timeout(1.8, connect=.8, pool=.15),
+                limits=httpx.Limits(max_connections=16, max_keepalive_connections=8),
+                headers={"User-Agent": "VietnamTravelRiskAI/1.0 (https://github.com/Phuthanh123456/AI-based-risk-analysis-and-warning-system-for-tourism-web-project)", "Accept": "application/json"},
+            )
         tasks = []
         result = {"items": [], "status": "unavailable", "attribution": ""}
         # Disabled for suggestions after reproducing incorrect same-name venue
@@ -245,6 +294,8 @@ class PlaceSearchService:
             params.update({"lat": lat, "lon": lon})
         photon_url = os.getenv("PHOTON_API_URL", "https://photon.komoot.io/api/")
         tasks.append(asyncio.create_task(self._call("photon", photon_url, params, limit, demo=urlparse(photon_url).hostname in {"photon.komoot.io", "photon.komoot.de"})))
+        if self.world_search:
+            tasks.append(asyncio.create_task(self._world_search(query, lat, lon, limit)))
         pending = set(tasks)
         cancelled = False
         try:
@@ -275,11 +326,42 @@ class PlaceSearchService:
         return {**result, "retry_after_ms": 500 if result["status"] == "busy" else 0, "cache": "miss"}
 
 
-service = PlaceSearchService()
+service = PlaceSearchService(world_search=True)
+
+
+@lru_cache(maxsize=1)
+def _catalog_index():
+    path = Path(__file__).resolve().parents[3] / "configs" / "search_catalog_coordinates.json"
+    records = []
+    for row in json.loads(path.read_text(encoding="utf-8")):
+        source = "catalog" if "url" in row else "wikidata" if "qid" in row else "osm"
+        identity = row.get("qid") or row.get("osm") or normalize_query(row["names"][0])
+        url = row.get("url") or ("https://www.wikidata.org/wiki/" if source == "wikidata" else "https://www.openstreetmap.org/") + identity
+        name = row.get("point_name", row["names"][0])
+        item = {"id": f"{source}:{identity}", "name": name, "label": f"{name}, {row['region']}, Vi\u1ec7t Nam",
+                "source": source, "source_url": url, "lat": row["lat"], "lon": row["lon"],
+                "kind": "catalog_reference", "attribution": urlparse(url).hostname if source == "catalog" else "Wikidata (CC0)" if source == "wikidata" else "OpenStreetMap contributors"}
+        records.append(({normalize_query(n) for n in row["names"]}, item))
+    return records
 
 
 async def search_places_async(query, lat=None, lon=None, limit=8):
-    return await service.search(query, lat, lon, limit)
+    term = normalize_query(query)
+    canonical = normalize_query(_place_aliases().get(term, term))
+    # These catalogue pages describe practices, not individual venues.
+    if canonical in {"tranh dan gian dong ho", "tranh dong ho", "nha nhac cung dinh hue",
+                     "nghe gom bau truc", "gom bau truc", "don ca tai tu nam bo", "don ca tai tu"}:
+        return {"items": [], "status": "no_results", "attribution": ""}
+    local = []
+    for names, item in _catalog_index():
+        if canonical in names or term in names:
+            return {"items": [item], "status": "ok", "attribution": item["attribution"], "cache": "catalog"}
+        if len(term) >= 3 and any(name.startswith(term) for name in names):
+            local.append(item)
+    result = await service.search(query, lat, lon, limit)
+    if local and not result["items"]:
+        return {"items": local[:limit], "status": "ok", "attribution": "Wikidata / OpenStreetMap", "cache": "catalog"}
+    return result
 
 
 async def close_search_client():

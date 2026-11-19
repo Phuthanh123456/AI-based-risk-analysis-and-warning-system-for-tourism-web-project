@@ -280,3 +280,21 @@ def test_english_landmark_search_uses_canonical_query_without_changing_coordinat
         finally:
             await service.close()
     asyncio.run(scenario())
+
+def test_offline_catalog_roundtrips_every_named_reference():
+    async def check():
+        for names, expected in search._catalog_index():
+            for name in names:
+                result = await search.search_places_async(name)
+                assert any(x["id"] == expected["id"] for x in result["items"]), name
+                assert expected["source_url"].startswith("https://")
+                assert 8 <= expected["lat"] <= 24 and 102 <= expected["lon"] <= 118
+    asyncio.run(check())
+
+def test_world_address_preserves_house_number_and_ward_labels():
+    item = {"source": "esri", "country_code": "VNM", "kind": "PointAddress",
+            "name": "135 Duong Nam Ky Khoi Nghia",
+            "label": "135 Duong Nam Ky Khoi Nghia, Ben Thanh, Ho Chi Minh"}
+    assert search._verified_candidates([item], "135 Nam Ky Khoi Nghia, Ho Chi Minh") == [item]
+    assert not search._verified_candidates([item], "35 Nam Ky Khoi Nghia")
+    assert not search._verified_candidates([item], "135/2 Nam Ky Khoi Nghia")

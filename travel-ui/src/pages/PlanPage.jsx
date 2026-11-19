@@ -29,7 +29,7 @@ export default function PlanPage() {const translate = useTranslate();
   const originValue = travel.originName || "";
   const missing = missingTripFields({ origin: travel.userPos, destination: travel.destination, selectedDestination: travel.destinationLocation, date: travel.departureDate, purpose: travel.tripPurpose }, localToday());
   useLayoutEffect(() => {
-    if (!location.state?.editTrip) initializePlan(location.state?.prefillDestination || "");
+    if (!location.state?.editTrip) initializePlan(location.state?.prefillDestination || "", TRIP_PURPOSES.find(p => p.key === location.state?.prefillPurpose)?.key ?? null);
   }, [location.key, location.state, initializePlan]);
   const originPoints = currentProvincePoints(travel.provinces);
   const references = originPoints.map((point) => ({

@@ -18,7 +18,10 @@ services:
       retries: 3
 
   frontend:
-    build: ./travel-ui
+    build:
+      context: ./travel-ui
+      args:
+        VITE_GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID:-}"
     ports:
       - "5173:80"
     depends_on:

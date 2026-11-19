@@ -5,6 +5,13 @@ import { BrowserRouter } from "react-router-dom";
 import "./tourism/Fonts.css";
 import "./index.css";
 import "./tourism/Readability.css";
+import "@fontsource/be-vietnam-pro/400.css";
+import "@fontsource/be-vietnam-pro/500.css";
+import "@fontsource/be-vietnam-pro/600.css";
+import "@fontsource/be-vietnam-pro/700.css";
+import "@fontsource/be-vietnam-pro/800.css";
+import "./tourism/GuardianTheme.css";
+import "./tourism/Cinematic.css";
 import { syncDocumentLanguage } from "./i18n/store.js";
 
 syncDocumentLanguage();

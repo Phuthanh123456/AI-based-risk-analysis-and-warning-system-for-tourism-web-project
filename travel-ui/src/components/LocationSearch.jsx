@@ -11,6 +11,14 @@ import { createLocationSearchClient } from "./locationSearchClient";
 
 const suggestions = createLocationSearchClient({ baseUrl: API_BASE });
 
+function selectablePlace(item) {
+  if (!Number.isFinite(item.lat) || !Number.isFinite(item.lon)) return false;
+  if (item.kind === "catalog_reference") return item.source_url?.startsWith("https://");
+  if (item.source === "osm") return item.source_url?.startsWith("https://www.openstreetmap.org/");
+  if (!["VN", "VNM"].includes(item.country_code)) return false;
+  return item.source === "esri" || (item.source === "photon" && Boolean(item.osm_id));
+}
+
 export default function LocationSearch({ label, text, selected, onTextChange, onPick, near, references = [] }) {const translate = useTranslate();
   const language = useLanguage();
   const address = value => translateAddress(value, language);
@@ -41,7 +49,7 @@ export default function LocationSearch({ label, text, selected, onTextChange, on
   const cached = suggestions.peek(query, lat, lon);
   const current = cached || (search.query === query ? search : { items: [], status: "idle", attribution: "" });
   // Never keep suggestions from an older query or accept unchecked providers.
-  const remote = current.status === "ok" ? current.items.filter((item) => item.source === "photon" && item.osm_id && ["VN", "VNM"].includes(item.country_code) && Number.isFinite(item.lat) && Number.isFinite(item.lon)) : [];
+  const remote = current.status === "ok" ? current.items.filter(selectablePlace) : [];
   const options = [...remote, ...matchingReferences.filter((item) => !remote.some((item2) => item2.label === item.label))];
   const loading = query.length >= 3 && query !== selectedLabel && !cached && (current.status === "loading" || current.status === "idle");
   const helper = selected ?
@@ -62,7 +70,7 @@ export default function LocationSearch({ label, text, selected, onTextChange, on
     onChange={(_event, value) => {if (value) onPick(value);else onTextChange("");}}
     loading={loading}
     loadingText={translate("Đang tìm địa điểm…")}
-    noOptionsText={translate(query.length < 3 ? "Nhập thêm ký tự để tìm địa chỉ" : "Chưa tìm thấy. Thử thêm tên đường, quận/huyện hoặc tỉnh/thành phố.")}
+    noOptionsText={translate(["unavailable", "busy"].includes(current.status) ? helper : query.length < 3 ? "Nhập thêm ký tự để tìm địa chỉ" : "Chưa tìm thấy. Thử thêm tên đường, quận/huyện hoặc tỉnh/thành phố.")}
     openOnFocus
     autoHighlight
     clearOnBlur={false}

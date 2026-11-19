@@ -60,3 +60,20 @@ def test_me_with_valid_token(client, auth_headers):
 def test_me_with_garbage_token(client):
     resp = client.get("/api/auth/me", headers={"Authorization": "Bearer not-a-real-token"})
     assert resp.status_code == 401
+
+
+def test_google_repeat_sign_in(client, monkeypatch):
+    from google.oauth2 import id_token
+    from contextlib import closing
+    from src.api.db import get_conn
+    claims = {"sub": "test-subject", "email": _unique_email(), "email_verified": True, "name": "Test"}
+    monkeypatch.setenv("GOOGLE_CLIENT_ID", "test-client")
+    monkeypatch.setattr(id_token, "verify_oauth2_token", lambda *args: claims)
+    for _ in range(2):
+        result = client.post("/api/auth/google", json={"credential": "test"})
+        assert result.status_code == 200
+    uid = result.json()["user"]["id"]
+    with closing(get_conn()) as conn:
+        assert conn.execute("SELECT count(*) FROM login_events WHERE user_id=? AND provider='google'", (uid,)).fetchone()[0] == 2
+    claims["email_verified"] = False
+    assert client.post("/api/auth/google", json={"credential": "test"}).status_code == 401

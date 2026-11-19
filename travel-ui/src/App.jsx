@@ -294,7 +294,7 @@ export default function App() {
   const riskRequestRef = useRef(0);
   const tripRequestRef = useRef(0);
 
-  const initializePlan = useCallback((prefillDestination = "") => {
+  const initializePlan = useCallback((prefillDestination = "", prefillPurpose = null) => {
     tripRequestRef.current += 1;
     riskRequestRef.current += 1;
     setUserPos(null);
@@ -302,7 +302,7 @@ export default function App() {
     setDestination(typeof prefillDestination === "string" ? prefillDestination : "");
     setDestinationLocation(null);
     setDepartureDate(localDate());
-    setTripPurpose(null);
+    setTripPurpose(prefillPurpose);
     setTripRes(null);
     setTripCheckedAt(null);
     setRouteCoords([]);
@@ -404,18 +404,10 @@ export default function App() {
       setSelectedProv(p);
       setSelectedRisk(null);
 
+      if (opts.fly) setMapAction({ type: "flyTo", center: [p.lat, p.lon], zoom: 8, ts: Date.now() });
       const r = await getRiskCached(p.dataProvince || p.province);
       if (requestId === riskRequestRef.current) setSelectedRisk(r);
 
-      // NEW: fly to province
-      if (opts.fly && requestId === riskRequestRef.current) {
-        setMapAction({
-          type: "flyTo",
-          center: [p.lat, p.lon],
-          zoom: 8,
-          ts: Date.now(),
-        });
-      }
     } catch (e) {
       if (requestId === riskRequestRef.current) {
         setErr(`Không tải được dữ liệu tỉnh: ${String(e.message || e)}`);
@@ -649,10 +641,10 @@ export default function App() {
 
   // Keep every Hook above this authentication branch so login/logout can
   // change screens without changing the component's Hook call order.
-  function openPublicTool(route = "/plan", place) {
+  function openPublicTool(route = "/plan", place, prefillPurpose) {
     const returnTo = LANDING_PORTAL_ROUTES.has(route) ? route : "/plan";
     if (typeof place === "string" && place.trim()) updateDestination(place.trim());
-    navigate("/login", { state: { returnTo } });
+    navigate("/login", { state: { returnTo, prefillDestination: place, prefillPurpose } });
     window.scrollTo({ top: 0, behavior: "instant" });
   }
   function returnHome() {
@@ -713,7 +705,7 @@ export default function App() {
   // routes. This prevents their fallback redirect from racing the login target.
   if (location.pathname === "/login" || location.pathname === "/register") {
     const target = location.state?.returnTo || "/plan";
-    return <Navigate to={LANDING_PORTAL_ROUTES.has(target) ? target : "/plan"} replace />;
+    return <Navigate to={LANDING_PORTAL_ROUTES.has(target) ? target : "/plan"} state={location.state} replace />;
   }
 
   return (

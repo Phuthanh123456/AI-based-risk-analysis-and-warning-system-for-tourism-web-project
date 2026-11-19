@@ -34,14 +34,14 @@ function PortalRoutes({ context }) {const translate = useTranslate();
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [location.pathname]);
 
-  function openTool(route = "/plan", place) {
-    if (route === "/plan") navigate(route, { state: place ? { prefillDestination: place } : null });else
+  function openTool(route = "/plan", place, prefillPurpose) {
+    if (route === "/plan") navigate(route, { state: { prefillDestination: place, prefillPurpose } });else
     {
       if (place) context.updateDestination(place);
       navigate(route);
     }
   }
-  if (location.pathname === "/") return <LandingPage signedIn themeMode={context.theme} toggleTheme={context.toggleTheme} logout={context.logout} onGoToLogin={openTool} />;
+  if (location.pathname === "/") return <LandingPage signedIn travel={context} themeMode={context.theme} toggleTheme={context.toggleTheme} logout={context.logout} onGoToLogin={openTool} />;
   return (
     <TravelContext.Provider value={context}>
       <MuiDashboardShell themeMode={context.theme} toggleTheme={context.toggleTheme} logout={context.logout} email={context.session?.user?.email} fullWidth={location.pathname === "/map"}>
@@ -74,15 +74,15 @@ export default function TravelPortal(props) {
   const theme = useMemo(() => createTheme({
     palette: {
       mode: props.theme === "dark" ? "dark" : "light",
-      primary: { main: props.theme === "dark" ? "#8bc8f4" : "#006db8" },
-      secondary: { main: "#bd773e" },
-      background: props.theme === "dark" ? { default: "#111e2c", paper: "#192a3c" } : { default: "#fbfaf6", paper: "#ffffff" },
-      text: props.theme === "dark" ? { primary: "#eef5fc", secondary: "#b7c8d8" } : { primary: "#132b42", secondary: "#536778" },
-      divider: props.theme === "dark" ? "#34485b" : "#dce5e8"
+      primary: { main: props.theme === "dark" ? "#ecb48e" : "#2b2720" },
+      secondary: { main: "#b4532a" },
+      background: props.theme === "dark" ? { default: "#171918", paper: "#222622" } : { default: "#f6f6f6", paper: "#ffffff" },
+      text: props.theme === "dark" ? { primary: "#f2f2ed", secondary: "#b8bcb4" } : { primary: "#191919", secondary: "#686761" },
+      divider: props.theme === "dark" ? "#3d443c" : "#e4e2dc"
     },
-    typography: { fontFamily: '"Lexend Deca", sans-serif', fontSize: 15, h1: { fontSize: "clamp(2.1rem, 2.7vw, 2.5rem)", lineHeight: 1.42, fontWeight: 700, letterSpacing: 0 }, h2: { fontSize: "1.65rem", lineHeight: 1.4, fontWeight: 700, letterSpacing: 0 }, h3: { fontSize: "1.3rem", lineHeight: 1.4, fontWeight: 700, letterSpacing: 0 }, body1: { fontSize: "1.0625rem", lineHeight: 1.8 }, body2: { fontSize: "1rem", lineHeight: 1.8 }, caption: { fontSize: ".8125rem", lineHeight: 1.7 }, subtitle1: { fontSize: "1.0625rem" } },
-    shape: { borderRadius: 12 },
-    components: { MuiButton: { styleOverrides: { root: { textTransform: "none", minHeight: 44, borderRadius: 100, fontWeight: 600, fontSize: 14, padding: "10px 22px" } } }, MuiCard: { styleOverrides: { root: { boxShadow: "none", border: "1px solid", borderColor: "var(--portal-border)" } } }, MuiOutlinedInput: { styleOverrides: { root: { borderRadius: 12, fontSize: 17 } } }, MuiFormHelperText: { styleOverrides: { root: { fontSize: 13, lineHeight: 1.7 } } } }
+    typography: { fontFamily: '"Be Vietnam Pro", sans-serif', fontSize: 15, h1: { fontSize: "clamp(2.1rem, 2.7vw, 2.5rem)", lineHeight: 1.42, fontWeight: 700, letterSpacing: 0 }, h2: { fontSize: "1.65rem", lineHeight: 1.4, fontWeight: 700, letterSpacing: 0 }, h3: { fontSize: "1.3rem", lineHeight: 1.4, fontWeight: 700, letterSpacing: 0 }, body1: { fontSize: "1.0625rem", lineHeight: 1.8 }, body2: { fontSize: "1rem", lineHeight: 1.8 }, caption: { fontSize: ".8125rem", lineHeight: 1.7 }, subtitle1: { fontSize: "1.0625rem" } },
+    shape: { borderRadius: 18 },
+    components: { MuiButton: { styleOverrides: { root: { textTransform: "none", minHeight: 44, borderRadius: 100, fontWeight: 600, fontSize: 14, padding: "10px 22px" } } }, MuiCard: { styleOverrides: { root: { boxShadow: "none", border: "1px solid", borderColor: "var(--portal-border)" } } }, MuiOutlinedInput: { styleOverrides: { root: { borderRadius: 18, fontSize: 17 } } }, MuiFormHelperText: { styleOverrides: { root: { fontSize: 13, lineHeight: 1.7 } } } }
   }, language === "en" ? enUS : viVN), [props.theme, language]);
   return <ThemeProvider theme={theme}><CssBaseline /><PortalRoutes context={props} /></ThemeProvider>;
 }

@@ -161,3 +161,9 @@ scripts/                  Launcher, audit danh mục, đánh giá artifact
 ```
 
 Tài liệu: [I18N.md](I18N.md), [LOCATION_SEARCH.md](LOCATION_SEARCH.md), [PERFORMANCE.md](PERFORMANCE.md).
+
+### Google sign-in
+
+Create a Google OAuth web client and register the exact frontend origin (for example http://localhost:5180) under Authorized JavaScript origins. Set GOOGLE_CLIENT_ID in the backend environment and VITE_GOOGLE_CLIENT_ID in travel-ui/.env.local to the same public client ID. Restart the backend and Vite, or rebuild the frontend for production. Docker Compose passes the backend client ID to the frontend build. The Google button appears when the frontend ID is configured.
+
+SQLite stores the verified Google subject, display name and account email. Successful password and Google logins each add a UTC timestamp and provider to login_events. ID tokens are verified on the server and are not stored. A pre-existing password account with the same email keeps its original sign-in method.

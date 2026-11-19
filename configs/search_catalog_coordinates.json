@@ -1,0 +1,746 @@
+[
+  {
+    "names": [
+      "Hồ Hoàn Kiếm"
+    ],
+    "region": "Hà Nội",
+    "qid": "Q1151254",
+    "lat": 21.028888888889,
+    "lon": 105.8525
+  },
+  {
+    "names": [
+      "Văn Miếu – Quốc Tử Giám"
+    ],
+    "region": "Hà Nội",
+    "qid": "Q1202019",
+    "lat": 21.028611,
+    "lon": 105.835556
+  },
+  {
+    "names": [
+      "Thác Bản Giốc"
+    ],
+    "region": "Cao Bằng",
+    "qid": "Q983252",
+    "lat": 22.856388888889,
+    "lon": 106.72194444444
+  },
+  {
+    "names": [
+      "Khu di tích Pác Bó",
+      "Pác Bó"
+    ],
+    "region": "Cao Bằng",
+    "qid": "Q7263979",
+    "lat": 22.978,
+    "lon": 106.054
+  },
+  {
+    "names": [
+      "Bản Sin Suối Hồ",
+      "Sin Suối Hồ"
+    ],
+    "region": "Lai Châu",
+    "qid": "Q10819870",
+    "lat": 22.53972222,
+    "lon": 103.5297222
+  },
+  {
+    "names": [
+      "Vùng núi Mẫu Sơn",
+      "Mẫu Sơn"
+    ],
+    "region": "Lạng Sơn",
+    "qid": "Q6922067",
+    "lat": 21.877111111111,
+    "lon": 107.00426111111
+  },
+  {
+    "names": [
+      "Chùa Tam Thanh"
+    ],
+    "region": "Lạng Sơn",
+    "qid": "Q10748541",
+    "lat": 21.849093,
+    "lon": 106.733374
+  },
+  {
+    "names": [
+      "Hồ Pá Khoang"
+    ],
+    "region": "Điện Biên",
+    "qid": "Q31922679",
+    "lat": 21.435277777778,
+    "lon": 103.09944444444
+  },
+  {
+    "names": [
+      "Cao nguyên Mộc Châu"
+    ],
+    "region": "Sơn La",
+    "qid": "Q10744312",
+    "lat": 20.9219444,
+    "lon": 104.7522222
+  },
+  {
+    "names": [
+      "Dãy núi Tà Xùa",
+      "Tà Xùa"
+    ],
+    "region": "Sơn La",
+    "qid": "Q10830265",
+    "lat": 21.32694444,
+    "lon": 104.4902778
+  },
+  {
+    "names": [
+      "Cao nguyên đá Đồng Văn"
+    ],
+    "region": "Tuyên Quang",
+    "qid": "Q10744325",
+    "lat": 23.192222222222224,
+    "lon": 105.19694444444444
+  },
+  {
+    "names": [
+      "Khu di tích Tân Trào",
+      "Tân Trào"
+    ],
+    "region": "Tuyên Quang",
+    "qid": "Q10830937",
+    "lat": 21.77722222,
+    "lon": 105.4680556
+  },
+  {
+    "names": [
+      "Hồ Ba Bể"
+    ],
+    "region": "Thái Nguyên",
+    "qid": "Q1328473",
+    "lat": 22.405278,
+    "lon": 105.615278
+  },
+  {
+    "names": [
+      "Vùng chè Tân Cương",
+      "Tân Cương (xã)"
+    ],
+    "region": "Thái Nguyên",
+    "qid": "Q10830404",
+    "lat": 21.539444444444445,
+    "lon": 105.775
+  },
+  {
+    "names": [
+      "Khu di tích Đền Hùng",
+      "Đền Hùng"
+    ],
+    "region": "Phú Thọ",
+    "qid": "Q5964889",
+    "lat": 21.365533,
+    "lon": 105.324627
+  },
+  {
+    "names": [
+      "Vườn quốc gia Tam Đảo"
+    ],
+    "region": "Phú Thọ",
+    "qid": "Q1749057",
+    "lat": 21.5167,
+    "lon": 105.55
+  },
+  {
+    "names": [
+      "Thung lũng Mai Châu",
+      "Mai Châu (huyện)"
+    ],
+    "region": "Phú Thọ",
+    "qid": "Q6735119",
+    "lat": 20.66478,
+    "lon": 105.083424
+  },
+  {
+    "names": [
+      "Chùa Vĩnh Nghiêm",
+      "Chùa Vĩnh Nghiêm (Bắc Giang)"
+    ],
+    "region": "Bắc Ninh",
+    "qid": "Q10748589",
+    "lat": 21.21472222,
+    "lon": 106.3236111
+  },
+  {
+    "names": [
+      "Chùa Côn Sơn"
+    ],
+    "region": "Hải Phòng",
+    "qid": "Q10748399",
+    "lat": 21.149837,
+    "lon": 106.384008
+  },
+  {
+    "names": [
+      "Chùa Keo",
+      "Chùa Keo (Thái Bình)"
+    ],
+    "region": "Hưng Yên",
+    "qid": "Q10748440",
+    "lat": 20.36055556,
+    "lon": 106.29722222
+  },
+  {
+    "names": [
+      "Quần thể danh thắng Tràng An"
+    ],
+    "region": "Ninh Bình",
+    "qid": "Q10810559",
+    "lat": 20.2557,
+    "lon": 105.9156
+  },
+  {
+    "names": [
+      "Vịnh Hạ Long"
+    ],
+    "region": "Quảng Ninh",
+    "qid": "Q190128",
+    "lat": 20.9,
+    "lon": 107.2
+  },
+  {
+    "names": [
+      "Danh thắng Yên Tử",
+      "Yên Tử"
+    ],
+    "region": "Quảng Ninh",
+    "qid": "Q10802059",
+    "lat": 21.160972222222224,
+    "lon": 106.6975
+  },
+  {
+    "names": [
+      "Thành nhà Hồ"
+    ],
+    "region": "Thanh Hóa",
+    "qid": "Q190060",
+    "lat": 20.078055555556,
+    "lon": 105.60472222222
+  },
+  {
+    "names": [
+      "Khu di tích Kim Liên"
+    ],
+    "region": "Nghệ An",
+    "qid": "Q6409093",
+    "lat": 18.674018,
+    "lon": 105.554433
+  },
+  {
+    "names": [
+      "Vườn quốc gia Pù Mát"
+    ],
+    "region": "Nghệ An",
+    "qid": "Q2610809",
+    "lat": 18.98333333,
+    "lon": 104.66666667
+  },
+  {
+    "names": [
+      "Biển Thiên Cầm",
+      "Thiên Cầm"
+    ],
+    "region": "Hà Tĩnh",
+    "qid": "Q10825119",
+    "lat": 18.274722222222,
+    "lon": 106.07694444444
+  },
+  {
+    "names": [
+      "Hoàng thành Huế"
+    ],
+    "region": "Huế",
+    "qid": "Q10769129",
+    "lat": 16.469444444444,
+    "lon": 107.57777777778
+  },
+  {
+    "names": [
+      "Chùa Thiên Mụ"
+    ],
+    "region": "Huế",
+    "qid": "Q975568",
+    "lat": 16.453599,
+    "lon": 107.544812
+  },
+  {
+    "names": [
+      "Vườn quốc gia Phong Nha – Kẻ Bàng"
+    ],
+    "region": "Quảng Trị",
+    "qid": "Q23513",
+    "lat": 17.533333333333,
+    "lon": 106.15
+  },
+  {
+    "names": [
+      "Thành cổ Quảng Trị"
+    ],
+    "region": "Quảng Trị",
+    "qid": "Q10825609",
+    "lat": 16.75392,
+    "lon": 107.18951
+  },
+  {
+    "names": [
+      "Phố cổ Hội An",
+      "Hội An"
+    ],
+    "region": "Đà Nẵng",
+    "qid": "Q5965459",
+    "lat": 15.877135,
+    "lon": 108.328631
+  },
+  {
+    "names": [
+      "Danh thắng Ngũ Hành Sơn",
+      "Ngũ Hành Sơn"
+    ],
+    "region": "Đà Nẵng",
+    "qid": "Q6755207",
+    "lat": 16,
+    "lon": 108.26
+  },
+  {
+    "names": [
+      "Thánh địa Mỹ Sơn"
+    ],
+    "region": "Đà Nẵng",
+    "qid": "Q391406",
+    "lat": 15.76324,
+    "lon": 108.124446
+  },
+  {
+    "names": [
+      "Đảo Lý Sơn",
+      "Lý Sơn"
+    ],
+    "region": "Quảng Ngãi",
+    "qid": "Q1320095",
+    "lat": 15.380833333333,
+    "lon": 109.1175
+  },
+  {
+    "names": [
+      "Măng Đen"
+    ],
+    "region": "Quảng Ngãi",
+    "qid": "Q10796319",
+    "lat": 14.599723894774165,
+    "lon": 108.29201976157728
+  },
+  {
+    "names": [
+      "Danh thắng Ghềnh Ráng",
+      "Ghềnh Ráng"
+    ],
+    "region": "Gia Lai",
+    "qid": "Q136375007",
+    "lat": 13.75636802259962,
+    "lon": 109.21213046240517
+  },
+  {
+    "names": [
+      "Tháp Bà Po Nagar",
+      "Tháp Po Nagar"
+    ],
+    "region": "Khánh Hòa",
+    "qid": "Q600269",
+    "lat": 12.26527778,
+    "lon": 109.19555556
+  },
+  {
+    "names": [
+      "Vườn quốc gia Núi Chúa"
+    ],
+    "region": "Khánh Hòa",
+    "qid": "Q1320113",
+    "lat": 11.70027778,
+    "lon": 109.15277778
+  },
+  {
+    "names": [
+      "Đà Lạt"
+    ],
+    "region": "Lâm Đồng",
+    "qid": "Q25281",
+    "lat": 11.94,
+    "lon": 108.4375
+  },
+  {
+    "names": [
+      "Mũi Né"
+    ],
+    "region": "Lâm Đồng",
+    "qid": "Q1317125",
+    "lat": 10.98199922600232,
+    "lon": 108.25118304681762
+  },
+  {
+    "names": [
+      "Vườn quốc gia Tà Đùng"
+    ],
+    "region": "Lâm Đồng",
+    "qid": "Q117835609",
+    "lat": 11.89,
+    "lon": 107.91666666666667
+  },
+  {
+    "names": [
+      "Hồ Lắk"
+    ],
+    "region": "Đắk Lắk",
+    "qid": "Q10771975",
+    "lat": 12.4225,
+    "lon": 108.18
+  },
+  {
+    "names": [
+      "Gành Đá Đĩa"
+    ],
+    "region": "Đắk Lắk",
+    "qid": "Q20984274",
+    "lat": 13.335,
+    "lon": 109.298
+  },
+  {
+    "names": [
+      "Dinh Độc Lập"
+    ],
+    "region": "TP. Hồ Chí Minh",
+    "qid": "Q933384",
+    "lat": 10.77705,
+    "lon": 106.69537
+  },
+  {
+    "names": [
+      "Quần đảo Côn Đảo",
+      "Côn Đảo"
+    ],
+    "region": "TP. Hồ Chí Minh",
+    "qid": "Q370746",
+    "lat": 8.683272,
+    "lon": 106.606264
+  },
+  {
+    "names": [
+      "Chùa Hội Khánh"
+    ],
+    "region": "TP. Hồ Chí Minh",
+    "qid": "Q5877747",
+    "lat": 10.981027777777777,
+    "lon": 106.65963888888889
+  },
+  {
+    "names": [
+      "Vườn quốc gia Cát Tiên"
+    ],
+    "region": "Đồng Nai",
+    "qid": "Q1421202",
+    "lat": 11.347222222222,
+    "lon": 107.15138888889
+  },
+  {
+    "names": [
+      "Vườn quốc gia Bù Gia Mập"
+    ],
+    "region": "Đồng Nai",
+    "qid": "Q3895703",
+    "lat": 12.21666667,
+    "lon": 107.15
+  },
+  {
+    "names": [
+      "Núi Bà Đen"
+    ],
+    "region": "Tây Ninh",
+    "qid": "Q4922113",
+    "lat": 11.36666667,
+    "lon": 106.16666667
+  },
+  {
+    "names": [
+      "Chợ nổi Cái Răng"
+    ],
+    "region": "Cần Thơ",
+    "qid": "Q10748803",
+    "lat": 10.005,
+    "lon": 105.746
+  },
+  {
+    "names": [
+      "Chùa Kh'leang",
+      "Chùa Khleang"
+    ],
+    "region": "Cần Thơ",
+    "qid": "Q11839840",
+    "lat": 9.61016,
+    "lon": 105.97679
+  },
+  {
+    "names": [
+      "Cù lao An Bình"
+    ],
+    "region": "Vĩnh Long",
+    "qid": "Q10752082",
+    "lat": 10.2932,
+    "lon": 105.9868
+  },
+  {
+    "names": [
+      "Vườn quốc gia Tràm Chim"
+    ],
+    "region": "Đồng Tháp",
+    "qid": "Q586985",
+    "lat": 10.725,
+    "lon": 105.517
+  },
+  {
+    "names": [
+      "Chùa Vĩnh Tràng"
+    ],
+    "region": "Đồng Tháp",
+    "qid": "Q7932540",
+    "lat": 10.362809,
+    "lon": 106.373749
+  },
+  {
+    "names": [
+      "Vườn quốc gia U Minh Hạ"
+    ],
+    "region": "Cà Mau",
+    "qid": "Q3895714",
+    "lat": 9.25138889,
+    "lon": 104.94527778
+  },
+  {
+    "names": [
+      "Đảo Phú Quốc",
+      "Phú Quốc"
+    ],
+    "region": "An Giang",
+    "qid": "Q146695",
+    "lat": 10.228888888889,
+    "lon": 103.95722222222
+  },
+  {
+    "names": [
+      "Rừng tràm Trà Sư"
+    ],
+    "region": "An Giang",
+    "qid": "Q16480259",
+    "lat": 10.585556,
+    "lon": 105.058611
+  },
+  {
+    "names": [
+      "Chợ Bến Thành"
+    ],
+    "region": "TP. Hồ Chí Minh",
+    "qid": "Q3232879",
+    "lat": 10.772521,
+    "lon": 106.698019
+  },
+  {
+    "names": [
+      "Chợ Bến Thành"
+    ],
+    "region": "TP. Hồ Chí Minh",
+    "qid": "Q3232879",
+    "lat": 10.772521,
+    "lon": 106.698019
+  },
+  {
+    "names": [
+      "Di tích Đồi A1",
+      "Đồi A1"
+    ],
+    "point_name": "Đồi A1",
+    "region": "Điện Biên",
+    "osm": "way/640290256",
+    "lat": 21.3830926,
+    "lon": 103.0176243
+  },
+  {
+    "names": [
+      "Sa Pa và thung lũng Mường Hoa",
+      "Sa Pa"
+    ],
+    "point_name": "Thị xã Sa Pa",
+    "region": "Lào Cai",
+    "osm": "relation/7097141",
+    "lat": 22.3153883,
+    "lon": 103.8399788
+  },
+  {
+    "names": [
+      "Ruộng bậc thang Mù Cang Chải"
+    ],
+    "point_name": "Ruộng bậc thang Nấm Linh Chi",
+    "region": "Lào Cai",
+    "osm": "node/11736197269",
+    "lat": 21.8565665,
+    "lon": 104.0257903
+  },
+  {
+    "names": [
+      "Khu du lịch Tam Chúc"
+    ],
+    "point_name": "Khu du lịch quốc gia Tam Chúc",
+    "region": "Ninh Bình",
+    "osm": "way/1346643116",
+    "lat": 20.563691,
+    "lon": 105.8041719
+  },
+  {
+    "names": [
+      "Khu bảo tồn thiên nhiên Pù Luông"
+    ],
+    "point_name": "Khu bảo tồn thiên nhiên Pù Luông",
+    "region": "Thanh Hóa",
+    "osm": "relation/17369040",
+    "lat": 20.4989609,
+    "lon": 105.2013014
+  },
+  {
+    "names": [
+      "Biển Hồ Pleiku",
+      "Hồ T'Nưng"
+    ],
+    "point_name": "Biển Hồ",
+    "region": "Gia Lai",
+    "osm": "way/506959800",
+    "lat": 14.0453573,
+    "lon": 107.9980662
+  },
+  {
+    "names": [
+      "Làng nổi Tân Lập"
+    ],
+    "point_name": "làng nổi tân lập",
+    "region": "Tây Ninh",
+    "osm": "node/4459410991",
+    "lat": 10.7119374,
+    "lon": 105.9893237
+  },
+  {
+    "names": [
+      "Khu bảo tồn Lung Ngọc Hoàng",
+      "Khu bảo tồn thiên nhiên Lung Ngọc Hoàng"
+    ],
+    "point_name": "Khu bảo tồn thiên nhiên Lung Ngọc Hoàng",
+    "region": "Cần Thơ",
+    "osm": "relation/17189465",
+    "lat": 9.7206578,
+    "lon": 105.6922479
+  },
+  {
+    "names": [
+      "Chùa Âng"
+    ],
+    "point_name": "Chùa Âng",
+    "region": "Vĩnh Long",
+    "osm": "way/288574348",
+    "lat": 9.9159554,
+    "lon": 106.3034636
+  },
+  {
+    "names": [
+      "Làng gốm Bát Tràng",
+      "Gốm Bát Tràng"
+    ],
+    "point_name": "Gốm Bát Tràng",
+    "region": "Hà Nội",
+    "osm": "way/217464682",
+    "lat": 20.9786372,
+    "lon": 105.9145311
+  },
+  {
+    "names": [
+      "Quần thể động Pu Sam Cáp",
+      "Động Pu Sam Cáp"
+    ],
+    "region": "Lai Châu",
+    "lat": 22.3859269,
+    "lon": 103.4103242,
+    "url": "https://dulich.laichau.gov.vn/en/place/details/dong-pu-sam-cap-53"
+  },
+  {
+    "names": [
+      "Nhà Công tử Bạc Liêu"
+    ],
+    "region": "Cà Mau",
+    "lat": 9.285,
+    "lon": 105.7219444,
+    "url": "https://vupc.mae.gov.vn/Data/files/11-2018-tt-btnmt.pdf"
+  },
+  {
+    "names": [
+      "Di tích Ngã ba Đồng Lộc",
+      "Ngã ba Đồng Lộc"
+    ],
+    "region": "Hà Tĩnh",
+    "lat": 18.398992,
+    "lon": 105.73848,
+    "url": "https://govietnam.travel/destination/dong-loc-t-junction-historical-relic-site/"
+  },
+  {
+    "names": [
+      "Quần thể di tích Phủ Dầy",
+      "Phủ Dầy"
+    ],
+    "region": "Ninh Bình",
+    "point_name": "Phủ Tiên Hương",
+    "lat": 20.3609,
+    "lon": 106.0778,
+    "osm": "way/163105543"
+  },
+  {
+    "names": [
+      "Chùa Dâu"
+    ],
+    "region": "Bắc Ninh",
+    "osm": "way/1365782460",
+    "lat": 21.0358692,
+    "lon": 106.0425161
+  },
+  {
+    "names": [
+      "Không gian di tích Phố Hiến",
+      "Phố Hiến"
+    ],
+    "region": "Hưng Yên",
+    "point_name": "Chùa Hiến (Phố Hiến)",
+    "lat": 20.6413889,
+    "lon": 106.0575,
+    "url": "https://vupc.mae.gov.vn/Data/files/10-2019-tt-btnmt.pdf"
+  },
+  {
+    "names": [
+      "Cồn Phụng"
+    ],
+    "region": "Vĩnh Long",
+    "osm": "way/26787704",
+    "lat": 10.33363,
+    "lon": 106.35728
+  },
+  {
+    "names": [
+      "Quần đảo Cát Bà"
+    ],
+    "region": "Hải Phòng",
+    "qid": "Q993402",
+    "point_name": "Đảo Cát Bà",
+    "lat": 20.8,
+    "lon": 106.99972222222
+  }
+]

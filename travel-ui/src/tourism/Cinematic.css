@@ -1,0 +1,141 @@
+:root{--cin-forest:#245c48;--cin-ivory:#f7f6f2;--cin-jade:#438778;--cin-radius:22px;--cin-gap:clamp(14px,2vw,28px);--cin-shadow:0 12px 40px #17251b12;--cin-enter:360ms}
+:where(.portal-shell,.guardian-home,.guardian-auth) :focus-visible{outline:3px solid #c86b45;outline-offset:4px}
+.guardian-workspace-rail a[aria-current=page]{background:var(--cin-forest);color:white}
+.guardian-workspace .portal-section{box-shadow:var(--cin-shadow);border-radius:var(--cin-radius)}
+.scene-caption{position:sticky;top:92svh;margin:0 3vw 0 auto;width:max-content;height:0;z-index:2;font-size:.72rem;font-weight:650;color:#1e3628;text-shadow:0 1px 6px #fff;background:#fff9;pointer-events:none}
+.guardian-home .guardian-destination-grid{display:grid;grid-template-columns:1.45fr 1fr 1fr;grid-template-rows:repeat(2,190px);gap:16px}
+.guardian-destination-grid>div:first-child{grid-row:span 2}.guardian-destination-grid>div:last-child{grid-column:span 2}
+.guardian-home .guardian-destination-grid .guardian-place-trigger,.guardian-home .guardian-destination-grid img{height:100%;width:100%;object-fit:cover}
+.guardian-place-dialog.cinematic-dialog{width:min(920px,94vw);overflow:auto;max-height:92svh}.cinematic-dialog article>.miniature-view{padding:0}
+.miniature-stage{height:clamp(240px,48svh,540px);background:radial-gradient(ellipse at 60% 17%,#ffebc3,#dce5d9 60%,#bad4ca);background-size:cover;background-position:center}
+.miniature-stage canvas{display:block;width:100%;height:100%;touch-action:none}.miniature-controls{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:12px 20px}.miniature-controls strong{margin-right:auto}.miniature-controls button{font:inherit;font-size:.88rem;color:inherit;border:1px solid #899b8b;background:transparent;border-radius:99px;padding:8px 13px;min-height:42px;cursor:pointer}
+.atlas-layout{display:grid;grid-template-columns:minmax(230px,30%) minmax(0,1fr);gap:var(--cin-gap)}.atlas-list{min-width:0;padding:16px;border-radius:var(--cin-radius);background:var(--tour-paper,#fff);box-shadow:var(--cin-shadow)}.atlas-options{display:grid;gap:7px;max-height:440px;overflow:auto;margin-top:12px}.atlas-options button{display:flex;align-items:center;gap:12px;border:1px solid transparent;border-radius:14px;padding:7px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.atlas-options button:is(:hover,:focus-visible,[data-active=true]){border-color:#57937a;background:#6eaf891b}.atlas-options img{width:58px;height:46px;object-fit:cover;border-radius:9px}
+.atlas-marker img{display:block;width:100px;height:65px;object-fit:cover}.atlas-marker b{display:block;padding:4px}.leaflet-tooltip.atlas-marker{transform-origin:bottom;border-radius:8px;box-shadow:var(--cin-shadow)}
+.discovery-stack{perspective:760px;touch-action:pan-y;cursor:grab}.discovery-stack [data-position="-1"]{transform:translateX(-53%) rotateY(32deg) scale(.79)}.discovery-stack [data-position="1"]{transform:translateX(53%) rotateY(-32deg) scale(.79)}
+.guardian-auth .auth-image-panel:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#0d272270,transparent 65%,#0e292448)}
+.guardian-auth .auth-brand,.guardian-auth .auth-photo-copy{color:white;z-index:1;text-shadow:0 1px 8px #12251d}
+@media(max-width:760px){.atlas-layout{display:flex;flex-direction:column-reverse}.atlas-options{display:flex;overflow:auto;max-height:115px}.atlas-options button{flex:0 0 145px}.guardian-home .guardian-destination-grid{grid-template-columns:1fr 1fr;grid-template-rows:repeat(2,180px)}.guardian-destination-grid>div:first-child,.guardian-destination-grid>div:last-child{grid-column:auto;grid-row:auto}.scene-caption{top:85svh}}
+@media(prefers-reduced-motion:reduce){.discovery-stack img,.atlas-list *{transition:none!important}}
+
+
+.directory-search {
+  padding: 18px clamp(16px, 3vw, 42px);
+}
+.directory-search .explore-search { display: block; width: min(100%, 580px); }
+#explore-title { scroll-margin-top: 100px; }
+.rail-itinerary { display: grid; gap: 10px; margin: 20px 0; border-top: 1px solid #818e792f; padding-top: 14px; }
+.rail-itinerary h2 { font-size: 1.2rem; margin: 0; }
+.rail-itinerary a { display: flex; gap: 12px; justify-content: space-between; }
+.scene-analysis ol { margin: .65em 0 0; padding-inline-start: 1.3em; line-height: 1.8; }
+.scenario-levels { display: flex; gap: 6px; flex-wrap: wrap; margin-block: 10px; }
+.scenario-levels span { border-top: 4px solid #2f7960; padding: 7px 5px; }
+.scenario-levels span:nth-child(2) { border-color: #b36c14; }
+.scenario-levels span:last-child { border-color: #ac443e; }
+.scene-postcards { display: flex; gap: clamp(6px, 1vw, 15px); align-items: center; padding: 20px 0; }
+.scene-postcards button { flex: 1; min-width: 0; padding: 5px 5px 12px; background: #fffdf5; color: #263b32; font: inherit; border: 0; border-radius: 8px; box-shadow: 0 12px 22px #253b3328; cursor: pointer; transform: rotate(-4deg); transition: transform .25s; }
+.scene-postcards button:nth-child(2) { transform: rotate(3deg) translateY(-10px); }
+.scene-postcards button:is(:hover,:focus-visible) { transform: translateY(-14px) rotate(0deg); }
+.scene-postcards img { display: block; width: 100%; aspect-ratio: 1/.9; object-fit: cover; margin-bottom: 8px; border-radius: 5px; }
+.guardian-home .guardian-final { background: radial-gradient(ellipse at 54% 140%,#4a705d,transparent 70%),#162b27; color: #fff9e9; }
+.guardian-home .guardian-final :is(p, em, .guardian-final-icon) { color: #d2dbc5; }
+.guardian-home .guardian-final button { background: #f3e6bb; color: #21372f; }
+.guardian-home .guardian-destination-grid .guardian-place-trigger > div { position: absolute; inset: auto 0 0; color: white; background: linear-gradient(transparent,#12231ed4); padding-top: 44px; }
+.guardian-home .guardian-destination-grid .guardian-card-arrow { color: #25382f; }
+.portal-page[data-weather-rain=true] .portal-banner-shade::after { content: ''; position: absolute; inset: 0 0 0 64%; opacity: .32; background-image: repeating-linear-gradient(113deg,transparent 0 26px,#d8f4ff 27px,transparent 28px 54px); mask-image: linear-gradient(100deg,transparent,#0006); pointer-events: none; animation: forecast-drizzle 2s linear infinite; }
+@keyframes forecast-drizzle { to { background-position: -58px 0; } }
+@media(prefers-reduced-motion:reduce) {
+  .portal-page[data-weather-rain=true] .portal-banner-shade::after { animation: none; }
+  .scene-postcards button { transition: none; }
+}
+
+.portal-map-frame .leaflet-container, .leaflet-container:has(.leaflet-geographic-overview-pane) { background: #d5e6eb; }
+
+.portal-page:has(.atlas-layout) { grid-template-columns: minmax(0,1fr); min-width: 0; }
+.atlas-layout, .atlas-options, .atlas-list, .atlas-layout .portal-map-frame {
+  min-width: 0; width: 100%; max-width: 100%; box-sizing: border-box;
+}
+.atlas-layout .portal-map-frame { contain: layout inline-size paint; }
+
+.weather-demo { border: 0; padding: 0; margin: 14px 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.weather-demo legend { font-size: .78rem; margin-bottom: 5px; }
+.weather-demo button { color: #223c31; background: #f8f8ee; padding: 8px 14px; min-height: 42px; border-radius: 22px; border: 1px solid #99aaa0; font: inherit; cursor: pointer; }
+.weather-demo button[aria-pressed=true] { background: #294a3c; color: white; }
+.journey-landscape[data-night=true] { background: linear-gradient(#152641,#5d6b90 55%,#8999ad); }
+
+.guardian-story:not(:has(.journey-landscape[data-ready=true])) .weather-demo { display: none; }
+.discovery-viewer .discovery-stack [data-position="-1"] { transform: translateX(-51%) rotateY(28deg) rotateZ(-4deg) scale(.8); }
+.discovery-viewer .discovery-stack [data-position="1"] { transform: translateX(51%) rotateY(-28deg) rotateZ(4deg) scale(.8); }
+.guardian-home .discovery-deck { margin-block: 30px 70px; }
+
+.journey-timeline { padding-inline-start: 14px; }
+.journey-timeline-entry { position: relative; border-inline-start: 2px solid #91aa99; padding-inline-start: 24px; }
+.journey-timeline-entry::before { content: ''; position: absolute; inset-inline-start: -6px; top: 28px; width: 10px; height: 10px; background: #426f58; border: 2px solid var(--tour-paper,#fff); border-radius: 50%; }
+.regional-score { display: block; inline-size: 100%; block-size: 15px; margin-top: 12px; }
+.portal-page .decision-hero { border-inline-start: 5px solid #b97f32; }
+.portal-page .decision-hero[data-decision=GO] { border-inline-start-color: #407950; }
+.portal-page .decision-hero[data-decision=DONT_GO] { border-inline-start-color: #af4440; }
+
+.discovery-viewer .deck-screen { width: auto; height: auto; min-height: 38px; margin-inline: 14px; padding: 5px 10px; border-radius: 20px; font: inherit; font-size: .85rem; background: transparent; border: 1px solid #87968e; color: inherit; cursor: pointer; }
+.miniature-stage:focus-visible { outline: 3px solid #a04a21; outline-offset: -4px; }
+
+.mobile-scene-caption { display: none; }
+@media (max-width: 760px) {
+  .guardian-home .scene-caption { display: none; }
+  .guardian-opening .opening-footer { position: absolute; bottom: 18px; inset-inline: 12px; display: grid; place-items: center; gap: 6px; }
+  .guardian-opening .opening-footer .guardian-scroll { position: static; transform: none; }
+  .mobile-scene-caption { display: block; font-size: .72rem; color: #35483d; }
+}
+@media (max-height: 620px) and (max-width: 760px) {
+  .guardian-opening .opening-footer { position: static; margin-top: 12px; }
+  .guardian-chapter.guardian-opening { flex-direction: column; }
+}
+
+.cinematic-dialog article:fullscreen, .deck-stage:fullscreen { background: #f6f5ed; color: #223b30; overflow: auto; }
+.cinematic-dialog article:fullscreen .miniature-stage { height: 68svh; }
+.deck-stage:fullscreen { display: grid; align-content: center; justify-items: center; }
+.deck-stage:fullscreen .discovery-stack { width: min(100%, 960px); height: min(57svh, 600px); }
+.deck-stage:fullscreen article { max-width: min(90%, 700px); }
+
+dialog.cinematic-dialog[data-expanded=true], dialog.discovery-viewer[data-expanded=true] {
+  inset: 0; margin: 0; width: 100%; max-width: 100%; height: 100dvh; max-height: 100dvh;
+  box-sizing: border-box; border-radius: 0; background: #f6f5ed;
+}
+.cinematic-dialog[data-expanded=true] .miniature-stage { height: 68svh; }
+.discovery-viewer[data-expanded=true] .deck-stage { max-width: 960px; margin: 5vh auto 0; }
+
+/* Desktop is the primary composition. Keep the working area and camera in view together. */
+@media (min-width: 1024px) {
+  .guardian-home .guardian-story > .guardian-chapter-nav {
+    visibility: visible; top: 34svh; margin-inline-end: clamp(22px, 2.5vw, 54px);
+    width: max-content; min-width: 38px; align-items: flex-end; gap: 3px;
+  }
+  .guardian-home .guardian-chapter-nav button { min-height: 30px; padding-inline: 10px; }
+  .guardian-home .guardian-chapter-nav button span { font-size: .82rem; padding: 4px 10px; color: #21352b; }
+  .guardian-home .guardian-chapter-nav button:focus-visible span { opacity: 1; }
+  .guardian-home .guardian-chapter-nav i { box-shadow: 0 0 0 1px #3650446b; }
+  .guardian-home .guardian-copy { width: min(43vw, 720px); }
+  .guardian-home .guardian-copy h1 { font-size: clamp(3.6rem,4.8vw,5.8rem); }
+  .guardian-home .guardian-copy h2 { font-size: clamp(2.5rem,3.5vw,4.45rem); }
+  .guardian-home .guardian-chapter { padding-inline: max(6vw, calc((100vw - 1660px)/2)); }
+  .guardian-home .guardian-feature-preview { width: fit-content; max-width: 100%; }
+  .guardian-home .guardian-destination-grid { grid-template-rows: repeat(2,clamp(170px,13vw,250px)); }
+  .guardian-workspace .atlas-layout { grid-template-columns: clamp(260px,24%,370px) minmax(0,1fr); align-items: stretch; }
+  .guardian-workspace .atlas-layout .portal-map-frame { height: clamp(420px,62vh,740px); }
+  .guardian-workspace .atlas-list { display: flex; flex-direction: column; max-height: clamp(420px,62vh,740px); }
+  .guardian-workspace .atlas-options { max-height: none; min-height: 0; flex: 1; scrollbar-gutter: stable; }
+}
+@media (min-width: 1280px) {
+  .guardian-workspace .discovery-layout .explore-page { margin: 0; min-width: 0; }
+  .guardian-workspace .discovery-layout .guide-hero { border-radius: var(--cin-radius); }
+  .guardian-workspace .discovery-layout { grid-template-columns: minmax(0,1fr) clamp(235px,19vw,325px); gap: var(--cin-gap); align-items: start; }
+  .discovery-layout > .journey-calendar { position: sticky; top: 110px; }
+  .cinematic-dialog.guardian-place-dialog { width: min(1080px,84vw); }
+  .cinematic-dialog .miniature-stage { height: clamp(300px,52vh,590px); }
+  .directory-search { padding-inline: 0; }
+}
+@media (min-width: 1024px) and (max-height: 780px) {
+  .guardian-home .guardian-chapter { padding-block: 90px 72px; }
+  .guardian-home .guardian-copy h2 { font-size: clamp(2.1rem,3.2vw,3.25rem); }
+  .guardian-home .guardian-feature-preview { margin-block: 12px; padding: 14px 18px; }
+}

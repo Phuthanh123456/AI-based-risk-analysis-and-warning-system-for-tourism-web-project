@@ -1,7 +1,8 @@
 import english from "./en.json" with { type: "json" };
 import overrides from "./overrides.json" with { type: "json" };
+import guardian from "./guardian.en.json" with { type: "json" };
 
-const dictionary = { ...english, ...overrides };
+const dictionary = { ...english, ...overrides, ...guardian };
 const normalise = text => text.replace(/\s+/g, " ").trim();
 const folded = new Map(Object.entries(dictionary).map(([vi, en]) => [vi.toLocaleLowerCase("vi"), en]));
 const escape = text => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

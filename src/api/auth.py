@@ -1,8 +1,7 @@
 # src/api/auth.py
-"""
-Email/password JWT auth. No OAuth, no external identity provider —
-bcrypt for hashing, PyJWT for tokens, raw sqlite3 (src/api/db.py) for storage.
-"""
+"""Password and Google Identity Services sign-in."""
+import os
+from contextlib import closing
 import re
 import time
 from typing import Optional
@@ -14,7 +13,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, EmailStr
 
 from src.api.config import JWT_SECRET, JWT_EXPIRE_MINUTES
-from src.api.db import create_user, get_user_by_email, get_user_by_id
+from src.api.db import get_conn, create_user, get_user_by_email, get_user_by_id
 
 _EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
@@ -140,6 +139,8 @@ def login(payload: LoginPayload = Body(...)):
     if not user or not verify_password(payload.password, user["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
+    with closing(get_conn()) as conn, conn:
+        conn.execute("INSERT INTO login_events(user_id, provider) VALUES (?, 'password')", (user["id"],))
     token = create_access_token(user["id"], user["email"])
     return {"token": token, "user": _public_user(user)}
 
@@ -147,3 +148,40 @@ def login(payload: LoginPayload = Body(...)):
 @auth_router.get("/me")
 def me(current_user: dict = Depends(get_current_user)):
     return _public_user(current_user)
+
+class GoogleLogin(BaseModel):
+    credential: str
+
+
+@auth_router.post("/google")
+def google_login(payload: GoogleLogin):
+    client_id = os.getenv("GOOGLE_CLIENT_ID")
+    if not client_id:
+        raise HTTPException(503, "Google sign-in is not configured")
+    from google.oauth2.id_token import verify_oauth2_token
+    from google.auth.transport.requests import Request as GoogleRequest
+    from google.auth.exceptions import TransportError, GoogleAuthError
+    try:
+        claims = verify_oauth2_token(payload.credential, GoogleRequest(), client_id)
+    except TransportError:
+        raise HTTPException(503, "Google verification temporarily unavailable")
+    except (ValueError, GoogleAuthError):
+        raise HTTPException(401, "Invalid Google credential")
+    if claims.get("email_verified") is not True or not claims.get("sub") or not claims.get("email"):
+        raise HTTPException(401, "Verified Google email required")
+
+    email = claims["email"].strip().lower()
+    with closing(get_conn()) as conn, conn:
+        conn.execute("BEGIN IMMEDIATE")
+        identity = conn.execute("SELECT user_id FROM google_identity WHERE subject=?", (claims["sub"],)).fetchone()
+        if identity:
+            uid = identity["user_id"]
+            conn.execute("UPDATE google_identity SET display_name=? WHERE user_id=?", (claims.get("name", ""), uid))
+        else:
+            if conn.execute("SELECT id FROM users WHERE email=?", (email,)).fetchone():
+                raise HTTPException(409, "This email already has an account. Use your original sign-in method.")
+            uid = conn.execute("INSERT INTO users(email,password_hash) VALUES (?, '!google')", (email,)).lastrowid
+            conn.execute("INSERT INTO google_identity VALUES (?,?,?)", (claims["sub"], uid, claims.get("name", "")))
+        conn.execute("INSERT INTO login_events(user_id, provider) VALUES (?, 'google')", (uid,))
+        user = dict(conn.execute("SELECT * FROM users WHERE id=?", (uid,)).fetchone())
+    return {"token": create_access_token(uid, user["email"]), "user": _public_user(user)}
