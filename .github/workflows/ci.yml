@@ -29,8 +29,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: npm
+          cache-dependency-path: travel-ui/package-lock.json
       - name: Install frontend dependencies
-        run: npm ci
+        run: npm ci --prefer-offline --fetch-retries=4 --fetch-retry-mintimeout=3000 --fetch-retry-maxtimeout=20000
       - name: Test frontend behavior
         run: npm test
       - name: Build production frontend
