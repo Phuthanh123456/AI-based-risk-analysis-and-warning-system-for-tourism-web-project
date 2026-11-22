@@ -115,6 +115,11 @@ class _HybridRow(dict):
 
 
 def _hybrid_row(cursor):
+    # psycopg invokes row_factory for commands such as CREATE TABLE too;
+    # those statements have no result description and never produce rows.
+    if cursor.description is None:
+        return tuple
+
     names = [column.name for column in cursor.description]
 
     def make_row(values):
