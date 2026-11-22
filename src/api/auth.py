@@ -12,7 +12,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, EmailStr
 
-from src.api.config import JWT_SECRET, JWT_EXPIRE_MINUTES
+from src.api.config import DATABASE_URL, JWT_SECRET, JWT_EXPIRE_MINUTES
 from src.api.db import get_conn, create_user, get_user_by_email, get_user_by_id
 
 _EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
@@ -172,7 +172,10 @@ def google_login(payload: GoogleLogin):
 
     email = claims["email"].strip().lower()
     with closing(get_conn()) as conn, conn:
-        conn.execute("BEGIN IMMEDIATE")
+        # SQLite needs an explicit write lock here. PostgreSQL starts a
+        # transaction automatically for the first statement on this connection.
+        if not DATABASE_URL:
+            conn.execute("BEGIN IMMEDIATE")
         identity = conn.execute("SELECT user_id FROM google_identity WHERE subject=?", (claims["sub"],)).fetchone()
         if identity:
             uid = identity["user_id"]
@@ -180,7 +183,12 @@ def google_login(payload: GoogleLogin):
         else:
             if conn.execute("SELECT id FROM users WHERE email=?", (email,)).fetchone():
                 raise HTTPException(409, "This email already has an account. Use your original sign-in method.")
-            uid = conn.execute("INSERT INTO users(email,password_hash) VALUES (?, '!google')", (email,)).lastrowid
+            if DATABASE_URL:
+                uid = conn.execute(
+                    "INSERT INTO users(email,password_hash) VALUES (?, '!google') RETURNING id", (email,)
+                ).fetchone()["id"]
+            else:
+                uid = conn.execute("INSERT INTO users(email,password_hash) VALUES (?, '!google')", (email,)).lastrowid
             conn.execute("INSERT INTO google_identity VALUES (?,?,?)", (claims["sub"], uid, claims.get("name", "")))
         conn.execute("INSERT INTO login_events(user_id, provider) VALUES (?, 'google')", (uid,))
         user = dict(conn.execute("SELECT * FROM users WHERE id=?", (uid,)).fetchone())

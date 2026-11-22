@@ -15,6 +15,10 @@ services:
         value: 3.11.9
       - key: JWT_SECRET
         sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
       - key: JWT_EXPIRE_MINUTES
         value: "1440"
       - key: OPENWEATHERMAP_API_KEY
@@ -36,7 +40,5 @@ services:
         sync: false
       - key: VAPID_CONTACT_EMAIL
         sync: false
-    # Note: Render's free tier does not support persistent disks, so the
-    # SQLite database (users/trip_history/push_subscriptions) resets on
-    # every redeploy. Upgrade to a paid plan and re-add a `disk:` block
-    # (see git history) if you need it to persist.
+    # DATABASE_URL should point to the hosted Neon PostgreSQL database.
+    # Keep local development on SQLite by leaving DATABASE_URL unset locally.

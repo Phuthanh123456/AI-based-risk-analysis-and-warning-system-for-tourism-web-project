@@ -24,6 +24,7 @@ export default function WorldExplorer({postcardHost,story,progress,weather,reduc
   const [mode,setMode]=useState("cinematic"),[status,setStatus]=useState("loading"),[quality,setQuality]=useState("auto");
   const [picked,setPicked]=useState(-1),[preset,setPreset]=useState("sunrise"),[expanded,setExpanded]=useState(false);
   const pendingStop=useRef(-1);
+  const [focusedStop,setFocusedStop]=useState(-1);
   const risk=useMemo(()=>matchTrip(travel),[travel]);
   const choices=useRef({chapter:weather,manual:preset,risk});
   useEffect(()=>{choices.current={chapter:weather,manual:preset,risk};},[weather,preset,risk]);
@@ -34,7 +35,10 @@ export default function WorldExplorer({postcardHost,story,progress,weather,reduc
     let disposed=false,control=null;
     import("./journeyScene").then(({mountLandscape})=>{
       if(disposed)return;
-      control=mountLandscape(host,progress,choices,quality,setMode,()=>setStatus("failed"));
+      control=mountLandscape(host,progress,choices,quality,next=>{
+        setMode(next);
+        if(next!=="explore")setFocusedStop(-1);
+      },()=>setStatus("failed"),setFocusedStop);
       engine.current=control;
       if(isOpen.current){control.attach(viewport.current,pins.current);if(pendingStop.current>=0)control.focus(pendingStop.current);}
       setStatus("ready");
@@ -65,24 +69,34 @@ export default function WorldExplorer({postcardHost,story,progress,weather,reduc
     if(moves[event.key]){event.preventDefault();engine.current?.step(moves[event.key]);}
   }
   const record=risk&&(picked===-2||picked>=0&&picked===risk.index)?risk:null;
+  const placeName=s=>say(s.name,s.enName||s.name);
+  const activeStop=sites[picked>=0?picked:mode==="tour"||mode==="explore"?focusedStop:-1];
+  const sceneTitles={
+    bridge:say("Cầu qua sông","River Bridge"),
+    forest:say("Rừng núi","Mountain Forest"),
+    atlas:say("Chuyến đi đã đánh giá","Assessed Trip"),
+  };
+  const sceneTitle=activeStop?placeName(activeStop):sceneTitles[mode]??say("Miền núi Việt Nam","Vietnamese Highlands");
+  const [,conditionVi,conditionEn]=conditions.find(([key])=>key===preset);
+  const placeImage=s=>"/images/explore/"+s.id+".webp";
   return <><button type="button" className="world-open" onClick={()=>open()} aria-haspopup="dialog"><span aria-hidden="true">⤾</span> {say("Khám phá 360°","Explore in 360°")}</button>
     {postcardHost&&createPortal(sites.map((s,i)=><button key={s.id} className="world-postcard" aria-haspopup="dialog" onClick={()=>open(i)}>
-      <img src={"/images/explore/"+s.id+".webp"} alt=""/><span>{s.name} <b aria-hidden="true">↗</b></span></button>),postcardHost)}
+      <img src={placeImage(s)} alt=""/><span>{placeName(s)} <b aria-hidden="true">↗</b></span></button>),postcardHost)}
     {createPortal(<dialog className="world-dialog" ref={dialog} onClose={close} aria-labelledby="world-title" data-expanded={expanded}>
       <div className="world-stage" ref={stage}>
-        <div className="world-viewport" ref={viewport} role="group" tabIndex={ready?0:-1} aria-label={say("Sa bàn. Dùng phím mũi tên để xoay hoặc giữ Shift để di chuyển.","Landscape. Use arrow keys to orbit or hold Shift to pan.")} onKeyDown={keyCamera} style={{backgroundImage:'url(/images/'+(picked>=0?'explore/'+sites[picked].id:'landing/halong-karsts')+'.webp)'}}>
-          {sites.map((s,i)=><button key={s.id} ref={e=>{pins.current[i]=e;}} className="world-pin" data-available={ready} aria-label={s.name} onClick={()=>choose(i)}>
-            <img src={"/images/explore/"+s.id+".webp"} alt="" /><strong>{s.name}</strong>{risk?.index===i&&<i>{t(risk.title)}</i>}
+        <div className="world-viewport" ref={viewport} role="group" tabIndex={ready?0:-1} aria-label={say("Sa bàn. Dùng phím mũi tên để xoay hoặc giữ Shift để di chuyển.","Landscape. Use arrow keys to orbit or hold Shift to pan.")} onKeyDown={keyCamera} style={{backgroundImage:"url("+(picked>=0?placeImage(sites[picked]):"/images/landing/halong-karsts.webp")+")"}}>
+          {sites.map((s,i)=><button key={s.id} ref={e=>{pins.current[i]=e;}} className="world-pin" data-available={ready} aria-label={placeName(s)} onClick={()=>choose(i)}>
+            <img src={placeImage(s)} alt="" /><strong>{placeName(s)}</strong>{risk?.index===i&&<i>{t(risk.title)}</i>}
           </button>)}
         </div>
-        <header className="world-head"><div><h2 id="world-title">{say("Miền núi Việt Nam","Vietnamese highlands")}</h2>
-          <small>{say("Sa bàn du lịch · Thời tiết minh họa","Travel diorama · Simulated weather")}</small></div>
+        <header className="world-head"><div><h2 id="world-title">{sceneTitle}</h2>
+          <small>{say("Sa bàn du lịch · Thời tiết minh họa","Travel diorama · Simulated weather")}{ready&&" · "+say(conditionVi,conditionEn)}</small></div>
           <button className="world-exit" onClick={()=>dialog.current.close()}>{say("Về trang chủ","Back to home")} ×</button></header>
         <aside className="world-panel"><h3>{say("Điểm dừng","Destinations")}</h3><div className="world-stops">{sites.map((s,i)=>
-          <button key={s.id} aria-pressed={picked===i} onClick={()=>choose(i)}><img src={"/images/explore/"+s.id+".webp"} alt="" />{s.name}</button>)}</div>
+          <button key={s.id} aria-pressed={picked===i} onClick={()=>choose(i)}><img src={placeImage(s)} alt="" />{placeName(s)}</button>)}</div>
           {ready&&<div className="world-scenic-stops">{[["bridge","Cầu qua sông","River bridge"],["forest","Rừng núi","Forest ridge"]].map(([key,vi,eng])=>
             <button key={key} aria-pressed={mode===key} onClick={()=>{setPicked(-1);engine.current?.setMode(key);}}>{say(vi,eng)}</button>)}</div>}
-          {picked>=0&&<Link to={sites[picked].path}>{say("Xem cẩm nang","Destination guide")} ↗</Link>}
+          {picked>=0&&sites[picked].path&&<Link to={sites[picked].path}>{say("Xem cẩm nang","Destination guide")} ↗</Link>}
           {risk&&<button className="world-trip-stop" onClick={()=>{setPicked(-2);engine.current?.setMode("atlas");}}>{say("Chuyến đi đã đánh giá","Assessed trip")}</button>}
           {record&&<p className="world-record">{record.name} · {record.date}<br/>{t(record.title)}{record.weather!=null&&<><br/>{say("Điểm thời tiết","Weather score")} {record.weather}/10</>}</p>}
           <label>{say("Đồ họa","Graphics")}<select value={quality} onChange={e=>{pendingStop.current=-1;setStatus("loading");setQuality(e.target.value);setPicked(-1);}}>

@@ -50,11 +50,12 @@ def validate_production_config():
             raise RuntimeError("Production requires a private JWT_SECRET of at least 32 bytes")
 
 # ============================================================
-# SQLITE (users / trip history / push subscriptions)
+# DATABASE (users / trip history / push subscriptions)
 # ============================================================
 # DB_PATH_OVERRIDE lets tests point at a throwaway sqlite file instead of
 # the real app database.
 DB_PATH = (os.getenv("DB_PATH_OVERRIDE") or os.path.join(PROJECT_ROOT, "data", "state", "app.sqlite"))
+DATABASE_URL = (os.getenv("DATABASE_URL") or "").strip()
 
 # ============================================================
 # AIR QUALITY (OpenWeatherMap)

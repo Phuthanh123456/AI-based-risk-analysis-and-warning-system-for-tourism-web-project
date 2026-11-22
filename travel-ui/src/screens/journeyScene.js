@@ -8,7 +8,7 @@ import {vegetation} from "../three/world/habitat";
 import {atmosphere} from "../three/world/atmosphere";
 import {vietnamAtlas} from "./vietnamAtlas";
 
-export function mountLandscape(host, progress, choices, quality, onMode, onFailure){
+export function mountLandscape(host, progress, choices, quality, onMode, onFailure, onFocus){
   const renderer=new T.WebGLRenderer({antialias:true,powerPreference:"high-performance"});
   const canvas=renderer.domElement,gl=renderer.getContext(),info=gl.getExtension("WEBGL_debug_renderer_info");
   const software=info&&/swiftshader|llvmpipe|software/i.test(gl.getParameter(info.UNMASKED_RENDERER_WEBGL));
@@ -35,6 +35,7 @@ export function mountLandscape(host, progress, choices, quality, onMode, onFailu
   function resize(){const {width,height}=viewport.getBoundingClientRect();if(width&&height){renderer.setSize(width,height,false);camera.aspect=width/height;camera.updateProjectionMatrix();}}
   function setFocus(index){
     focus=index;town.focus(index);flight=true;
+    onFocus?.(index);
     target.copy(locations[index]);pos.copy(target).add(offset.set(7.8,6.2,9.2));
   }
   function setMode(next){

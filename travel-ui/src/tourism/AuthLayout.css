@@ -4,3 +4,24 @@
 @media(max-width:600px){.tour-auth.guardian-auth{padding:95px 18px 30px;justify-content:start}.guardian-auth-card{max-width:430px;grid-template-columns:1fr;border-width:7px;border-radius:28px;min-height:0}.auth-image-panel{height:195px;border-radius:20px}.auth-image-panel>.guardian-auth-scene{border-radius:20px;object-position:50% 42%}.auth-brand{left:23px;top:30px;right:auto}.auth-brand>svg{font-size:33px}.auth-brand>span{font-size:16px}.auth-brand small{font-size:6px}.auth-photo-copy{left:24px;right:auto;top:90px;text-align:left}.auth-photo-copy h2{font-size:15px;line-height:1.7}.guardian-auth-mascot{inset:-15% -30% -2% 35%}.auth-form-panel{padding:28px 23px}.auth-form-content h1{font-size:29px!important}.auth-subtitle{font-size:12px}.auth-field input{font-size:16px;height:49px}.auth-field{font-size:13px}.auth-top-actions{left:18px;right:18px;top:20px}.auth-back{font-size:11px}.guardian-auth-note p{font-size:12px}.auth-switch{font-size:12px}.guardian-auth-note{padding:13px}.auth-footer-note{font-size:9px}}
 @media(prefers-reduced-motion:reduce){.guardian-auth-mascot{animation:none}.guardian-auth-mascot img{transition:none}}
 .auth-google{display:grid;justify-items:center;gap:6px;margin:16px 0;text-align:center}.auth-google>button{width:100%;min-height:44px;border:1px solid #acb8ae;border-radius:24px;background:#fff;color:#46554b;font:inherit;font-weight:600}.auth-google small{line-height:1.45}.auth-google>div:empty{display:none}
+.tour-auth .auth-form-content { max-width: 400px; }
+:root .tour-auth.guardian-auth .auth-login-form .tour-button,
+.tour-auth .auth-google > button {
+  box-sizing: border-box;
+  width: 100%;
+  height: 48px;
+  min-height: 48px;
+  padding-block: 0;
+  line-height: 1.2;
+}
+.auth-google { grid-template-columns: minmax(0, 1fr); }
+/* Match the text offset created by the leading Google logo. */
+:root .tour-auth.guardian-auth .auth-login-form .tour-button {
+  padding-inline: 31px 15px;
+}
+.auth-google-slot,
+.auth-google-mount {
+  display: grid;
+  justify-items: center;
+  width: 100%;
+}
