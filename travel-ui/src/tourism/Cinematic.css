@@ -13,8 +13,6 @@
 .atlas-options button:is(:hover,:focus-visible,[data-active=true]){border-color:#57937a;background:#6eaf891b}.atlas-options img{width:58px;height:46px;object-fit:cover;border-radius:9px}
 .atlas-marker img{display:block;width:100px;height:65px;object-fit:cover}.atlas-marker b{display:block;padding:4px}.leaflet-tooltip.atlas-marker{transform-origin:bottom;border-radius:8px;box-shadow:var(--cin-shadow)}
 .discovery-stack{perspective:760px;touch-action:pan-y;cursor:grab}.discovery-stack [data-position="-1"]{transform:translateX(-53%) rotateY(32deg) scale(.79)}.discovery-stack [data-position="1"]{transform:translateX(53%) rotateY(-32deg) scale(.79)}
-.guardian-auth .auth-image-panel:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#0d272270,transparent 65%,#0e292448)}
-.guardian-auth .auth-brand,.guardian-auth .auth-photo-copy{color:white;z-index:1;text-shadow:0 1px 8px #12251d}
 @media(max-width:760px){.atlas-layout{display:flex;flex-direction:column-reverse}.atlas-options{display:flex;overflow:auto;max-height:115px}.atlas-options button{flex:0 0 145px}.guardian-home .guardian-destination-grid{grid-template-columns:1fr 1fr;grid-template-rows:repeat(2,180px)}.guardian-destination-grid>div:first-child,.guardian-destination-grid>div:last-child{grid-column:auto;grid-row:auto}.scene-caption{top:85svh}}
 @media(prefers-reduced-motion:reduce){.discovery-stack img,.atlas-list *{transition:none!important}}
 

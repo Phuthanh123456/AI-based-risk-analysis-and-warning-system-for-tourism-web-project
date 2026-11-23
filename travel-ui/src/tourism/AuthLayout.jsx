@@ -13,7 +13,7 @@ export default function AuthLayout({ children, title, subtitle, onBack }) {const
   return <main className="tour-auth guardian-auth">
 
     <div className="auth-top-actions"><Link className="auth-back" to="/" onClick={goHome}><ArrowBack fontSize="small" />{translate(" Về trang chủ")}</Link><LanguageSwitch /></div>
-    <div className="guardian-auth-card"><section className="auth-image-panel"><img className="guardian-auth-scene" src="/images/landing/hoian-lanterns.webp" alt="" /><Link className="auth-brand" to="/" onClick={goHome}><ExploreIcon aria-hidden="true" /><span>{translate("VIETNAM")}<small>{translate("TRAVEL RISK AI")}</small></span></Link><div className="auth-photo-copy"><h2>{translate("Những miền đất đẹp.")}<br />{translate("Những hành trình an tâm.")}</h2></div></section>
+    <div className="guardian-auth-card"><section className="auth-image-panel"><img className="guardian-auth-scene" src="/images/landing/hoian-lanterns.webp" alt="" /></section>
     <section className="auth-form-panel"><div className="auth-form-content"><p className="tour-kicker">{translate("HÀNH TRÌNH CỦA BẠN")}</p><h1>{translate(title)}</h1><p className="auth-subtitle">{translate(subtitle)}</p>{translate(children)}<div className="guardian-auth-note"><ExploreIcon /><p>{translate("Khám phá điểm đến, chuẩn bị hành trình và theo dõi thông tin phù hợp với chuyến đi của bạn.")}</p></div></div></section></div>
     <p className="auth-footer-note">{translate("Vietnam Travel Risk AI · Đi để hiểu thêm")}</p>
   </main>;
