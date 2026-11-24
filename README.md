@@ -2,31 +2,41 @@
 
 **Đồ án môn Phát triển ứng dụng Web — Trường Đại học Công nghệ Thông tin, ĐHQG-HCM (UIT)**
 
-Giảng viên: **Nguyễn Thanh Bình**. Thành viên, MSSV, lớp: bổ sung theo thông tin nhóm khi nộp bài.
+Giảng viên: **Nguyễn Thanh Bình**. Thành viên: **Thái Nguyễn Thanh Phú**.
 
 [![CI](https://github.com/Phuthanh123456/AI-based-risk-analysis-and-warning-system-for-tourism-web-project/actions/workflows/ci.yml/badge.svg)](https://github.com/Phuthanh123456/AI-based-risk-analysis-and-warning-system-for-tourism-web-project/actions/workflows/ci.yml)
 
-Repository môn học: `Phuthanh123456/AI-based-risk-analysis-and-warning-system-for-tourism-web-project`.
+**Demo:** [https://vietjourney.id.vn/](https://vietjourney.id.vn/) · **API:** [https://travel-risk-api.onrender.com](https://travel-risk-api.onrender.com) · **API docs:** [Swagger UI](https://travel-risk-api.onrender.com/docs) · **Health:** [https://travel-risk-api.onrender.com/health](https://travel-risk-api.onrender.com/health)
+
+Repository môn học: [Phuthanh123456/AI-based-risk-analysis-and-warning-system-for-tourism-web-project](https://github.com/Phuthanh123456/AI-based-risk-analysis-and-warning-system-for-tourism-web-project).
 Ứng dụng giúp du khách khám phá Việt Nam và cân nhắc chuyến đi qua **thời tiết/không khí, tuyến đường và tin tức địa phương**. Kết quả mang tính tham khảo, không phải xác nhận an toàn hay thông báo chính thức.
 
-## Trạng thái triển khai
+## Demo và môi trường production
 
-Đã có React frontend, REST API, SQLite, API docs, Docker và CI. Đợt kiểm tra **13/11/2026** chạy tại máy phát triển và Docker Linux, **chưa deploy bản cập nhật lên hosting**. Backend Railway trong cấu hình cũ trả HTTP 404. Frontend cũ trả HTML không chứng minh API hoạt động. Chưa có URL production mới được xác nhận cho bản này.
+| Thành phần | Nền tảng | URL / ghi chú |
+| --- | --- | --- |
+| Web frontend | Vercel | [vietjourney.id.vn](https://vietjourney.id.vn/) |
+| REST API | Render | [travel-risk-api.onrender.com](https://travel-risk-api.onrender.com) |
+| Tài liệu API | FastAPI Swagger UI | [Mở `/docs`](https://travel-risk-api.onrender.com/docs) |
+| Kiểm tra API | FastAPI health endpoint | [`/health`](https://travel-risk-api.onrender.com/health) |
+| Cơ sở dữ liệu production | Neon PostgreSQL | Được cấu hình qua `DATABASE_URL`; không công khai thông tin kết nối |
+| DNS tên miền | Cloudflare | `vietjourney.id.vn` trỏ tới frontend Vercel |
 
-Khi nộp môn, cần bổ sung **Live URL, public API base URL và URL `/docs` online** sau triển khai; kiểm tra thêm slide và báo cáo Word. README không thay thế các tài liệu đó.
+Các URL trên được kiểm tra ngày **24/11/2026**: web, `/health` và `/docs` trả HTTP 200. Render Free có thể đưa API vào trạng thái ngủ khi ít truy cập; yêu cầu đầu tiên sau thời gian nhàn rỗi có thể phản hồi chậm. `/health` xác nhận tiến trình API đang trả lời, không bảo đảm mọi nhà cung cấp dữ liệu bên ngoài đều hoạt động.
 
 ## Chức năng
 
 | Nhóm | Hành vi hiện có |
 | --- | --- |
 | Khám phá | Danh mục 34 tỉnh/thành, đối chiếu địa phương cũ; điểm đến, văn hóa, ẩm thực và nhóm trải nghiệm |
-| Tài khoản | Đăng ký, đăng nhập JWT, đăng xuất; SQLite lưu người dùng, lịch sử và đăng ký cảnh báo |
+| Tài khoản | Đăng ký, đăng nhập JWT, đăng xuất; PostgreSQL trên production hoặc SQLite local lưu người dùng, lịch sử và đăng ký cảnh báo |
 | Hành trình | Bắt buộc chọn xuất phát, đích có tọa độ, ngày đi và mục đích; gợi ý tìm địa chỉ, GPS |
 | Ngày đi | Mặc định hôm nay theo giờ Việt Nam; chọn hôm nay và 7 ngày tiếp theo |
 | Tổng quan | NÊN ĐI / CẦN LƯU Ý TRƯỚC KHI ĐI / KHÔNG NÊN ĐI; xét ba yếu tố, không tạo điểm tổng hợp giả |
 | Thời tiết | Điểm 0–10 đúng ngày, dự báo từng ngày, PM2.5 khi nguồn có dữ liệu, gợi ý theo mục đích chuyến đi |
 | Di chuyển | Bản đồ bên trái, thông tin bên phải; hình tuyến, quãng đường và thời gian ô tô ước tính; không chấm ùn tắc |
-| Tin tức | Tối đa 12 tiêu đề trong mẫu 7 ngày; nguồn, mức lưu ý, tác động bất lợi/khắc phục/chưa rõ; xem bài gốc để xác minh |
+| Tin tức | Tra cứu RSS theo yêu cầu; tối đa 12 tiêu đề trong mẫu 7 ngày, lọc theo địa danh/từ khóa; hiển thị nguồn, mức lưu ý tạm tính và đường dẫn bài gốc để xác minh |
+| Khám phá 360° | Sa bàn tương tác Three.js/WebGL cho phép chọn điểm dừng, xoay và phóng cảnh quan; hiệu ứng thời tiết trong sa bàn là minh họa, không phải đầu ra dự báo |
 | Tiện ích | So sánh tin điểm đến, lịch sử tra cứu, theo dõi thời tiết và kiểm tra cảnh báo |
 | Giao diện | VI/EN, sáng/tối, desktop/mobile; giữ tên món ăn và thuật ngữ văn hóa đặc trưng khi cần |
 
@@ -36,8 +46,8 @@ Lịch sử lưu snapshot tại thời điểm gọi `/trip`, không phải kế
 
 ```mermaid
 flowchart LR
-  UI[React / Vite / MUI / Leaflet] --> API[FastAPI / Uvicorn]
-  API --> DB[(SQLite)]
+  UI[React / Vite / MUI / Leaflet / Three.js] --> API[FastAPI / Uvicorn on Render]
+  API --> DB[(Neon PostgreSQL in production<br/>SQLite for local development)]
   API --> GEO[Photon / OpenStreetMap search]
   API --> ROUTE[TrackAsia / OSRM routing]
   API --> WEATHER[Open-Meteo weather]
@@ -48,7 +58,7 @@ flowchart LR
   API --> OLD[Historical features + classifier probabilities]
 ```
 
-Backend Python/FastAPI, frontend JavaScript/React 19; cơ sở dữ liệu SQLite, schema trong `src/api/db.py`. Môn học cho phép lựa chọn framework; API server này không dùng Node/Express. Mật khẩu băm bcrypt, token HS256 có thời hạn. `.env`, token và dữ liệu tài khoản không đưa vào Git.
+Backend Python/FastAPI, frontend JavaScript/React 19. Production dùng Neon PostgreSQL; local development/test dùng SQLite khi không đặt `DATABASE_URL`. Schema và lớp tương thích cơ sở dữ liệu nằm trong `src/api/db.py`. Môn học cho phép lựa chọn framework; API server này không dùng Node/Express. Mật khẩu băm bcrypt, token HS256 có thời hạn. `.env`, token và dữ liệu tài khoản không đưa vào Git.
 Giữ nguyên dữ liệu/nhãn và tên tỉnh lịch sử trong `data/`; không tự gán nguồn hay giấy phép cho dữ liệu.
 
 ## AI và cách đánh giá thực tế
@@ -129,7 +139,9 @@ npm run build
 
 Không cần commit output `.local.json`. GitHub CI chạy pytest, frontend tests, lint và build. Xem kết quả kiểm thử thật và giới hạn trong [RELEASE_TEST_REPORT.md](RELEASE_TEST_REPORT.md).
 
-## Cấu hình production — chưa deploy
+## Docker và tự triển khai
+
+Production demo hiện chạy trên Vercel, Render và Neon như bảng ở trên. Các lệnh dưới đây dành cho chạy thử bằng Docker hoặc tự triển khai; địa chỉ localhost không phải public demo.
 
 Tạo `.env` từ mẫu, đặt **JWT_SECRET riêng ngẫu nhiên ít nhất 32 byte**. Compose bật `APP_ENV=production`, từ chối secret mặc định/yếu.
 
@@ -139,9 +151,9 @@ docker compose up -d --build
 docker compose ps
 ```
 
-Frontend: **http://localhost:5173**; backend: **http://localhost:8000**; Swagger qua nginx: **http://localhost:5173/docs**. Compose giữ `./data:/app/data`, có restart policy/healthcheck. Chưa phải public hosting/HTTPS. Server online cần domain, TLS, lưu trữ bền vững, backup SQLite và giám sát. Không chạy các bản API với SQLite tạm riêng lẻ rồi kỳ vọng tài khoản tự đồng bộ.
+Frontend: **http://localhost:5173**; backend: **http://localhost:8000**; Swagger qua nginx: **http://localhost:5173/docs**. Compose giữ `./data:/app/data`, có restart policy/healthcheck. Đây là cấu hình chạy local, không phải URL production. Nếu tự host, cần cấu hình HTTPS, lưu trữ dữ liệu bền vững, backup và giám sát.
 
-Nếu frontend ở Vercel riêng backend: root `travel-ui`, đặt **`VITE_API_BASE_URL=https://<backend-da-trien-khai>` trước build**, redeploy frontend. `vercel.json` chỉ giữ SPA rewrite, không trỏ cứng Railway cũ. Docs online nằm ở `<backend>/docs`; Docker nginx cũng proxy docs. `render.yaml` chỉ là mẫu; Render free không bảo đảm SQLite tồn tại sau redeploy.
+Nếu frontend ở Vercel riêng backend: root `travel-ui`, đặt **`VITE_API_BASE_URL=https://<backend-da-trien-khai>` trước build**, redeploy frontend. `vercel.json` chỉ giữ SPA rewrite, không trỏ cứng Railway cũ. Docs online nằm ở `<backend>/docs`; Docker nginx cũng proxy docs. `render.yaml` là cấu hình mẫu cho Render; dùng PostgreSQL/Neon hoặc storage bền vững cho dữ liệu production, không phụ thuộc SQLite tạm trong filesystem của container.
 
 Các nhà cung cấp có thể chậm, giới hạn hoặc gián đoạn; cache/deadline/retry không bảo đảm uptime tuyệt đối. Bản môn học dùng tile OSM/FOSSGIS; phục vụ tải lớn cần dịch vụ và điều kiện sử dụng phù hợp, không tải tile hàng loạt hoặc coi nguồn cộng đồng là SLA.
 
@@ -166,4 +178,4 @@ Tài liệu: [I18N.md](I18N.md), [LOCATION_SEARCH.md](LOCATION_SEARCH.md), [PERF
 
 Create a Google OAuth web client and register the exact frontend origin (for example http://localhost:5180) under Authorized JavaScript origins. Set GOOGLE_CLIENT_ID in the backend environment and VITE_GOOGLE_CLIENT_ID in travel-ui/.env.local to the same public client ID. Restart the backend and Vite, or rebuild the frontend for production. Docker Compose passes the backend client ID to the frontend build. The Google button appears when the frontend ID is configured.
 
-SQLite stores the verified Google subject, display name and account email. Successful password and Google logins each add a UTC timestamp and provider to login_events. ID tokens are verified on the server and are not stored. A pre-existing password account with the same email keeps its original sign-in method.
+The configured database stores the verified Google subject, display name and account email. Successful password and Google logins each add a UTC timestamp and provider to login_events. ID tokens are verified on the server and are not stored. A pre-existing password account with the same email keeps its original sign-in method.
