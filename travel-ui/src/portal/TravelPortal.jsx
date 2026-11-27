@@ -44,6 +44,11 @@ function PortalRoutes({ context }) {const translate = useTranslate();
     }
   }
   if (location.pathname === "/") return <LandingPage signedIn travel={context} themeMode={context.theme} toggleTheme={context.toggleTheme} logout={context.logout} onGoToLogin={openTool} />;
+  if (location.pathname === "/admin" || location.pathname === "/admin/") return (
+    <Suspense fallback={<Box className="portal-loading"><CircularProgress size={28} /></Box>}>
+      <AdminPage token={context.session?.user?.token} email={context.session?.user?.email} logout={context.logout} toggleTheme={context.toggleTheme} />
+    </Suspense>
+  );
   return (
     <TravelContext.Provider value={context}>
       <MuiDashboardShell themeMode={context.theme} toggleTheme={context.toggleTheme} logout={context.logout} email={context.session?.user?.email} fullWidth={location.pathname === "/map"}>
@@ -63,7 +68,6 @@ function PortalRoutes({ context }) {const translate = useTranslate();
             <Route path="/compare" element={<ComparePage />} />
             <Route path="/alerts" element={<AlertsPage />} />
             <Route path="/history" element={<HistoryPage />} />
-            <Route path="/admin" element={<AdminPage token={context.session?.user?.token} />} />
             <Route path="/profile" element={<ProfilePage email={context.session?.user?.email} />} />
             <Route path="*" element={<Navigate to="/plan" replace />} />
           </Routes>
