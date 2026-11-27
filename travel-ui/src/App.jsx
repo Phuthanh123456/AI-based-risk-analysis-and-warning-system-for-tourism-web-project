@@ -19,7 +19,7 @@ const PlaceGuidePage = lazy(() => import("./pages/PlaceGuidePage"));
 const ExperiencePage = lazy(() => import("./pages/ExperiencePage"));
 
 const LANDING_PORTAL_ROUTES = new Set([
-  "/plan", "/map", "/weather", "/traffic", "/news", "/compare", "/alerts", "/history",
+  "/plan", "/map", "/weather", "/traffic", "/news", "/compare", "/alerts", "/history", "/admin",
 ]);
 
 function localDate() {

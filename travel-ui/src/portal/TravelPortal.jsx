@@ -22,6 +22,7 @@ const MapPage = lazy(() => import("../pages/MapPage"));
 const ComparePage = lazy(() => import("../pages/ComparePage"));
 const AlertsPage = lazy(() => import("../pages/AlertsPage"));
 const HistoryPage = lazy(() => import("../pages/HistoryPage"));
+const AdminPage = lazy(() => import("../pages/AdminPage"));
 const ProfilePage = lazy(() => import("../pages/ProfilePage"));
 const ProvinceGuidePage = lazy(() => import("../pages/ProvinceGuidePage"));
 const PlaceGuidePage = lazy(() => import("../pages/PlaceGuidePage"));
@@ -62,6 +63,7 @@ function PortalRoutes({ context }) {const translate = useTranslate();
             <Route path="/compare" element={<ComparePage />} />
             <Route path="/alerts" element={<AlertsPage />} />
             <Route path="/history" element={<HistoryPage />} />
+            <Route path="/admin" element={<AdminPage token={context.session?.user?.token} />} />
             <Route path="/profile" element={<ProfilePage email={context.session?.user?.email} />} />
             <Route path="*" element={<Navigate to="/plan" replace />} />
           </Routes>

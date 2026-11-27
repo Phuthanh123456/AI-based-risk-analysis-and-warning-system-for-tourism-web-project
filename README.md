@@ -179,3 +179,16 @@ Tài liệu: [I18N.md](I18N.md), [LOCATION_SEARCH.md](LOCATION_SEARCH.md), [PERF
 Create a Google OAuth web client and register the exact frontend origin (for example http://localhost:5180) under Authorized JavaScript origins. Set GOOGLE_CLIENT_ID in the backend environment and VITE_GOOGLE_CLIENT_ID in travel-ui/.env.local to the same public client ID. Restart the backend and Vite, or rebuild the frontend for production. Docker Compose passes the backend client ID to the frontend build. The Google button appears when the frontend ID is configured.
 
 The configured database stores the verified Google subject, display name and account email. Successful password and Google logins each add a UTC timestamp and provider to login_events. ID tokens are verified on the server and are not stored. A pre-existing password account with the same email keeps its original sign-in method.
+
+### Administration
+
+Open `/admin` and sign in through the normal email/password form. FastAPI restricts
+`GET /api/admin/overview` to a dedicated account. The dashboard shows aggregate
+account, sign-in, saved assessment and Web Push subscription statistics.
+
+Set `ADMIN_EMAIL` to a new, dedicated account address and `ADMIN_PASSWORD_HASH`
+to the bcrypt hash of a strong password in the backend service environment.
+On startup the API inserts this account if the address is unused. An existing
+account is never updated or promoted by email alone. If disabling access, remove
+the admin environment variables and rotate the dedicated account credentials
+before enabling it again.

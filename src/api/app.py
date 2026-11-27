@@ -74,6 +74,7 @@ from src.integrations.traffic.serpapi_service import (
 from src.api.db import init_db, save_trip_history, list_trip_history, delete_trip_history
 from src.api.auth import auth_router, get_current_user, get_current_user_optional
 from src.api.notifications import notification_router
+from src.api.admin import admin_router, provision_admin
 from src.integrations.traffic.place_search import search_places_async, close_search_client
 from src.api.recent_news import fetch_recent_news
 
@@ -154,6 +155,7 @@ async def lifespan(_app: FastAPI):
     if os.getenv("APP_ENV", "development").lower() == "production" and weather_model_system is None:
         raise RuntimeError("Production weather model failed to load")
     init_database()
+    provision_admin()
     try:
         yield
     finally:
@@ -1110,6 +1112,7 @@ def map_points():
 # ============================================================
 app.include_router(auth_router)
 app.include_router(notification_router)
+app.include_router(admin_router)
 
 
 @app.get("/api/trip-history")
