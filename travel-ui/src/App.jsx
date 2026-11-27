@@ -61,6 +61,7 @@ function decodeRoutePolyline(enc, type) {
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
+  const adminLogin = new URLSearchParams(location.search).get("next") === "/admin";
   const [initialContext] = useState(readSavedContext);
   // ===== LOGIN (new) =====
   const [session, setSession] = useState(() => {
@@ -678,11 +679,12 @@ export default function App() {
     };
   }, [canTrip, session?.user?.token, location.pathname, tripRes, tripCheckedAt, tripLoading, tripPurpose, departureDate, userPos, destinationLocation]);
   if (!session) {
-    if (location.pathname === "/admin" || location.pathname === "/admin/") return <Navigate to="/login" replace state={{ returnTo: "/admin" }} />;
+    if (location.pathname === "/admin" || location.pathname === "/admin/") return <Navigate to="/login?next=%2Fadmin" replace />;
     if (homeAfterLogout.current && location.pathname !== "/") return <Navigate to="/" replace />;
     const registerScreen = <RegisterScreen onRegister={login} onBack={returnHome} onGoToLogin={() => navigate("/login", { replace: true, state: location.state })} />;
     const loginScreen = (
       <LoginScreen
+        adminLogin={adminLogin}
         onLogin={login}
         onBack={returnHome}
         onGoToRegister={() => navigate("/register", { state: location.state })}
@@ -705,7 +707,7 @@ export default function App() {
   // Redirect only after authentication has committed, before mounting portal
   // routes. This prevents their fallback redirect from racing the login target.
   if (location.pathname === "/login" || location.pathname === "/register") {
-    const target = session.user.isAdmin ? "/admin" : location.state?.returnTo || "/plan";
+    const target = session.user.isAdmin || adminLogin ? "/admin" : location.state?.returnTo || "/plan";
     return <Navigate to={LANDING_PORTAL_ROUTES.has(target) ? target : "/plan"} state={location.state} replace />;
   }
 
