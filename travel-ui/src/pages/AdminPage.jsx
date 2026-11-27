@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, Button, CircularProgress, FormControlLabel, IconButton, Switch, useTheme } from "@mui/material";
+import { Alert, Button, CircularProgress, IconButton, useTheme } from "@mui/material";
 import DashboardOutlined from "@mui/icons-material/DashboardOutlined";
 import TimelineOutlined from "@mui/icons-material/TimelineOutlined";
 import PlaceOutlined from "@mui/icons-material/PlaceOutlined";
@@ -47,7 +47,6 @@ export default function AdminPage({ token, email, logout, toggleTheme }) {
   const dark = theme.palette.mode === "dark";
   const [revision, setRevision] = useState(0);
   const [result, setResult] = useState(null);
-  const [demo, setDemo] = useState(false);
   const [section, setSection] = useState("overview");
   const t = (vn, en) => vi ? vn : en;
   const labels = {
@@ -83,7 +82,7 @@ export default function AdminPage({ token, email, logout, toggleTheme }) {
   }
 
   const live = result?.data;
-  const data = demo && live?.activity ? withAdminDemoData(live) : live;
+  const data = live?.activity ? withAdminDemoData(live) : live;
   const days = data?.activity ?? [];
   const metrics = data ? [
     [t("Tài khoản", "Accounts"), data.counts.accounts, GroupsOutlined],
@@ -121,20 +120,12 @@ export default function AdminPage({ token, email, logout, toggleTheme }) {
             <p>{t("Theo dõi hoạt động đánh giá chuyến đi và sử dụng dịch vụ.", "Track trip assessments and platform activity.")}</p>
           </div>
           <div className="vj-admin-hero-actions">
-            <FormControlLabel
-              control={<Switch size="small" checked={demo} onChange={(_, checked) => setDemo(checked)} disabled={!live?.activity} />}
-              label={t("Dữ liệu demo", "Demo data")}
-            />
             {result?.updated && <time dateTime={result.updated.toISOString()}>{t("Cập nhật", "Updated")} {result.updated.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })}</time>}
             <Button variant="contained" startIcon={<RefreshOutlined />} onClick={refresh} disabled={!result}>
               {t("Tải lại dữ liệu", "Refresh data")}
             </Button>
           </div>
         </div>
-        {demo && data && <Alert severity="info">{t(
-          "Chế độ demo · Số liệu thật cộng 100 tài khoản và hoạt động mô phỏng.",
-          "Demo mode · Live totals plus 100 simulated accounts and sample activity."
-        )}</Alert>}
         {!result && <CircularProgress aria-label={t("Đang tải", "Loading")} />}
         {result && !data && <Alert severity="error">{result.error === "Administrator access required"
           ? t("Trang này chỉ dành cho quản trị viên.", "Administrator access required.")
