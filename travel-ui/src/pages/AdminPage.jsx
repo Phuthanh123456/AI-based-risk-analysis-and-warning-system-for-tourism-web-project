@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { createElement, useEffect, useState } from "react";
 import { Alert, Button, CircularProgress, IconButton, useTheme } from "@mui/material";
 import DashboardOutlined from "@mui/icons-material/DashboardOutlined";
 import TimelineOutlined from "@mui/icons-material/TimelineOutlined";
@@ -99,7 +99,7 @@ export default function AdminPage({ token, email, logout, toggleTheme }) {
         {sections.map(([id, label, Icon]) => <button type="button" key={id} aria-current={section === id ? "location" : undefined} onClick={() => {
           setSection(id);
           document.getElementById("vj-admin-" + id)?.scrollIntoView({ block: "start" });
-        }}><Icon fontSize="small" />{label}</button>)}
+        }}>{createElement(Icon, { fontSize: "small" })}{label}</button>)}
       </nav>
       <Link className="vj-admin-return" to="/plan">{t("Về trang lập hành trình", "Back to trip planner")}</Link>
     </aside>
@@ -133,7 +133,7 @@ export default function AdminPage({ token, email, logout, toggleTheme }) {
         {data && <>
           <section className="vj-admin-metrics" aria-label={t("Số liệu tổng quan", "Key metrics")}>
             {metrics.map(([label, value, Icon]) => <article className="vj-admin-card vj-admin-metric" key={label}>
-              <div className="vj-admin-icon"><Icon fontSize="small" /></div>
+              <div className="vj-admin-icon">{createElement(Icon, { fontSize: "small" })}</div>
               <div><span>{label}</span><strong>{number.format(value)}</strong></div>
             </article>)}
           </section>
