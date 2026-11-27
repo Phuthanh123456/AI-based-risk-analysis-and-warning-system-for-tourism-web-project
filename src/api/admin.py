@@ -1,26 +1,15 @@
 """Provision a dedicated administrator and expose aggregate operations metrics."""
 
-import os
-import re
 from contextlib import closing
-from hmac import compare_digest
 from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Response
 
-from src.api.auth import get_current_user, verify_password
+from src.api.auth import admin_credentials, get_current_user, is_admin, verify_password
 from src.api.config import DATABASE_URL
 from src.api.db import get_conn
 
 admin_router = APIRouter(prefix="/api/admin", tags=["admin"])
-
-
-def admin_credentials():
-    email = os.getenv("ADMIN_EMAIL", "").strip().lower()
-    password_hash = os.getenv("ADMIN_PASSWORD_HASH", "").strip()
-    if not email or not re.fullmatch(r"\$2[aby]\$\d{2}\$[./A-Za-z0-9]{53}", password_hash):
-        return None
-    return email, password_hash
 
 
 def provision_admin():
@@ -39,12 +28,7 @@ def provision_admin():
 
 
 def require_admin(user: dict = Depends(get_current_user)):
-    credentials = admin_credentials()
-    if (
-        not credentials
-        or user["email"] != credentials[0]
-        or not compare_digest(user["password_hash"].encode(), credentials[1].encode())
-    ):
+    if not is_admin(user):
         raise HTTPException(status_code=403, detail="Administrator access required")
     return user
 

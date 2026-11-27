@@ -2,6 +2,7 @@
 """Password and Google Identity Services sign-in."""
 import os
 from contextlib import closing
+from hmac import compare_digest
 import re
 import time
 from typing import Optional
@@ -107,8 +108,24 @@ class LoginPayload(BaseModel):
     password: str
 
 
+def admin_credentials():
+    email = os.getenv("ADMIN_EMAIL", "").strip().lower()
+    password_hash = os.getenv("ADMIN_PASSWORD_HASH", "").strip()
+    if not email or not re.fullmatch(r"\$2[aby]\$\d{2}\$[./A-Za-z0-9]{53}", password_hash):
+        return None
+    return email, password_hash
+
+
+def is_admin(user: dict) -> bool:
+    credentials = admin_credentials()
+    return bool(
+        credentials and user["email"] == credentials[0]
+        and compare_digest(user["password_hash"].encode(), credentials[1].encode())
+    )
+
+
 def _public_user(user: dict) -> dict:
-    return {"id": user["id"], "email": user["email"], "created_at": user.get("created_at")}
+    return {"id": user["id"], "email": user["email"], "created_at": user.get("created_at"), "is_admin": is_admin(user)}
 
 
 # ============================================================

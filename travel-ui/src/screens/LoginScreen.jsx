@@ -15,7 +15,7 @@ export function LoginScreen({ onLogin, onBack, onGoToRegister }) {const translat
     event.preventDefault();setErr("");
     if (!email.trim() || !password.trim()) {setErr("Vui lòng nhập đầy đủ email và mật khẩu.");return;}
     setLoading(true);
-    try {const data = await apiPost("/api/auth/login", { email: email.trim(), password });onLogin({ email: data.user.email, token: data.token });}
+    try {const data = await apiPost("/api/auth/login", { email: email.trim(), password });onLogin({ email: data.user.email, token: data.token, isAdmin: data.user.is_admin === true });}
     catch (reason) {setErr(reason.message || "Sai email hoặc mật khẩu.");} finally
     {setLoading(false);}
   }

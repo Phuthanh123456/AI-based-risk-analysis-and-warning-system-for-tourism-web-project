@@ -678,6 +678,7 @@ export default function App() {
     };
   }, [canTrip, session?.user?.token, location.pathname, tripRes, tripCheckedAt, tripLoading, tripPurpose, departureDate, userPos, destinationLocation]);
   if (!session) {
+    if (location.pathname === "/admin" || location.pathname === "/admin/") return <Navigate to="/login" replace state={{ returnTo: "/admin" }} />;
     if (homeAfterLogout.current && location.pathname !== "/") return <Navigate to="/" replace />;
     const registerScreen = <RegisterScreen onRegister={login} onBack={returnHome} onGoToLogin={() => navigate("/login", { replace: true, state: location.state })} />;
     const loginScreen = (
@@ -704,7 +705,7 @@ export default function App() {
   // Redirect only after authentication has committed, before mounting portal
   // routes. This prevents their fallback redirect from racing the login target.
   if (location.pathname === "/login" || location.pathname === "/register") {
-    const target = location.state?.returnTo || "/plan";
+    const target = session.user.isAdmin ? "/admin" : location.state?.returnTo || "/plan";
     return <Navigate to={LANDING_PORTAL_ROUTES.has(target) ? target : "/plan"} state={location.state} replace />;
   }
 
