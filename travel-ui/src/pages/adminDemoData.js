@@ -21,7 +21,7 @@ export function withAdminDemoData(live) {
 
   return {
     counts: {
-      accounts: live.counts.accounts + 100,
+      accounts: live.counts.accounts + 50,
       assessments: live.counts.assessments + demoAssessments,
       sign_ins: live.counts.sign_ins + demoSignIns,
       subscriptions: live.counts.subscriptions + 28,
